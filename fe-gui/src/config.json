@@ -1,0 +1,17 @@
+{
+  "_": "#GoVueAdmin-Customized",
+  "app": {
+    "name": "#{appName}",
+    "initial": "#{appInitial}",
+    "shortname": "#{appShortname}",
+    "desc": "#{appDescription}",
+    "version": "#{appVersion}"
+  },
+  "api_client": {
+    "bo_api_base_url": "",
+    "app_id": "#{appShortname}_fe",
+    "header_app_id": "X-App-Id",
+    "header_access_token": "X-Access-Token",
+    "header_language": "X-Language"
+  }
+}
