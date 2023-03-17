@@ -1,0 +1,12 @@
+title:
+  en: Introduction
+  vi: Giới thiệu
+summary:
+  en: An introduction of DO CMS
+  vi: Giới thiệu tổng quan về DO CMS
+icon:
+  id: fa-folder-tree
+  category: fa-solid
+file:
+  en: content-en.md
+  vi: content-vi.md
