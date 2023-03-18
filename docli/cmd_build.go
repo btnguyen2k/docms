@@ -224,7 +224,7 @@ func _buildCatDir(opts *Options, siteMeta *docms.SiteMeta, catDir os.DirEntry) {
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
 		if !dirEntry.IsDir() {
-			fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+dirEntry.Name())
+			fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+catDir.Name()+"/"+dirEntry.Name())
 			continue
 		}
 		matches := reDirContent.FindStringSubmatch(dirEntry.Name())
@@ -375,23 +375,26 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, catDir, docDir os.Dir
 	} else {
 		fmt.Printf("[INFO]\t\t metadata verification done.\n")
 	}
+
+	contentFiles := newDocMeta.GetContentFileNames()
+	for _, f := range contentFiles {
+		contentFile := opts.SrcDir + "/" + catDir.Name() + "/" + docDir.Name() + "/" + f
+		if !isFile(contentFile) {
+			exitIfError(fmt.Errorf("content file <%s> not exists", contentFile))
+		}
+	}
+
 	exitIfError(os.Mkdir(opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name(), dirPerm))
 	exitIfError(writeFileYaml(opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name()+"/meta.yaml", newDocMeta))
 
-	// srcDirEntries, err := getDirContent(opts.SrcDir + "/" + catDir.Name())
-	// exitIfError(err)
-	// for _, dirEntry := range srcDirEntries {
-	// 	if !dirEntry.IsDir() {
-	// 		fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+dirEntry.Name())
-	// 		continue
-	// 	}
-	// 	matches := reDirContent.FindStringSubmatch(dirEntry.Name())
-	// 	if len(matches) == 0 {
-	// 		fmt.Printf("[WARN]\t ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
-	// 		continue
-	// 	}
-	// 	_buildDocDir(opts, siteMeta, catDir, dirEntry)
-	// }
+	fmt.Printf("[INFO]\t\t building content directory <%s>...", opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name())
+	err := copyDir(opts.SrcDir+"/"+catDir.Name()+"/"+docDir.Name(), opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name(), "meta.yaml", "meta.json")
+	if err == nil {
+		fmt.Printf("done.\n")
+	} else {
+		fmt.Printf("\n")
+		exitIfError(err)
+	}
 }
 
 // handle command "build"
