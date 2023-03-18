@@ -70,6 +70,21 @@ type DocumentMeta struct {
 	ContentFile interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
 }
 
+func (dm *DocumentMeta) GetContentFileNames() []string {
+	switch dm.ContentFile.(type) {
+	case string:
+		return []string{dm.ContentFile.(string)}
+	case map[string]string:
+		result := make([]string, 0)
+		for _, v := range dm.ContentFile.(map[string]string) {
+			result = append(result, v)
+		}
+		return result
+	default:
+		return make([]string, 0)
+	}
+}
+
 func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
