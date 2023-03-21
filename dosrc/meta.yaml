@@ -1,9 +1,20 @@
-name: DO CMS
+name: DO CMS # (string) site's name
 description:
-  en: A CI/CD based Content Management System
-  vi: Hệ thống Quản lý nội dung dựa trên CI/CD
-icon: fa-solid fa-newspaper
+  # (string, or map[language-code]text)
+  en: Content Management System where its content is built through CI/CD pipeline
+  vi: Hệ thống Quản trị nội dung với dữ liệu được xây dựng trên qui trình CI/CD
+icon: fas fa-code # (string) site's icon, supporting FontAwesome icons
 languages:
-  # available languages as map of {language-code: display label}
+  # (map[language-code]text) available languages
   en: English
   vi: Tiếng Việt
+  default: en # default language
+contacts:
+  # (map[string]string) site's contact info
+  website: "https://github.com/btnguyen2k/docms"
+  email: "btnguyen2k (at) gmail (dot) com"
+  github: "https://github.com/btnguyen2k/"
+  facebook: ""
+  linkedin: "https://www.linkedin.com/in/btnguyen2k/"
+  slack: ""
+  twitter: ""

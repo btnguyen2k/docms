@@ -15,28 +15,35 @@ const (
 )
 
 var (
-	gDataDir         string
-	gDefaultLanguage string
-	gSiteMeta        *SiteMeta
-	gTopicList       = make([]*TopicMeta, 0)            // list of categories, sorted by index
-	gTopicMeta       = make(map[string]*TopicMeta)      // map[category-id]category-metadata
-	gDocumentList    = make(map[string][]*DocumentMeta) // list of documents, per category, sorted by index
-	gDocumentMeta    = make(map[string]*DocumentMeta)   // map[category-id:document-id]document-metadata
+	gDataDir      string
+	gSiteMeta     *SiteMeta
+	gTopicList    = make([]*TopicMeta, 0)            // list of categories, sorted by index
+	gTopicMeta    = make(map[string]*TopicMeta)      // map[category-id]category-metadata
+	gDocumentList = make(map[string][]*DocumentMeta) // list of documents, per category, sorted by index
+	gDocumentMeta = make(map[string]*DocumentMeta)   // map[category-id:document-id]document-metadata
 )
 
 // SiteMeta capture metadata of the website.
 type SiteMeta struct {
-	Name        string            `json:"name",yaml:"name"`               // name of the website
-	Description interface{}       `json:"description",yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Languages   map[string]string `json:"languages",yaml:"languages"`     // available languages of the website content
-	Icon        string            `json:"icon",yaml:"icon"`               // website's icon
+	Name            string            `json:"name",yaml:"name"`               // name of the website
+	Description     interface{}       `json:"description",yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
+	Languages       map[string]string `json:"languages",yaml:"languages"`     // available languages of the website content
+	DefaultLanguage string            `json:"-",yaml:"-"`                     // site's default language
+	Icon            string            `json:"icon",yaml:"icon"`               // website's icon
+	Contacts        map[string]string `json:"contacts",yaml:"contacts"`       // site's contact info
+}
+
+func (sm *SiteMeta) init() error {
+	sm.DefaultLanguage = sm.Languages["default"]
+	// delete(sm.Languages, "default")
+	return nil
 }
 
 func (sm *SiteMeta) GetDescriptionMap() map[string]string {
 	result := make(map[string]string)
 	switch sm.Description.(type) {
 	case string:
-		result[gDefaultLanguage] = sm.Description.(string)
+		result[sm.DefaultLanguage] = sm.Description.(string)
 	case map[string]string:
 		for k, v := range sm.Description.(map[string]string) {
 			result[k] = v
@@ -55,7 +62,11 @@ func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 		return nil, err
 	}
 	var metadata *SiteMeta
-	return metadata, yaml.Unmarshal(buf, &metadata)
+	err = yaml.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.init()
+	}
+	return metadata, err
 }
 
 func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
@@ -64,7 +75,11 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 		return nil, err
 	}
 	var metadata *SiteMeta
-	return metadata, json.Unmarshal(buf, &metadata)
+	err = json.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.init()
+	}
+	return metadata, err
 }
 
 /*----------------------------------------------------------------------*/
@@ -92,7 +107,7 @@ func (tm *TopicMeta) GetDescriptionMap() map[string]string {
 	result := make(map[string]string)
 	switch tm.Description.(type) {
 	case string:
-		result[gDefaultLanguage] = tm.Description.(string)
+		result[gSiteMeta.DefaultLanguage] = tm.Description.(string)
 	case map[string]string:
 		for k, v := range tm.Description.(map[string]string) {
 			result[k] = v
@@ -109,7 +124,7 @@ func (tm *TopicMeta) GetTitleMap() map[string]string {
 	result := make(map[string]string)
 	switch tm.Title.(type) {
 	case string:
-		result[gDefaultLanguage] = tm.Title.(string)
+		result[gSiteMeta.DefaultLanguage] = tm.Title.(string)
 	case map[string]string:
 		for k, v := range tm.Title.(map[string]string) {
 			result[k] = v

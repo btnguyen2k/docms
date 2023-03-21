@@ -5,6 +5,9 @@ import utils from '@/utils/app_utils'
 const messages = {
     en: {
         wait: 'Please wait...',
+        search: 'Search',
+        search_prompt: 'Enter search term',
+
         click_to_home: 'Click here to navigate to the home page.',
         click_to_topic: 'Click here to navigate to the topic index.',
         contacts: 'Contacts',
@@ -23,6 +26,9 @@ const messages = {
     },
     vi: {
         wait: 'Vui lòng giờ giây lát...',
+        search: 'Tìm kiếm',
+        search_prompt: 'Nhập câu truy vấn tìm kiếm',
+
         click_to_home: 'Nhấn vào đây để đi đến trang chủ.',
         click_to_topic: 'Nhấn vào đây để đi đến trang nhà của chủ đề.',
         contacts: 'Liên hệ',

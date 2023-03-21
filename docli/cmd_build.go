@@ -6,8 +6,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/urfave/cli"
 	"main/src/docms"
+
+	"github.com/urfave/cli"
 )
 
 var reDirContent = regexp.MustCompile(`^(\d)+-(\w+)$`)
@@ -105,6 +106,9 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 
 	// icon
 	newMetadata.Icon = siteMeta.Icon
+
+	// contacts
+	newMetadata.Contacts = siteMeta.Contacts
 
 	return newMetadata, checkPass
 }

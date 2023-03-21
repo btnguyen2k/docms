@@ -10,10 +10,12 @@ var _apiResultGetSiteMeta *itineris.ApiResult
 func apiGetSiteMeta(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
 	if _apiResultGetSiteMeta == nil {
 		_apiResultGetSiteMeta = itineris.NewApiResult(itineris.StatusOk).SetData(map[string]interface{}{
-			"name":        gSiteMeta.Name,
-			"languages":   gSiteMeta.Languages,
-			"icon":        gSiteMeta.Icon,
-			"description": gSiteMeta.GetDescriptionMap(),
+			"name":            gSiteMeta.Name,
+			"languages":       gSiteMeta.Languages,
+			"defaultLanguage": gSiteMeta.DefaultLanguage,
+			"icon":            gSiteMeta.Icon,
+			"description":     gSiteMeta.GetDescriptionMap(),
+			"contacts":        gSiteMeta.Contacts,
 		})
 	}
 	return _apiResultGetSiteMeta

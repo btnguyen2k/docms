@@ -28,8 +28,6 @@ func (m MyBootstrapper) Bootstrap() error {
 }
 
 func initCMSData() {
-	gDefaultLanguage = goapi.AppConfig.GetString("docms.default_language", "en")
-
 	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
 	log.Printf("Loading CMS data from <%s>...", gDataDir)
 
