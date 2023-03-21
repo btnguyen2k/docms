@@ -2,10 +2,7 @@ name: DO CMS
 description:
   en: A CI/CD based Content Management System
   vi: Hệ thống Quản lý nội dung dựa trên CI/CD
-icon:
-  # support font sets: Font Awesome
-  id: fa-folder-tree
-  category: fa-solid
+icon: fa-solid fa-newspaper
 languages:
   # available languages as map of {language-code: display label}
   en: English

@@ -4,6 +4,4 @@ title:
 description:
   en: An introduction of DO CMS
   vi: Giới thiệu tổng quan về DO CMS
-icon:
-  id: fa-folder-tree
-  category: fa-solid
+icon: fas fa-lightbulb

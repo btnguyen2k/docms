@@ -26,34 +26,37 @@ import (
 //   - api-handler function must have the following signature:
 //     func (itineris.ApiContext, itineris.ApiAuth, itineris.ApiParams) *itineris.ApiResult
 func initApiHandlers(router *itineris.ApiRouter) {
+	router.SetHandler("health", apiHealth)
 	router.SetHandler("info", apiInfo)
-	router.SetHandler("login", apiLogin)
-	router.SetHandler("verifyLoginToken", apiVerifyLoginToken)
-	router.SetHandler("systemInfo", apiSystemInfo)
 
-	router.SetHandler("myFeed", apiMyFeed)
-	router.SetHandler("myBlog", apiMyBlog)
-	router.SetHandler("createBlogPost", apiCreateBlogPost)
-	router.SetHandler("getBlogPost", apiGetBlogPost)
-	router.SetHandler("updateBlogPost", apiUpdateBlogPost)
-	router.SetHandler("deleteBlogPost", apiDeleteBlogPost)
-
-	router.SetHandler("getUserVoteForPost", apiGetUserVoteForPost)
-	router.SetHandler("voteForPost", apiVoteForPost)
+	// router.SetHandler("login", apiLogin)
+	// router.SetHandler("verifyLoginToken", apiVerifyLoginToken)
+	// router.SetHandler("systemInfo", apiSystemInfo)
+	//
+	// router.SetHandler("myFeed", apiMyFeed)
+	// router.SetHandler("myBlog", apiMyBlog)
+	// router.SetHandler("createBlogPost", apiCreateBlogPost)
+	// router.SetHandler("getBlogPost", apiGetBlogPost)
+	// router.SetHandler("updateBlogPost", apiUpdateBlogPost)
+	// router.SetHandler("deleteBlogPost", apiDeleteBlogPost)
+	//
+	// router.SetHandler("getUserVoteForPost", apiGetUserVoteForPost)
+	// router.SetHandler("voteForPost", apiVoteForPost)
 }
 
 /*------------------------------ shared variables and functions ------------------------------*/
 
 var (
 	// those APIs will not need authentication.
-	// "false" means client, however, needs to sends app-id along with the API call
+	// "false" means client, however, needs to send app-id along with the API call
 	// "true" means the API is free for public call
 	publicApis = map[string]bool{
-		"login":            false,
-		"info":             true,
-		"getApp":           false,
-		"verifyLoginToken": true,
-		"loginChannelList": true,
+		// "login":            false,
+		"info":   true,
+		"health": true,
+		// "getApp":           false,
+		// "verifyLoginToken": true,
+		// "loginChannelList": true,
 	}
 )
 
@@ -85,6 +88,13 @@ func _currentUserFromContext(ctx *itineris.ApiContext) (*SessionClaims, *user.Us
 }
 
 /*------------------------------ APIs ------------------------------*/
+
+var _apiResultHealth = itineris.NewApiResult(itineris.StatusOk).SetData("ok")
+
+// API handler "health"
+func apiHealth(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	return _apiResultHealth
+}
 
 // API handler "info"
 func apiInfo(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {

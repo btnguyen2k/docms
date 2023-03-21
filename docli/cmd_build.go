@@ -109,14 +109,14 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 	return newMetadata, checkPass
 }
 
-func _loadCategoryMetadata(opts *Options, dir os.DirEntry) *docms.CategoryMeta {
+func _loadTopicMetadata(opts *Options, dir os.DirEntry) *docms.TopicMeta {
 	metaFileYaml := opts.SrcDir + "/" + dir.Name() + "/meta.yaml"
 	fmt.Printf("[INFO]\t looking for file <%s>...", metaFileYaml)
 	if isFile(metaFileYaml) {
 		fmt.Printf("found.\n")
-		catMeta, err := docms.LoadCategoryMetaFromYaml(metaFileYaml)
+		topicMeta, err := docms.LoadTopicMetaFromYaml(metaFileYaml)
 		exitIfError(err)
-		return catMeta
+		return topicMeta
 	}
 
 	fmt.Printf("not found.\n")
@@ -124,9 +124,9 @@ func _loadCategoryMetadata(opts *Options, dir os.DirEntry) *docms.CategoryMeta {
 	fmt.Printf("[INFO]\t looking for file <%s>...", metaFileJson)
 	if isFile(metaFileJson) {
 		fmt.Printf("found.\n")
-		catMeta, err := docms.LoadCategoryMetaFromJson(metaFileJson)
+		topicMeta, err := docms.LoadTopicMetaFromJson(metaFileJson)
 		exitIfError(err)
-		return catMeta
+		return topicMeta
 	}
 
 	fmt.Printf("not found.\n")
@@ -134,14 +134,14 @@ func _loadCategoryMetadata(opts *Options, dir os.DirEntry) *docms.CategoryMeta {
 	return nil
 }
 
-func _verifyCategoryMetadata(siteMeta *docms.SiteMeta, catMeta *docms.CategoryMeta) (*docms.CategoryMeta, bool) {
+func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) (*docms.TopicMeta, bool) {
 	checkPass := true
-	newMetadata := &docms.CategoryMeta{}
+	newMetadata := &docms.TopicMeta{}
 	fmt.Printf("[INFO]\t veryfing metadata file...\n")
 
 	// "title" must be a string, or a map[string]string
 	{
-		title := catMeta.Title
+		title := topicMeta.Title
 		switch title.(type) {
 		case string:
 			if strings.TrimSpace(title.(string)) == "" {
@@ -172,7 +172,7 @@ func _verifyCategoryMetadata(siteMeta *docms.SiteMeta, catMeta *docms.CategoryMe
 
 	// "description" must be a string, or a map[string]string
 	{
-		desc := catMeta.Description
+		desc := topicMeta.Description
 		switch desc.(type) {
 		case string:
 			if strings.TrimSpace(desc.(string)) == "" {
@@ -202,29 +202,29 @@ func _verifyCategoryMetadata(siteMeta *docms.SiteMeta, catMeta *docms.CategoryMe
 	}
 
 	// icon
-	newMetadata.Icon = catMeta.Icon
+	newMetadata.Icon = topicMeta.Icon
 
 	return newMetadata, checkPass
 }
 
-func _buildCatDir(opts *Options, siteMeta *docms.SiteMeta, catDir os.DirEntry) {
-	fmt.Printf("[INFO] building category from <%s>...\n", opts.SrcDir+"/"+catDir.Name())
+func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry) {
+	fmt.Printf("[INFO] building topic from <%s>...\n", opts.SrcDir+"/"+topicDir.Name())
 
-	catMeta := _loadCategoryMetadata(opts, catDir)
-	newCatMeta, ok := _verifyCategoryMetadata(siteMeta, catMeta)
+	topicMeta := _loadTopicMetadata(opts, topicDir)
+	newTopicMeta, ok := _verifyTopicMetadata(siteMeta, topicMeta)
 	if !ok {
 		exitIfError(fmt.Errorf("there is error while checking metadata file"))
 	} else {
 		fmt.Printf("[INFO]\t metadata verification done.\n")
 	}
-	exitIfError(os.Mkdir(opts.OutputDir+"/"+catDir.Name(), dirPerm))
-	exitIfError(writeFileYaml(opts.OutputDir+"/"+catDir.Name()+"/meta.yaml", newCatMeta))
+	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name(), dirPerm))
+	exitIfError(writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/meta.yaml", newTopicMeta))
 
-	srcDirEntries, err := getDirContent(opts.SrcDir + "/" + catDir.Name())
+	srcDirEntries, err := getDirContent(opts.SrcDir + "/" + topicDir.Name())
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
 		if !dirEntry.IsDir() {
-			fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+catDir.Name()+"/"+dirEntry.Name())
+			fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+topicDir.Name()+"/"+dirEntry.Name())
 			continue
 		}
 		matches := reDirContent.FindStringSubmatch(dirEntry.Name())
@@ -232,12 +232,12 @@ func _buildCatDir(opts *Options, siteMeta *docms.SiteMeta, catDir os.DirEntry) {
 			fmt.Printf("[WARN]\t ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
 			continue
 		}
-		_buildDocDir(opts, siteMeta, catDir, dirEntry)
+		_buildDocDir(opts, siteMeta, topicDir, dirEntry)
 	}
 }
 
-func _loadDocumentMetadata(opts *Options, catDir, docDir os.DirEntry) *docms.DocumentMeta {
-	metaFileYaml := opts.SrcDir + "/" + catDir.Name() + "/" + docDir.Name() + "/meta.yaml"
+func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) *docms.DocumentMeta {
+	metaFileYaml := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yaml"
 	fmt.Printf("[INFO]\t\t looking for file <%s>...", metaFileYaml)
 	if isFile(metaFileYaml) {
 		fmt.Printf("found.\n")
@@ -247,7 +247,7 @@ func _loadDocumentMetadata(opts *Options, catDir, docDir os.DirEntry) *docms.Doc
 	}
 
 	fmt.Printf("not found.\n")
-	metaFileJson := opts.SrcDir + "/" + catDir.Name() + "/" + docDir.Name() + "/meta.json"
+	metaFileJson := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.json"
 	fmt.Printf("[INFO]\t\t looking for file <%s>...", metaFileJson)
 	if isFile(metaFileJson) {
 		fmt.Printf("found.\n")
@@ -365,10 +365,10 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 	return newMetadata, checkPass
 }
 
-func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, catDir, docDir os.DirEntry) {
-	fmt.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+catDir.Name()+"/"+docDir.Name())
+func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry) {
+	fmt.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name())
 
-	docMeta := _loadDocumentMetadata(opts, catDir, docDir)
+	docMeta := _loadDocumentMetadata(opts, topicDir, docDir)
 	newDocMeta, ok := _verifyDocumentMetadata(siteMeta, docMeta)
 	if !ok {
 		exitIfError(fmt.Errorf("there is error while checking metadata file"))
@@ -378,17 +378,17 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, catDir, docDir os.Dir
 
 	contentFiles := newDocMeta.GetContentFileNames()
 	for _, f := range contentFiles {
-		contentFile := opts.SrcDir + "/" + catDir.Name() + "/" + docDir.Name() + "/" + f
+		contentFile := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + f
 		if !isFile(contentFile) {
 			exitIfError(fmt.Errorf("content file <%s> not exists", contentFile))
 		}
 	}
 
-	exitIfError(os.Mkdir(opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name(), dirPerm))
-	exitIfError(writeFileYaml(opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name()+"/meta.yaml", newDocMeta))
+	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), dirPerm))
+	exitIfError(writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name()+"/meta.yaml", newDocMeta))
 
-	fmt.Printf("[INFO]\t\t building content directory <%s>...", opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name())
-	err := copyDir(opts.SrcDir+"/"+catDir.Name()+"/"+docDir.Name(), opts.OutputDir+"/"+catDir.Name()+"/"+docDir.Name(), "meta.yaml", "meta.json")
+	fmt.Printf("[INFO]\t\t building content directory <%s>...", opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name())
+	err := copyDir(opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name(), opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), "meta.yaml", "meta.json")
 	if err == nil {
 		fmt.Printf("done.\n")
 	} else {
@@ -450,6 +450,6 @@ func actionBuild(c *cli.Context) {
 			fmt.Printf("[WARN] ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
 			continue
 		}
-		_buildCatDir(opts, siteMeta, dirEntry)
+		_buildTopicDir(opts, siteMeta, dirEntry)
 	}
 }

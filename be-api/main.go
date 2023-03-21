@@ -10,8 +10,8 @@ import (
 	"math/rand"
 	"time"
 
+	"main/src/docms"
 	"main/src/goapi"
-	"main/src/gvabe"
 )
 
 func main() {
@@ -23,8 +23,8 @@ func main() {
 	// - Application configurations via global variable goapi.AppConfig
 	// - itineris.ApiRouter instance via global variable goapi.ApiRouter
 	var bootstrappers = []goapi.IBootstrapper{
-		gvabe.Bootstrapper,
-		// samples_api_filters.Bootstrapper,
+		// gvabe.Bootstrapper,
+		docms.Bootstrapper,
 	}
 	goapi.Start(bootstrappers...)
 }
