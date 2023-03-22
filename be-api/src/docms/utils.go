@@ -177,6 +177,40 @@ func (dm *DocumentMeta) setIndexAndId(input string) bool {
 	return true
 }
 
+func (dm *DocumentMeta) GetSummaryMap() map[string]string {
+	result := make(map[string]string)
+	switch dm.Summary.(type) {
+	case string:
+		result[gSiteMeta.DefaultLanguage] = dm.Summary.(string)
+	case map[string]string:
+		for k, v := range dm.Summary.(map[string]string) {
+			result[k] = v
+		}
+	case map[string]interface{}:
+		for k, v := range dm.Summary.(map[string]interface{}) {
+			result[k] = fmt.Sprintf("%s", v)
+		}
+	}
+	return result
+}
+
+func (dm *DocumentMeta) GetTitleMap() map[string]string {
+	result := make(map[string]string)
+	switch dm.Title.(type) {
+	case string:
+		result[gSiteMeta.DefaultLanguage] = dm.Title.(string)
+	case map[string]string:
+		for k, v := range dm.Title.(map[string]string) {
+			result[k] = v
+		}
+	case map[string]interface{}:
+		for k, v := range dm.Title.(map[string]interface{}) {
+			result[k] = fmt.Sprintf("%s", v)
+		}
+	}
+	return result
+}
+
 func (dm *DocumentMeta) GetContentFileNames() []string {
 	switch dm.ContentFile.(type) {
 	case string:

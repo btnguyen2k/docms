@@ -1,4 +1,7 @@
-<template><div>//TODO</div>
+<template>
+  <div>
+    Page
+  </div>
 <!--  <div v-if="foundStatus<0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>-->
 <!--  <div v-else-if="foundStatus==0" class="alert alert-danger m-4" role="alert">-->
 <!--    {{ $t('error_product_not_found', {domain: currentHost}) }}-->

@@ -1,6 +1,12 @@
 package docms
 
 import (
+	"fmt"
+	"reflect"
+	"regexp"
+	"strings"
+
+	"github.com/btnguyen2k/consu/reddo"
 	"main/src/itineris"
 )
 
@@ -38,4 +44,39 @@ func apiGetTopics(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiPa
 		_apiResultGetTopics = itineris.NewApiResult(itineris.StatusOk).SetData(topics)
 	}
 	return _apiResultGetTopics
+}
+
+func _extractParam(params *itineris.ApiParams, paramName string, typ reflect.Type, defValue interface{}, regexp *regexp.Regexp) interface{} {
+	v, _ := params.GetParamAsType(paramName, typ)
+	if v == nil {
+		v = defValue
+	}
+	if v != nil {
+		if _, ok := v.(string); ok {
+			v = strings.TrimSpace(v.(string))
+			if regexp != nil && !regexp.Match([]byte(v.(string))) {
+				return nil
+			}
+		}
+	}
+	return v
+}
+
+// API handler "getDocumentsForTopic"
+func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
+	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
+	docList := gDocumentList[topicId.(string)]
+	if docList == nil {
+		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
+	}
+	documents := make([]map[string]interface{}, len(docList))
+	for i, doc := range docList {
+		documents[i] = map[string]interface{}{
+			"id":      doc.id,
+			"icon":    doc.Icon,
+			"title":   doc.GetTitleMap(),
+			"summary": doc.GetSummaryMap(),
+		}
+	}
+	return itineris.NewApiResult(itineris.StatusOk).SetData(documents)
 }

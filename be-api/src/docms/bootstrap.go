@@ -56,6 +56,7 @@ func initCMSData() {
 		topicMeta.setIndexAndId(topicDir.Name())
 		gTopicList = append(gTopicList, topicMeta)
 		gTopicMeta[topicMeta.id] = topicMeta
+		gDocumentList[topicMeta.id] = make([]*DocumentMeta, 0)
 
 		// fetch all documents inside the topic directory
 		docDirList, err := GetDirContent(gDataDir+"/"+topicDir.Name(), func(entry os.DirEntry) bool {
@@ -91,4 +92,6 @@ func initCMSData() {
 func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getSiteMeta", apiGetSiteMeta)
 	router.SetHandler("getTopics", apiGetTopics)
+	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
+	// router.SetHandler("getDocument", apiGetDocument)
 }

@@ -1,7 +1,7 @@
 <template>
   <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
   <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else>
+  <div v-else class="landing-page">
     <div class="page-wrapper">
       <header class="header text-center">
         <div class="container">
@@ -38,12 +38,12 @@
       <section class="cards-section text-center">
         <div class="container">
           <div id="cards-wrapper" class="cards-wrapper row">
-            <div v-for="topic in topicList" v-bind:key="topic.id" :class="_topicBlockStyleClass(topic)+' item col-12 col-lg-4'">
+            <div v-for="topic in topicList" v-bind:key="topic.id" :class="_styleClassForTopic(topic)+' item col-12 col-lg-4'">
               <div class="item-inner">
                 <div v-if="topic.icon!=''" class="icon-holder icon"><fa-icon :icon="topic.icon"/></div>
                 <h3 class="title">{{ _localedText(topic.title) }}</h3>
                 <p class="intro">{{ _localedText(topic.description) }}</p>
-                <a class="link" href="start.html"><span></span></a>
+                <router-link class="link" :to="{ name: 'Topic', params: { tid: topic.id } }"><span></span></router-link>
               </div>
             </div>
           </div>
@@ -62,72 +62,60 @@
 <script>
 import clientUtils from "@/utils/api_client"
 import i18n from "@/i18n"
+import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
 
 export default {
   name: 'Home',
-  unmounted() {
-    document.body.classList.remove('landing-page')
-  },
   mounted() {
-    document.body.classList.add('landing-page')
-
-    this.status = 0
-    const vue = this
-    clientUtils.apiDoGet(clientUtils.apiSite,
-        (apiResp) => {
-          let status = apiResp.status
-          if (status == 200) {
-            vue.siteMeta = apiResp.data
-            clientUtils.apiDoGet(clientUtils.apiTopics,
-                (apiResp) => {
-                  vue.status = apiResp.status
-                  if (vue.status == 200) {
-                    vue.topicList = apiResp.data
-                  } else {
-                    vue.errorMsg = apiResp.message
-                  }
-                },
-                (err) => {
-                  vue.errorMsg = err
-                })
-          } else {
-            vue.errorMsg = apiResp.message
-          }
-        },
-        (err) => {
-          vue.errorMsg = err
-        })
+    this._fetchSiteMeta(this)
   },
   computed: {
     _siteNameFirst() {
-      return this.siteMeta.name ? this.siteMeta.name.split(' ')[0] : ""
+      return extractLeadingFromName(this.siteMeta.name)
     },
     _siteNameLast() {
-      return this.siteMeta.name ? this.siteMeta.name.slice(this._siteNameFirst.length).trim() : ""
+      return extractTrailingFromName(this.siteMeta.name)
     },
   },
   methods: {
-    _topicBlockStyleClass(topic) {
-      const styleList = ["item-blue", "item-green", "item-red", "item_pink", "item-purple", "item-orange"]
-      let hash = 0
-      for (let i = 0; i < topic.id.length; i++) {
-        hash = ((hash << 5) - hash) + topic.id.charCodeAt(i)
-        hash = hash & hash
-      }
-      return styleList[hash % styleList.length]
+    _styleClassForTopic(topic) {
+      const styleList = ["item-blue", "item-green", "item-red", "item-pink", "item-purple", "item-orange"]
+      return styleByHash(topic.id, styleList)
     },
     _localedText(inputMap) {
       return inputMap[i18n.global.locale]?inputMap[i18n.global.locale]:inputMap
     },
-    doViewTopic(tid) {
-      this.$router.push({name: "Topic", params: {tid: tid}})
+    _fetchSiteMeta(vue) {
+      vue.status = 0
+      clientUtils.apiDoGet(clientUtils.apiSite,
+          (apiResp) => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.siteMeta = apiResp.data
+              vue._fetchTopics(vue)
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          (err) => {
+            vue.errorMsg = err
+          })
     },
-    goHome() {
-      this.$router.push({name: "Home"})
+    _fetchTopics(vue) {
+      vue.status = 0
+      clientUtils.apiDoGet(clientUtils.apiTopics,
+          (apiResp) => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.topicList = apiResp.data
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          (err) => {
+            vue.errorMsg = err
+          })
     },
-    popup(msg) {
-      alert(msg)
-    }
   },
   data() {
     return {

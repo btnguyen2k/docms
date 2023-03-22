@@ -22,6 +22,7 @@ const appId = appConfig.APP_ID
 // const apiInfo = "/info"
 const apiSite = "/api/site"
 const apiTopics = "/api/topics"
+const apiDocuments = "/api/documents/:topic-id"
 
 function _apiOnSuccess(method, resp, apiUri, callbackSuccessful) {
     if (method == 'GET' && Object.prototype.hasOwnProperty.call(resp, "data") && resp.data.status == 403) {
@@ -122,6 +123,7 @@ export default {
     // apiInfo,
     apiSite,
     apiTopics,
+    apiDocuments,
 
     apiDoGet,
 }

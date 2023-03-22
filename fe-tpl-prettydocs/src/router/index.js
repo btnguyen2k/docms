@@ -1,11 +1,9 @@
 import { h, resolveComponent } from 'vue'
-// eslint-disable-next-line no-unused-vars
-import { createRouter, createWebHashHistory, createMemoryHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-    // history: createWebHashHistory(''),
-    history: createMemoryHistory(''),
-    linkActiveClass: 'active',
+    history: createWebHistory('/cms'),
+    // linkActiveClass: 'active',
     scrollBehavior: () => {
         // always scroll to top
         return { top: 0 }
@@ -80,7 +78,7 @@ import i18n from '@/i18n'
 function configRoutes() {
     return [
         {
-            path: '/_error', name: 'Error', meta: { label: i18n.global.t('message.error') },
+            path: '/_error', name: 'Error', meta: { label: i18n.global.t('error') },
             component: () => import('@/components/Error'), props: true,
         },
         {
@@ -92,15 +90,15 @@ function configRoutes() {
             },
             children: [
                 {
-                    path: '', name: 'Home', meta: { label: i18n.global.t('message.gome') },
+                    path: '', name: 'Home', meta: { label: i18n.global.t('home') },
                     component: () => import('@/components/Home')
                 },
                 {
-                    path: '/:tid', name: 'Topic', meta: { label: i18n.global.t('message.topic') },
+                    path: '/:tid', name: 'Topic', meta: { label: i18n.global.t('topic') },
                     component: () => import('@/components/Topic')
                 },
                 {
-                    path: '/:tid/:pid', name: 'Page', meta: { label: i18n.global.t('message.page') },
+                    path: '/:tid/:pid', name: 'Page', meta: { label: i18n.global.t('page') },
                     component: () => import('@/components/Page')
                 }
             ]
