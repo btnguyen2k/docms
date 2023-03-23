@@ -17,8 +17,8 @@
           </div>
 
           <div class="main-search-box pt-3 pb-4 d-inline-block">
-            <form class="form-inline search-form justify-content-center" action="" method="get">
-              <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input">
+            <form class="form-inline search-form justify-content-center" @submit.prevent="doSearch" method="get">
+              <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input" v-model="searchQuery">
               <button type="submit" class="btn search-btn" :value="$t('search')"><fa-icon icon="fas fa-search" /></button>
             </form>
           </div>
@@ -120,6 +120,9 @@ export default {
             vue.errorMsg = err
           })
     },
+    doSearch() {
+      this.$router.push({name: 'Search', query: {q: this.searchQuery}})
+    },
   },
   data() {
     return {
@@ -127,6 +130,7 @@ export default {
       topicList: [],
       status: -1,
       errorMsg: '',
+      searchQuery: '',
     }
   },
 }

@@ -22,8 +22,8 @@
           </ol>
 
           <div class="top-search-box">
-            <form class="form-inline search-form justify-content-center" action="" method="get">
-              <input type="text" :placeholder="$t('search')" name="q" class="form-control search-input">
+            <form class="form-inline search-form justify-content-center" @submit.prevent="doSearch" method="get">
+              <input type="text" :placeholder="$t('search')" name="q" class="form-control search-input" v-model="searchQuery">
               <button type="submit" class="btn search-btn" :value="$t('search')"><fa-icon icon="fas fa-search"></fa-icon></button>
             </form>
           </div>
@@ -197,6 +197,9 @@ export default {
     doViewDocument(tid, did) {
       this.$router.push({name: 'Document', params: {tid: tid, did: did}})
     },
+    doSearch() {
+      this.$router.push({name: 'Search', query: {q: this.searchQuery}})
+    },
   },
   data() {
     return {
@@ -207,6 +210,7 @@ export default {
       document: {},
       status: -1,
       errorMsg: '',
+      searchQuery: '',
     }
   },
 }

@@ -17,10 +17,10 @@ import i18n from '@/i18n'
 
 function configRoutes() {
     return [
-        // {
-        //     path: '/_error', name: 'Error', meta: { label: i18n.global.t('error') },
-        //     component: () => import('@/components/Error'), props: true,
-        // },
+        {
+            path: '/_search', name: 'Search', meta: { label: i18n.global.t('search') },
+            component: () => import('@/components/Search'), props: true,
+        },
         {
             path: '/',
             component: {
