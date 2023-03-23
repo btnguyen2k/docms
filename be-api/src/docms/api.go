@@ -65,18 +65,40 @@ func _extractParam(params *itineris.ApiParams, paramName string, typ reflect.Typ
 // API handler "getDocumentsForTopic"
 func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
+	docMetaList := gDocumentList[topicId.(string)]
+	if docMetaList == nil {
+		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
+	}
+	documents := make([]map[string]interface{}, len(docMetaList))
+	for i, docMeta := range docMetaList {
+		documents[i] = map[string]interface{}{
+			"id":      docMeta.id,
+			"icon":    docMeta.Icon,
+			"title":   docMeta.GetTitleMap(),
+			"summary": docMeta.GetSummaryMap(),
+		}
+	}
+	return itineris.NewApiResult(itineris.StatusOk).SetData(documents)
+}
+
+// API handler "getDocument"
+func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
+	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
+	docId := _extractParam(params, "did", reddo.TypeString, "", nil)
 	docList := gDocumentList[topicId.(string)]
 	if docList == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
 	}
-	documents := make([]map[string]interface{}, len(docList))
-	for i, doc := range docList {
-		documents[i] = map[string]interface{}{
-			"id":      doc.id,
-			"icon":    doc.Icon,
-			"title":   doc.GetTitleMap(),
-			"summary": doc.GetSummaryMap(),
-		}
+	docMeta := gDocumentMeta[topicId.(string)+":"+docId.(string)]
+	if docMeta == nil {
+		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Document <%s/%s> not found", topicId, docId))
 	}
-	return itineris.NewApiResult(itineris.StatusOk).SetData(documents)
+	document := map[string]interface{}{
+		"id":      docMeta.id,
+		"icon":    docMeta.Icon,
+		"title":   docMeta.GetTitleMap(),
+		"summary": docMeta.GetSummaryMap(),
+		"content": gDocumentContent[topicId.(string)+":"+docId.(string)],
+	}
+	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
 }

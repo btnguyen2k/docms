@@ -1,7 +1,7 @@
 <template>
   <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
   <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">{{ $t('error_topic_not_found', {topic: $route.params.tid}) }}</div>
+  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">{{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}</div>
   <div v-else :class="_styleClassForTopic(topic)">
     <div class="page-wrapper">
       <header id="header" class="header">
@@ -16,8 +16,9 @@
           </div>
 
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><router-link :to="{ name: 'Home' }">{{ $t('home') }}</router-link></li>
-            <li class="breadcrumb-item active">{{ _localedText(topic.title) }}</li>
+            <li class="breadcrumb-item"><router-link :to="{name: 'Home'}">{{ $t('home') }}</router-link></li>
+            <li class="breadcrumb-item"><router-link :to="{name: 'Topic', params: {tid: topic.id}}">{{ _localedText(topic.title) }}</router-link></li>
+            <li class="breadcrumb-item active">{{ _localedText(document.title) }}</li>
           </ol>
 
           <div class="top-search-box">
@@ -32,36 +33,34 @@
       <div class="doc-wrapper">
         <div class="container">
           <div id="doc-header" class="doc-header text-center">
-            <h1 class="doc-title"><fa-icon v-if="topic.icon" :icon="topic.icon"></fa-icon> {{ _localedText(topic.title) }}</h1>
-<!--            <div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
+            <h1 class="doc-title"><fa-icon v-if="document.icon" :icon="document.icon"></fa-icon> {{ _localedText(document.title) }}</h1>
+            <!--            <div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
           </div>
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
                 <section class="doc-section">
-                  <div class="section-block">
-                    <p>{{ _localedText(topic.description) }}</p>
-                  </div>
-
-                  <div v-if="documentList.length==0" class="alert alert-warning" role="alert">{{ $t('empty_topic') }}</div>
-                  <div v-else v-for="doc in documentList" v-bind:key="doc.id" class="section-block">
-                    <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="nav-link">
-                      <h3 class="block-title"><fa-icon v-if="doc.icon!=''" :icon="doc.icon" class="pe-1"/>{{ _localedText(doc.title) }}</h3>
-                    </router-link>
-                    <p style="cursor: pointer" @click="doViewDocument(topic.id, doc.id)">{{ _localedText(doc.summary) }}</p>
-                  </div>
-
+                  <div class="section-block" v-html="documentContentRendered"></div>
                 </section>
               </div>
             </div>
             <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
               <div id="doc-nav" class="doc-nav">
                 <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                  <li v-for="topic in topicList" v-bind:key="topic.id" :class="'nav-item'+($route.params.tid==topic.id?' active':'')">
-                    <router-link class="nav-link scrollto" :to="{name: 'Topic', params: {tid: topic.id}}">
-                      <fa-icon v-if="topic.icon!=''" :icon="topic.icon" class="pe-1"/>{{ _localedText(topic.title) }}
-                    </router-link>
-                  </li>
+                  <template v-for="topic in topicList" v-bind:key="topic.id">
+                    <li :class="'nav-item'+($route.params.tid==topic.id?' active':'')">
+                      <router-link class="nav-link scrollto" :to="{name: 'Topic', params: {tid: topic.id}}">
+                        <fa-icon v-if="topic.icon!=''" :icon="topic.icon" class="pe-1"/>{{ _localedText(topic.title) }}
+                      </router-link>
+                    </li>
+                    <nav v-if="topic.id==$route.params.tid" class="nav doc-sub-menu nav flex-column">
+                      <li v-for="doc in documentList" v-bind:key="doc.id" :class="'nav-item'+($route.params.did==doc.id?' active':'')">
+                        <router-link class="nav-link scrollto" :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}">
+                          <fa-icon v-if="doc.icon!=''" :icon="doc.icon" class="pe-1"/>{{ _localedText(doc.title) }}
+                        </router-link>
+                      </li>
+                    </nav>
+                  </template>
                 </nav>
               </div>
             </div>
@@ -84,21 +83,21 @@
 <script>
 import clientUtils from "@/utils/api_client"
 import i18n from "@/i18n"
-import { extractLeadingFromName, extractTrailingFromName } from "@/components/utils"
+import { extractLeadingFromName, extractTrailingFromName, markdownRender } from "@/components/utils"
 import { styleByHash } from "./utils"
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 
 export default {
-  name: 'Topic',
+  name: 'Document',
   mounted() {
     const vue = this
     const route = useRoute()
     watch(
-        () => route.params.tid,
-        async newTid => {
-          if (newTid) {
-            vue._fetchTopics(vue, newTid)
+        () => route.params.did,
+        async newDid => {
+          if (newDid) {
+            vue._fetchDocument(vue, newDid)
           }
         }
     )
@@ -110,6 +109,9 @@ export default {
     },
     _siteNameLast() {
       return extractTrailingFromName(this.siteMeta.name)
+    },
+    documentContentRendered() {
+      return markdownRender(this._localedText(this.document.content), true)
     },
   },
   methods: {
@@ -133,7 +135,7 @@ export default {
             }
           },
           (err) => {
-              vue.errorMsg = err
+            vue.errorMsg = err
           })
     },
     _fetchTopics(vue, topicId) {
@@ -146,7 +148,7 @@ export default {
               vue.topicList.forEach(t => {
                 if (t.id == topicId) {
                   vue.topic = t
-                  vue._fetchDocuments(vue)
+                  vue._fetchDocuments(vue, vue.$route.params.did)
                 }
               })
             } else {
@@ -157,13 +159,33 @@ export default {
             vue.errorMsg = err
           })
     },
-    _fetchDocuments(vue) {
+    _fetchDocuments(vue, docId) {
       vue.status = 0
       clientUtils.apiDoGet(clientUtils.apiDocuments.replaceAll(':topic-id', vue.topic.id),
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
               vue.documentList = apiResp.data
+              vue.documentList.forEach(d => {
+                if (d.id == docId) {
+                  vue._fetchDocument(vue, docId)
+                }
+              })
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          (err) => {
+            vue.errorMsg = err
+          })
+    },
+    _fetchDocument(vue, docId) {
+      vue.status = 0
+      clientUtils.apiDoGet(clientUtils.apiDocument.replaceAll(':topic-id', vue.topic.id).replaceAll(':document-id', docId),
+          (apiResp) => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.document = apiResp.data
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
@@ -182,6 +204,7 @@ export default {
       topicList: [],
       topic: {},
       documentList: [],
+      document: {},
       status: -1,
       errorMsg: '',
     }

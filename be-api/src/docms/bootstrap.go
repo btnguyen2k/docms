@@ -1,6 +1,7 @@
 package docms
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sort"
@@ -29,11 +30,11 @@ func (m MyBootstrapper) Bootstrap() error {
 
 func initCMSData() {
 	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
-	log.Printf("Loading CMS data from <%s>...", gDataDir)
+	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 
 	var err error
 	// load site's metadata
-	gSiteMeta, err = LoadSiteMetaFromYaml(gDataDir + "/" + metaFile)
+	gSiteMeta, err = LoadSiteMeta(gDataDir+"/"+metaFileYaml, gDataDir+"/"+metaFileJson)
 	if err != nil {
 		panic(err)
 	}
@@ -46,36 +47,52 @@ func initCMSData() {
 		panic(err)
 	}
 	for _, topicDir := range topicDirList {
-		log.Printf("Loading Topic data from <%s>...", gDataDir+"/"+topicDir.Name())
+		topicDirPath := gDataDir + "/" + topicDir.Name()
+		log.Printf("[%s] Loading Topic data from <%s>...", logLevelInfo, topicDirPath)
 
 		// load topic metadata
-		topicMeta, err := LoadTopicMetaFromYaml(gDataDir + "/" + topicDir.Name() + "/" + metaFile)
+		topicMeta, err := LoadTopicMeta(topicDirPath+"/"+metaFileYaml, topicDirPath+"/"+metaFileJson)
 		if err != nil {
 			panic(err)
 		}
-		topicMeta.setIndexAndId(topicDir.Name())
+		topicMeta.setDirectory(topicDir.Name())
 		gTopicList = append(gTopicList, topicMeta)
 		gTopicMeta[topicMeta.id] = topicMeta
 		gDocumentList[topicMeta.id] = make([]*DocumentMeta, 0)
 
 		// fetch all documents inside the topic directory
-		docDirList, err := GetDirContent(gDataDir+"/"+topicDir.Name(), func(entry os.DirEntry) bool {
+		docDirList, err := GetDirContent(topicDirPath, func(entry os.DirEntry) bool {
 			return entry.IsDir() && RexpContentDir.MatchString(entry.Name())
 		})
 		if err != nil {
 			panic(err)
 		}
 		for _, docDir := range docDirList {
-			log.Printf("Loading Document data from <%s>...", gDataDir+"/"+topicDir.Name()+"/"+docDir.Name())
+			docDirPath := gDataDir + "/" + topicDir.Name() + "/" + docDir.Name()
+			log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
 
 			// load document metadata
-			docMeta, err := LoadDocumentMetaFromYaml(gDataDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + metaFile)
+			docMeta, err := LoadDocumentMeta(docDirPath+"/"+metaFileYaml, docDirPath+"/"+metaFileYaml)
 			if err != nil {
 				panic(err)
 			}
-			docMeta.setIndexAndId(docDir.Name())
+			docMeta.setDirectory(docDir.Name())
 			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
 			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
+			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
+
+			// load document content
+			docFileContentMap := docMeta.GetContentFileMap()
+			if len(docFileContentMap) == 0 {
+				panic(fmt.Errorf("document <%s> has no content defined at metadata key <file>", docDirPath))
+			}
+			for k, v := range docFileContentMap {
+				buff, err := os.ReadFile(docDirPath + "/" + v)
+				if err != nil {
+					panic(err)
+				}
+				gDocumentContent[topicMeta.id+":"+docMeta.id][k] = string(buff)
+			}
 		}
 		sort.Slice(gDocumentList[topicMeta.id], func(i, j int) bool {
 			return gDocumentList[topicMeta.id][i].index < gDocumentList[topicMeta.id][j].index
@@ -93,5 +110,5 @@ func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getSiteMeta", apiGetSiteMeta)
 	router.SetHandler("getTopics", apiGetTopics)
 	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
-	// router.SetHandler("getDocument", apiGetDocument)
+	router.SetHandler("getDocument", apiGetDocument)
 }

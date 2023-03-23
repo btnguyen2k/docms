@@ -23,7 +23,8 @@
             </form>
           </div>
 
-          <div class="social-container">
+          <div class="social-container" v-if="Object.keys(siteMeta.contacts).length > 0">
+            {{ $t('contact_info') }}
             <a class="link p-1 fa-lg" v-if="siteMeta.contacts.website" :title="siteMeta.contacts.website" :href="siteMeta.contacts.website" target="_blank"><fa-icon icon="fas fa-globe" /></a>
             <a class="link p-1 fa-lg" v-if="siteMeta.contacts.email" :title="siteMeta.contacts.email" :href="'mailto:'+siteMeta.contacts.email" target="_blank"><fa-icon icon="fas fa-envelope" /></a>
             <a class="link p-1 fa-lg" v-if="siteMeta.contacts.github" :title="siteMeta.contacts.github" :href="siteMeta.contacts.github" target="_blank"><fa-icon icon="fab fa-github" /></a>
@@ -53,7 +54,10 @@
     <footer class="footer text-center">
       <div class="container">
         <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
-        <small class="copyright">Designed with <span class="sr-only">love</span><fa-icon icon="fas fa-heart"/> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers.</small>
+        <small class="copyright">
+          Powered by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
+          Theme <span style="font-family: monospace, monospace;">PrettyDocs</span> designed with <span class="sr-only">love</span><fa-icon icon="fas fa-heart"/> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers.
+        </small>
       </div>
     </footer>
   </div>

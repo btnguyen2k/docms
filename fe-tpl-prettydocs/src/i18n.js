@@ -5,7 +5,6 @@ import utils from '@/utils/app_utils'
 const messages = {
     en: {
         wait: 'Please wait...',
-        error: 'Error',
         search: 'Search',
         search_prompt: 'Enter search term',
         home: 'Home',
@@ -13,27 +12,16 @@ const messages = {
         topic: 'Topic',
         documents: 'Documents',
         document: 'Document',
+        contact_info: 'Contact us at',
 
-        error_topic_not_found: 'Topic "{topic}" not found.',
+        error: 'Error',
+        error_topic_not_found: 'Topic "{topic}" not found',
+        error_document_not_found: 'Document "{topic}/{document}" not found',
 
-        // click_to_home: 'Click here to navigate to the home page.',
-        // click_to_topic: 'Click here to navigate to the topic index.',
-        // contacts: 'Contacts',
-        // pages: 'Pages',
-        //
-        // page_updated_timestamp: 'Last updated',
-        // page_created_timestamp: 'Creation time',
-        //
-        // error_unknown: "Error occurred, try again after a moment! If the problem persists, please contact website administrator.",
-        // error_product_not_found: 'No product mapped to domain "{domain}".',
-
-        // error_page_not_found: 'Page "{page}" not found.',
-        //
-        // empty_topic: 'This topic has no document page.',
+        empty_topic: 'This topic has no document page',
     },
     vi: {
         wait: 'Vui lòng giờ giây lát...',
-        error: 'Lỗi',
         search: 'Tìm kiếm',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
         home: 'Trang nhà',
@@ -41,22 +29,13 @@ const messages = {
         topic: 'Chủ đề',
         documents: 'Bài viết',
         document: 'Bài viết',
+        contact_info: 'Thông tin liên hệ',
 
-        error_topic_not_found: 'Không tìm thấy chủ đề "{topic}".',
+        error: 'Lỗi',
+        error_topic_not_found: 'Không tìm thấy chủ đề "{topic}"',
+        error_document_not_found: 'Không tìm thấy bài viết "{topic}/{document}"',
 
-        // click_to_home: 'Nhấn vào đây để đi đến trang chủ.',
-        // click_to_topic: 'Nhấn vào đây để đi đến trang nhà của chủ đề.',
-        // contacts: 'Liên hệ',
-        // pages: 'Trang tài liệu',
-        //
-        // page_updated_timestamp: 'Cập nhật lần cuối',
-        // page_created_timestamp: 'Thời điểm tạo',
-        //
-        // error_unknown: "Có lỗi xảy ra, vui lòng thử lại sau. Nếu sự cố vẫn còn tiếp diễn, hãy liên lạc với người quản trị website.",
-        // error_product_not_found: 'Không có sản phẩm nào tương ứng với tên miền "{domain}".',
-        // error_page_not_found: 'Không tìm thấy trang tài liệu "{page}".',
-        //
-        // empty_topic: 'Chủ đề này hiện chưa có bài viết nào.',
+        empty_topic: 'Chủ đề này hiện chưa có bài viết nào',
     }
 }
 
