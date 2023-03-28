@@ -224,18 +224,20 @@ func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntr
 	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name(), dirPerm))
 	exitIfError(writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/meta.yaml", newTopicMeta))
 
-	srcDirEntries, err := getDirContent(opts.SrcDir + "/" + topicDir.Name())
+	srcDirEntries, err := docms.GetDirContent(opts.SrcDir+"/"+topicDir.Name(), func(entry os.DirEntry) bool {
+		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
+	})
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
-		if !dirEntry.IsDir() {
-			fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+topicDir.Name()+"/"+dirEntry.Name())
-			continue
-		}
-		matches := reDirContent.FindStringSubmatch(dirEntry.Name())
-		if len(matches) == 0 {
-			fmt.Printf("[WARN]\t ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
-			continue
-		}
+		// if !dirEntry.IsDir() {
+		// 	fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+topicDir.Name()+"/"+dirEntry.Name())
+		// 	continue
+		// }
+		// matches := reDirContent.FindStringSubmatch(dirEntry.Name())
+		// if len(matches) == 0 {
+		// 	fmt.Printf("[WARN]\t ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
+		// 	continue
+		// }
 		_buildDocDir(opts, siteMeta, topicDir, dirEntry)
 	}
 }
@@ -380,7 +382,7 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.D
 		fmt.Printf("[INFO]\t\t metadata verification done.\n")
 	}
 
-	contentFiles := newDocMeta.GetContentFileNames()
+	contentFiles := newDocMeta.GetContentFileMap()
 	for _, f := range contentFiles {
 		contentFile := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + f
 		if !isFile(contentFile) {
@@ -413,7 +415,7 @@ func actionBuild(c *cli.Context) {
 		exitIfError(err)
 	}
 
-	outputDirEntries, err := getDirContent(opts.OutputDir)
+	outputDirEntries, err := docms.GetDirContent(opts.OutputDir, nil)
 	exitIfError(err)
 	if len(outputDirEntries) > 0 {
 		if !opts.PurgeOutputDir {
@@ -442,18 +444,20 @@ func actionBuild(c *cli.Context) {
 	}
 	exitIfError(writeFileYaml(opts.OutputDir+"/meta.yaml", newSiteMeta))
 
-	srcDirEntries, err := getDirContent(opts.SrcDir)
+	srcDirEntries, err := docms.GetDirContent(opts.SrcDir, func(entry os.DirEntry) bool {
+		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
+	})
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
-		if !dirEntry.IsDir() {
-			fmt.Printf("[WARN] ignore <%s>: not directory\n", opts.SrcDir+"/"+dirEntry.Name())
-			continue
-		}
-		matches := reDirContent.FindStringSubmatch(dirEntry.Name())
-		if len(matches) == 0 {
-			fmt.Printf("[WARN] ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
-			continue
-		}
+		// if !dirEntry.IsDir() {
+		// 	fmt.Printf("[WARN] ignore <%s>: not directory\n", opts.SrcDir+"/"+dirEntry.Name())
+		// 	continue
+		// }
+		// matches := reDirContent.FindStringSubmatch(dirEntry.Name())
+		// if len(matches) == 0 {
+		// 	fmt.Printf("[WARN] ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
+		// 	continue
+		// }
 		_buildTopicDir(opts, siteMeta, dirEntry)
 	}
 }

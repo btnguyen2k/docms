@@ -3,7 +3,6 @@ package goapi
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -22,13 +21,17 @@ import (
 
 const (
 	defaultConfigFile = "./config/application.conf"
+	logLevelInfo      = "INFO"
+	logLevelWarning   = "WARN"
+	logLevelError     = "ERROR"
 )
 
 var (
-	AppVersion       string
-	AppVersionNumber uint64
-	AppConfig        *hocon.Config
-	ApiRouter        *itineris.ApiRouter
+	AppVersion        string
+	AppVersionNumber  uint64
+	AppConfig         *hocon.Config
+	ApiRouter         *itineris.ApiRouter
+	PostInitEchoSetup = make([]func(e *echo.Echo) error, 0)
 )
 
 // Start bootstraps the application.
@@ -54,7 +57,7 @@ func Start(bootstrappers ...IBootstrapper) {
 	// bootstrapping
 	if bootstrappers != nil {
 		for _, b := range bootstrappers {
-			log.Println("Bootstrapping", b)
+			log.Printf("[%s] Bootstrapping %#v...", logLevelInfo, b)
 			err := b.Bootstrap()
 			if err != nil {
 				log.Println(err)
@@ -70,9 +73,10 @@ func Start(bootstrappers ...IBootstrapper) {
 }
 
 func initAppConfig() *hocon.Config {
-	configFile := os.Getenv("APP_CONFIG")
+	const envKey = "APP_CONFIG"
+	configFile := os.Getenv(envKey)
 	if configFile == "" {
-		log.Printf("No environment APP_CONFIG found, fallback to [%s]", defaultConfigFile)
+		log.Printf("[%s] No environment %s found, fallback to [%s]", logLevelWarning, envKey, defaultConfigFile)
 		configFile = defaultConfigFile
 	}
 	return loadAppConfig(configFile)
@@ -80,9 +84,10 @@ func initAppConfig() *hocon.Config {
 
 // @since template-v0.4.r2
 func initGrpcServer() {
-	listenPort := AppConfig.GetInt32("api.grpc.listen_port", 0)
+	const confKeyGrpcPort = "api.grpc.listen_port"
+	listenPort := AppConfig.GetInt32(confKeyGrpcPort, 0)
 	if listenPort <= 0 {
-		log.Println("No valid [api.grpc.listen_port] configured, gRPC API gateway is disabled.")
+		log.Printf("[%s] No valid [%s] configured, gRPC API gateway is disabled", logLevelWarning, confKeyGrpcPort)
 		return
 	}
 	listenAddr := AppConfig.GetString("api.grpc.listen_addr", "127.0.0.1")
@@ -94,14 +99,17 @@ func initGrpcServer() {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	pb.RegisterPApiServiceServer(grpcServer, newGrpcGateway())
-	log.Printf("Starting [%s] gRPC server on [%s:%d]...\n", AppConfig.GetString("app.name")+" v"+AppConfig.GetString("app.version"), listenAddr, listenPort)
+	log.Printf("[%s] Starting [%s] gRPC server on [%s:%d]...",
+		logLevelInfo, AppConfig.GetString("app.name")+" v"+AppConfig.GetString("app.version"),
+		listenAddr, listenPort)
 	go grpcServer.Serve(lis)
 }
 
 func initEchoServer() {
-	listenPort := AppConfig.GetInt32("api.http.listen_port", 0)
+	const confKeyHttpPort = "api.http.listen_port"
+	listenPort := AppConfig.GetInt32(confKeyHttpPort, 0)
 	if listenPort <= 0 {
-		log.Println("No valid [api.http.listen_port] configured, REST API gateway is disabled.")
+		log.Printf("[%s] No valid [%s] configured, REST API gateway is disabled", logLevelWarning, confKeyHttpPort)
 		return
 	}
 	listenAddr := AppConfig.GetString("api.http.listen_addr", "127.0.0.1")
@@ -121,38 +129,45 @@ func initEchoServer() {
 		}))
 	}
 
-	const fePath = "/app"
-	const feDir = "./frontend"
-	e.Static(fePath, feDir)
-	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusFound, fePath+"/")
-	})
-	e.GET(fePath+"/", func(c echo.Context) error {
-		if fcontent, err := ioutil.ReadFile(feDir + "/index.html"); err != nil {
-			if os.IsNotExist(err) {
-				return c.HTML(http.StatusNotFound, "Not found: "+fePath+"/index.html")
+	const confKeyFePath = "gvabe.frontend.path"
+	fePath := AppConfig.GetString(confKeyFePath)
+	const confKeyFeDir = "gvabe.frontend.directory"
+	feDir := AppConfig.GetString(confKeyFeDir)
+	if fePath == "" || feDir == "" {
+		log.Printf("[%s] Frontend path/directory is not defined at key [%s/%s]", logLevelWarning, confKeyFePath, confKeyFeDir)
+	} else {
+		e.Static(fePath, feDir)
+		e.GET("/", func(c echo.Context) error {
+			return c.Redirect(http.StatusFound, fePath+"/")
+		})
+		e.GET(fePath+"/", func(c echo.Context) error {
+			if fcontent, err := os.ReadFile(feDir + "/index.html"); err != nil {
+				if os.IsNotExist(err) {
+					return c.HTML(http.StatusNotFound, "Not found: "+fePath+"/index.html")
+				} else {
+					return err
+				}
 			} else {
-				return err
+				return c.HTMLBlob(http.StatusOK, fcontent)
 			}
-		} else {
-			return c.HTMLBlob(http.StatusOK, fcontent)
-		}
-	})
-	e.GET("/manifest.json", func(c echo.Context) error {
-		if fcontent, err := ioutil.ReadFile(feDir + "/manifest.json"); err != nil {
-			if os.IsNotExist(err) {
-				return c.HTML(http.StatusNotFound, "Not found: manifest.json")
+		})
+		e.GET("/manifest.json", func(c echo.Context) error {
+			if fcontent, err := os.ReadFile(feDir + "/manifest.json"); err != nil {
+				if os.IsNotExist(err) {
+					return c.HTML(http.StatusNotFound, "Not found: manifest.json")
+				} else {
+					return err
+				}
 			} else {
-				return err
+				return c.JSONBlob(http.StatusOK, fcontent)
 			}
-		} else {
-			return c.JSONBlob(http.StatusOK, fcontent)
-		}
-	})
+		})
+	}
 
 	// register API http endpoints
+	const confKeyHttpEndpoints = "api.http.endpoints"
 	hasEndpoints := false
-	confV := AppConfig.GetValue("api.http.endpoints")
+	confV := AppConfig.GetValue(confKeyHttpEndpoints)
 	if confV != nil && confV.IsObject() {
 		for uri, uriO := range confV.GetObject().Items() {
 			if uriO.IsObject() && !uriO.IsEmpty() {
@@ -165,10 +180,20 @@ func initEchoServer() {
 		}
 	}
 	js, _ := json.Marshal(httpRoutingMap)
-	log.Println("API http endpoints: " + string(js))
+	log.Printf("[%s] API http endpoints: %s", logLevelInfo, js)
 	if !hasEndpoints {
-		log.Println("No valid HTTP endpoints defined at key [api.http.endpoints].")
+		log.Printf("[%s] No valid HTTP endpoints defined at key [%s]", logLevelWarning, confKeyHttpEndpoints)
 	}
-	log.Printf("Starting [%s] RESTful server on [%s:%d]...\n", AppConfig.GetString("app.name")+" v"+AppConfig.GetString("app.version"), listenAddr, listenPort)
+
+	for _, postInitEchoSetup := range PostInitEchoSetup {
+		if err := postInitEchoSetup(e); err != nil {
+			log.Printf("[%s] Error executing post-init Echo setup:  %s", logLevelError, err)
+		}
+	}
+
+	log.Printf("[%s] Starting [%s] RESTful server on [%s:%d]...",
+		logLevelInfo,
+		AppConfig.GetString("app.name")+" v"+AppConfig.GetString("app.version"),
+		listenAddr, listenPort)
 	go e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%d", listenAddr, listenPort)))
 }

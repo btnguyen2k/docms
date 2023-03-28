@@ -82,10 +82,9 @@
 </template>
 
 <script>
-import clientUtils from "@/utils/api_client"
+import { apiDoGet, apiSite, apiTopics, apiDocuments } from "@/utils/api_client"
 import i18n from "@/i18n"
-import { extractLeadingFromName, extractTrailingFromName } from "@/components/utils"
-import { styleByHash } from "./utils"
+import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 
@@ -122,7 +121,7 @@ export default {
     },
     _fetchSiteMeta(vue) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiSite,
+      apiDoGet(apiSite,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -138,7 +137,7 @@ export default {
     },
     _fetchTopics(vue, topicId) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiTopics,
+      apiDoGet(apiTopics,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -159,7 +158,7 @@ export default {
     },
     _fetchDocuments(vue) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiDocuments.replaceAll(':topic-id', vue.topic.id),
+      apiDoGet(apiDocuments.replaceAll(':topic-id', vue.topic.id),
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {

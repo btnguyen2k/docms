@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: How it work
+  vi: Cách thức hoạt động
+summary:
+  # (string, or map[language-code]text)
+  en: "Authoring website content with DO CMS is as similar to daily work of an developer: push (documents) to Git, make pull requests, trigger CI/CD pipelines, build and containerize website content and finally deploy it for end users to access."
+  vi: "Biên tập nội dung trang web với DO CMS sẽ rất giống với công việc hàng ngày của một lập trình viên: đầy (tài liệu) lên Git, tạo pull request, kích hoạt CI/CD, 'biên dịch' và đóng gói nội dung trang web và cuối cùng là triển khai đến người dùng cuối."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-en.md

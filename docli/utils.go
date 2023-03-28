@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v3"
+	"main/src/docms"
 )
 
 const (
@@ -33,19 +34,19 @@ func isDir(path string) bool {
 	}
 }
 
-func getDirContent(path string) ([]os.DirEntry, error) {
-	dirInfo, err := os.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-	result := make([]os.DirEntry, 0)
-	for _, entry := range dirInfo {
-		if entry.Name() != "." && entry.Name() != ".." {
-			result = append(result, entry)
-		}
-	}
-	return result, nil
-}
+// func getDirContent(path string) ([]os.DirEntry, error) {
+// 	dirInfo, err := os.ReadDir(path)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	result := make([]os.DirEntry, 0)
+// 	for _, entry := range dirInfo {
+// 		if entry.Name() != "." && entry.Name() != ".." {
+// 			result = append(result, entry)
+// 		}
+// 	}
+// 	return result, nil
+// }
 
 func isFile(path string) bool {
 	fi, err := os.Stat(path)
@@ -93,14 +94,16 @@ func _copyFile(srcPath, destPath string) error {
 
 func copyDir(srcPath, destPath string, ignoreList ...string) error {
 	ignoreList = append(ignoreList, ".", "..")
-	srcDirEntries, err := getDirContent(srcPath)
+	srcDirEntries, err := docms.GetDirContent(srcPath, func(entry os.DirEntry) bool {
+		return !_inList(ignoreList, entry.Name())
+	})
 	if err != nil {
 		return err
 	}
 	for _, srcEntry := range srcDirEntries {
-		if _inList(ignoreList, srcEntry.Name()) {
-			continue
-		}
+		// if _inList(ignoreList, srcEntry.Name()) {
+		// 	continue
+		// }
 		if srcEntry.IsDir() {
 			if err := os.Mkdir(destPath+"/"+srcEntry.Name(), dirPerm); err != nil {
 				return err
