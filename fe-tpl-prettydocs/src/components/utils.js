@@ -34,19 +34,23 @@ class MyRenderer extends marked.Renderer {
         super(options)
     }
 
-    listitem(text) {
-        return super.listitem(replaceMathWithIds(htmlDecode(text), 'listitem'))
-    }
+    // listitem(text) {
+    //     console.log("ListItem: ", text)
+    //     return super.listitem(replaceMathWithIds(htmlDecode(text), 'listitem'))
+    // }
 
     paragraph(text) {
+        // console.log("Paragraph: ", text)
         return super.paragraph(replaceMathWithIds(htmlDecode(text), 'paragraph'))
     }
 
-    tablecell(content, flags) {
-        return super.tablecell(replaceMathWithIds(htmlDecode(content), 'tablecell'), flags)
-    }
+    // tablecell(content, flags) {
+    //     console.log("TableCell: ", content, flags)
+    //     return super.tablecell(replaceMathWithIds(htmlDecode(content), 'tablecell'), flags)
+    // }
 
     text(text) {
+        // console.log("Text: ", text)
         return super.text(replaceMathWithIds(htmlDecode(text), 'text'))
     }
 
@@ -62,20 +66,60 @@ class MyRenderer extends marked.Renderer {
         }
         return super.image(href, title, text)
     }
+
+    table(header, body) {
+        let output = super.table(header, body)
+        output = output.replaceAll('<table>', '<table class="table table-bordered table-striped">')
+        return output
+    }
+
+    blockquote(src) {
+        let output = super.blockquote(src)
+        output = output.replaceAll('<blockquote>', '<blockquote class="blockquote">')
+        return output
+    }
+
+    checkbox(checked) {
+        let output = super.checkbox(checked)
+        output = output.replaceAll('<input ', '<input class="form-check-input" ')
+        return output
+    }
 }
 
 const myRenderer = new MyRenderer()
 
+function unescapeHtml(html) {
+    return html.replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&amp;/g, '&')
+}
+
+const reKatexId = /(__special_katext_id_\d+__)/g
+
 function replaceMathWithIds(text, el) {
-    // allowing newlines inside of `$$...$$`
-    text = text.replace(/\$\$([\s\S]+?)\$\$/g, (_match, expression) => {
+    if ( reKatexId.test(text) ) {
+        return text
+    }
+    // console.log("Test: ", text)
+    // block Mathematics and Chemical formulas: allowing newlines between $$...$$
+    text = text.replace(/\$\$\s([\s\S]+?)\s\$\$/g, (_match, expression) => {
+        expression = unescapeHtml(expression).replace(/\\(\s)/g, (_match, capture) => {
+            return '\\\\' + capture
+        })
+        // console.log("\tBlock match: ", _match)
+        // console.log("\texpression: ", expression)
         const id = nextKatexId()
         mathExpMap[id] = {type: 'block', expression, el: el}
         return id
     })
 
-    // Not allowing newlines inside of `$...$`
-    text = text.replace(/\$([^\n]+?)\$/g, (_match, expression) => {
+    // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
+    text = text.replace(/[^$]\$([^$\n]+?)\$/g, (_match, expression) => {
+        expression = unescapeHtml(expression)
+        // console.log("\tInline match: ", _match)
+        // console.log("\texpression: ", expression)
         const id = nextKatexId()
         mathExpMap[id] = {type: 'inline', expression, el: el}
         return id
@@ -96,7 +140,7 @@ const markedOpts = {
 
 function markdownRender(markdownInput, sanitize) {
     const html = marked.parse(markdownInput, markedOpts)
-    const latexHtml = html.replace(/(__special_katext_id_\d+__)/g, (_match, capture) => {
+    const latexHtml = html.replace(reKatexId, (_match, capture) => {
         const token = mathExpMap[capture]
         return katex.renderToString(token.expression, {
             displayMode: token.type == 'block',

@@ -18,7 +18,7 @@
             </div>
             <div class="col-6">
               <label for="hhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important;" v-html="markdownRendered"></div>
+              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important; overflow: auto;" v-html="markdownRendered"></div>
             </div>
           </div>
         </div>
@@ -32,7 +32,7 @@
             </div>
             <div class="col-12">
               <label for="vhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="vhtml" class="form-control img-fit img-center" style="height: 45vh !important;" v-html="markdownRendered"></div>
+              <div id="vhtml" class="form-control img-fit img-center" style="height: 45vh !important; overflow: auto;" v-html="markdownRendered"></div>
             </div>
           </div>
         </div>
@@ -45,6 +45,7 @@
 import { localStorageGet, localStorageSet } from "@/utils/app_utils"
 import { markdownRender } from "./utils"
 import { tab } from "bootstrap"
+import './markdown-gfm.css'
 
 export default {
   name: 'Editor',

@@ -86,6 +86,7 @@ import i18n from "@/i18n"
 import { styleByHash, extractLeadingFromName, extractTrailingFromName, markdownRender } from "./utils"
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
+import './markdown-gfm.css'
 
 export default {
   name: 'Document',
