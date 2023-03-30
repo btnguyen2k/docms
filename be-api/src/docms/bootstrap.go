@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/btnguyen2k/docms/be-api/src/goapi"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
-	"github.com/btnguyen2k/docms/be-apimain/src/goapi"
 	"github.com/labstack/echo/v4"
 )
 
