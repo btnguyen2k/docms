@@ -5,8 +5,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"gopkg.in/yaml.v3"
-	"main/src/docms"
 )
 
 const (

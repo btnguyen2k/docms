@@ -6,8 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"main/src/docms"
-
+	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli"
 )
 
