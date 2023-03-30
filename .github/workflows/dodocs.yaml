@@ -1,0 +1,22 @@
+name: dodocs
+
+on:
+  push:
+    branches: [ '*' ]
+#    paths: [ 'dosrc/**' ]
+
+jobs:
+  buildDocs:
+    name: Build docs
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go env
+      uses: actions/setup-go@v2
+      with:
+        go-version: "1.17"
+    - name: Install DOCLI
+      run:
+        go install github.com/btnguyen2k/docms/docli
+    - name: Build docs
+      run:
+        docli --version
