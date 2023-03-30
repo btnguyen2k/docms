@@ -22,11 +22,11 @@ const (
 var (
 	gDataDir         string
 	gSiteMeta        *SiteMeta
-	gTopicList       = make([]*TopicMeta, 0)              // list of categories, sorted by index
-	gTopicMeta       = make(map[string]*TopicMeta)        // map[category-id]category-metadata
-	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per category, sorted by index
-	gDocumentMeta    = make(map[string]*DocumentMeta)     // map[category-id:document-id]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map[category-id:document-id]map[language-code]document-content
+	gTopicList       = make([]*TopicMeta, 0)              // list of topics, sorted by index
+	gTopicMeta       = make(map[string]*TopicMeta)        // map[topic-id]topic-metadata
+	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
+	gDocumentMeta    = make(map[string]*DocumentMeta)     // map[topic-id:document-id]document-metadata
+	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
 )
 
 // SiteMeta capture metadata of the website.
@@ -108,7 +108,7 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 
 /*----------------------------------------------------------------------*/
 
-// TopicMeta capture metadata of a category.
+// TopicMeta capture metadata of a topic.
 type TopicMeta struct {
 	index       int         `json:"-",yaml:"-"`                     // topic index, for ordering
 	id          string      `json:"-",yaml:"-"`                     // topic id
@@ -197,7 +197,7 @@ func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 
 /*----------------------------------------------------------------------*/
 
-// DocumentMeta capture metadata of a category.
+// DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
 	index       int         `json:"-",yaml:"-"`             // document index, for ordering
 	id          string      `json:"-",yaml:"-"`             // document id

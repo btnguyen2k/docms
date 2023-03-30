@@ -1,7 +1,6 @@
 package goapi
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -19,11 +18,11 @@ func loadAppConfig(file string) *hoconf.Config {
 		defer os.Chdir(curDir)
 	}
 
-	log.Printf("Loading configurations from file [%s]", file)
+	log.Printf("[%s] Loading configurations from file [%s]", logLevelInfo, file)
 	confDir, confFile := path.Split(file)
 	os.Chdir(confDir)
 
-	if data, err := ioutil.ReadFile(confFile); err != nil {
+	if data, err := os.ReadFile(confFile); err != nil {
 		panic(err)
 	} else {
 		return hoconf.ParseString(string(data), myIncludeCallback)
@@ -34,13 +33,13 @@ func myIncludeCallback(filename string) *hocon.HoconRoot {
 	if files, err := filepath.Glob(filename); err != nil {
 		panic(err)
 	} else if len(files) == 0 {
-		log.Printf("[WARN] [%s] does not match any file", filename)
+		log.Printf("[%s] [%s] does not match any file", logLevelWarning, filename)
 		return hocon.Parse("", nil)
 	} else {
 		var root = hocon.Parse("", nil)
 		for _, f := range files {
-			log.Printf("Loading configurations from file [%s]", f)
-			if data, err := ioutil.ReadFile(f); err != nil {
+			log.Printf("[%s] Loading configurations from file [%s]", logLevelInfo, f)
+			if data, err := os.ReadFile(f); err != nil {
 				panic(err)
 			} else {
 				node := hocon.Parse(string(data), myIncludeCallback)

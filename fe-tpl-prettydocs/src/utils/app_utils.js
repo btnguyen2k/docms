@@ -61,7 +61,7 @@ function crc32(str) {
     return ((crc ^ (-1)) >>> 0).toString(16).toLowerCase()
 }
 
-export default {
+export {
     lskeyLoginSession,
     lskeyLoginSessionLastCheck,
 
@@ -69,8 +69,10 @@ export default {
     localStorageSet,
     localStorageGetAsInt,
     getUnixTimestamp,
-    loadLoginSession: getLoginSession,
+    getLoginSession,
     saveLoginSession,
     parseJwt,
     crc32,
 }
+
+export default {}

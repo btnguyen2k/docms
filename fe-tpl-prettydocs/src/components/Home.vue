@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import clientUtils from "@/utils/api_client"
+import { apiDoGet, apiSite, apiTopics } from "@/utils/api_client"
 import i18n from "@/i18n"
 import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
 
@@ -91,7 +91,7 @@ export default {
     },
     _fetchSiteMeta(vue) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiSite,
+      apiDoGet(apiSite,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -107,7 +107,7 @@ export default {
     },
     _fetchTopics(vue) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiTopics,
+      apiDoGet(apiTopics,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {

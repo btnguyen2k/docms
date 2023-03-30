@@ -40,7 +40,7 @@
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
                 <section class="doc-section">
-                  <div class="section-block" v-html="documentContentRendered"></div>
+                  <div class="section-block img-fit img-center" v-html="documentContentRendered"></div>
                 </section>
               </div>
             </div>
@@ -81,12 +81,12 @@
 </template>
 
 <script>
-import clientUtils from "@/utils/api_client"
+import { apiDoGet, apiSite, apiTopics, apiDocuments, apiDocument } from "@/utils/api_client"
 import i18n from "@/i18n"
-import { extractLeadingFromName, extractTrailingFromName, markdownRender } from "@/components/utils"
-import { styleByHash } from "./utils"
+import { styleByHash, extractLeadingFromName, extractTrailingFromName, markdownRender } from "./utils"
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
+import './markdown-gfm.css'
 
 export default {
   name: 'Document',
@@ -124,7 +124,7 @@ export default {
     },
     _fetchSiteMeta(vue) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiSite,
+      apiDoGet(apiSite,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -140,7 +140,7 @@ export default {
     },
     _fetchTopics(vue, topicId) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiTopics,
+      apiDoGet(apiTopics,
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -161,7 +161,7 @@ export default {
     },
     _fetchDocuments(vue, docId) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiDocuments.replaceAll(':topic-id', vue.topic.id),
+      apiDoGet(apiDocuments.replaceAll(':topic-id', vue.topic.id),
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {
@@ -181,7 +181,7 @@ export default {
     },
     _fetchDocument(vue, docId) {
       vue.status = 0
-      clientUtils.apiDoGet(clientUtils.apiDocument.replaceAll(':topic-id', vue.topic.id).replaceAll(':document-id', docId),
+      apiDoGet(apiDocument.replaceAll(':topic-id', vue.topic.id).replaceAll(':document-id', docId),
           (apiResp) => {
             vue.status = apiResp.status
             if (vue.status == 200) {

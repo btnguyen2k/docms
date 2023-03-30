@@ -1,7 +1,9 @@
 title:
+  # (string, or map[language-code]text)
   en: Introduction
   vi: Giới thiệu
 description:
+  # (string, or map[language-code]text)
   en: "An introduction of DO CMS: what it is and how it work."
-  vi: "Giới thiệu tổng quan về cách thức hoạt động của DO CMS."
-icon: fas fa-lightbulb
+  vi: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
+icon: fas fa-lightbulb # (string) supporting FontAwesome icons

@@ -1,6 +1,6 @@
 //#DO CMS frontend, template PrettyDocs
 import { createI18n } from 'vue-i18n'
-import utils from '@/utils/app_utils'
+import { localStorageGet, localStorageSet } from '@/utils/app_utils'
 
 const messages = {
     en: {
@@ -39,7 +39,7 @@ const messages = {
     }
 }
 
-let savedLocale = utils.localStorageGet('_l')
+let savedLocale = localStorageGet('_l')
 savedLocale = savedLocale ? (messages[savedLocale] ? savedLocale : 'en') : 'en'
 const _i18n = createI18n({
     locale: savedLocale,
@@ -54,7 +54,7 @@ i18n.global = reactive(i18n.global)
 let oldLocale = i18n.global.locale
 watchEffect(() => {
     if (i18n.global.locale !== oldLocale) {
-        utils.localStorageSet('_l', i18n.global.locale)
+        localStorageSet('_l', i18n.global.locale)
         oldLocale = i18n.global.locale
     }
 })
