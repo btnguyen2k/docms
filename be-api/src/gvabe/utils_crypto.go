@@ -2,8 +2,6 @@ package gvabe
 
 import (
 	"crypto"
-	"crypto/aes"
-	"crypto/cipher"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -12,8 +10,6 @@ import (
 	"errors"
 	"hash"
 	"io"
-	"strconv"
-	"time"
 )
 
 // RsaMode defines RSA encryption modes
@@ -132,43 +128,4 @@ func parseRsaPublicKeyFromPem(pemStr string) (*rsa.PublicKey, error) {
 		}
 	}
 	return nil, errors.New("not RSA public key")
-}
-
-// padRight adds "0" right right of a string until its length reach a specific value.
-func padRight(str string, l int) string {
-	for len(str) < l {
-		str += "0"
-	}
-	return str
-}
-
-// aesEncrypt encrypts a block of data using AES/CTR mode.
-//
-// IV is put at the beginning of the cipher data.
-func aesEncrypt(key, data []byte) ([]byte, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	iv := []byte(padRight(strconv.FormatInt(time.Now().UnixNano(), 16), 16))
-	cipherData := make([]byte, 16+len(data))
-	copy(cipherData, iv)
-	ctr := cipher.NewCTR(block, iv)
-	ctr.XORKeyStream(cipherData[16:], data)
-	return cipherData, nil
-}
-
-// aesDecrypt decrypts a block of encrypted data using AES/CTR mode.
-//
-// Assuming IV is put at the beginning of the cipher data.
-func aesDecrypt(key, encryptedData []byte) ([]byte, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	iv := encryptedData[0:16]
-	data := make([]byte, len(encryptedData)-16)
-	ctr := cipher.NewCTR(block, iv)
-	ctr.XORKeyStream(data, encryptedData[16:])
-	return data, nil
 }

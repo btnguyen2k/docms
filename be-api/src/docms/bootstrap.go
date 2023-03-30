@@ -9,9 +9,9 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
+	"github.com/btnguyen2k/docms/be-apimain/src/goapi"
 	"github.com/labstack/echo/v4"
-	"main/src/goapi"
-	"main/src/itineris"
 )
 
 var Bootstrapper = &MyBootstrapper{name: "gvabe"}

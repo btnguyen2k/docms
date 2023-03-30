@@ -8,19 +8,12 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-
-	"main/src/utils"
 )
 
 var (
 	errorInvalidClient = errors.New("invalid client id")
 	errorInvalidJwt    = errors.New("cannot decode token")
 	errorExpiredJwt    = errors.New("token has expired")
-)
-
-const (
-	loginChannelForm  = "form"
-	loginChannelExter = "exter"
 )
 
 // Session captures a user-login-session. Session object is to be serialized and embedded into a SessionClaims.
@@ -87,36 +80,4 @@ func parseLoginToken(jwtStr string) (*SessionClaims, error) {
 	var result SessionClaims
 	js, _ := json.Marshal(claims)
 	return &result, json.Unmarshal(js, &result)
-}
-
-// genLoginClaims generates a login token as SessionClaims:
-//
-// available since template-v0.2.0
-func genLoginClaims(id string, sess *Session) (*SessionClaims, error) {
-	if id == "" {
-		id = utils.UniqueId()
-	}
-	u, err := userDaov2.Get(sess.UserId)
-	if err != nil {
-		return nil, err
-	}
-	if u == nil {
-		return nil, errors.New(fmt.Sprintf("user [%s] not found", sess.UserId))
-	}
-	sessData, err := json.Marshal(sess)
-	if err != nil {
-		return nil, err
-	}
-	sessData, err = zipAndEncrypt(sessData)
-	return &SessionClaims{
-		UserId:          sess.UserId,
-		UserDisplayName: sess.DisplayName,
-		Data:            sessData,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: sess.ExpiredAt.Unix(),
-			Id:        id,
-			IssuedAt:  sess.CreatedAt.Unix(),
-			Subject:   sess.Channel,
-		},
-	}, err
 }

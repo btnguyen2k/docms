@@ -1,8 +1,8 @@
 /*
 Package itineris creates a framework that help building API server over HTTP and gRPC.
 
-  HTTP/gRPC are API communication protocols only. Business logic is handled by one single code repository for all communication protocols.
-  Data is interchanged (request/response) in JSON format; can be gzipped to reduce space/transmit time consumption.
+	HTTP/gRPC are API communication protocols only. Business logic is handled by one single code repository for all communication protocols.
+	Data is interchanged (request/response) in JSON format; can be gzipped to reduce space/transmit time consumption.
 
 @author Thanh Nguyen <btnguyen2k@gmail.com>
 */
@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/btnguyen2k/consu/reddo"
-	"main/src/utils"
+	"github.com/btnguyen2k/docms/be-api/src/utils"
 )
 
 /*----------------------------------------------------------------------*/
@@ -235,7 +235,8 @@ func NewApiParams() *ApiParams {
 }
 
 // SetParam sets a parameter value.
-//   If value is nil, the associated param is removed
+//
+//	If value is nil, the associated param is removed
 func (prm *ApiParams) SetParam(key string, value interface{}) *ApiParams {
 	if value == nil {
 		return prm.RemoveParam(key)

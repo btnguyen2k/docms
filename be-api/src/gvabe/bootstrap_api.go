@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"strconv"
 
-	"main/src/goapi"
-	"main/src/itineris"
+	"github.com/btnguyen2k/docms/be-api/src/goapi"
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
 )
 
 // Setup API handlers: application register its api-handlers by calling router.SetHandler(apiName, apiHandlerFunc)

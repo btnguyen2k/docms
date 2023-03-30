@@ -10,8 +10,8 @@ import (
 	"math/rand"
 	"time"
 
-	"main/src/docms"
-	"main/src/goapi"
+	"github.com/btnguyen2k/docms/be-api/src/docms"
+	"github.com/btnguyen2k/docms/be-api/src/goapi"
 )
 
 func main() {

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/btnguyen2k/consu/reddo"
-	"main/src/itineris"
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
 )
 
 var _apiResultGetSiteMeta *itineris.ApiResult

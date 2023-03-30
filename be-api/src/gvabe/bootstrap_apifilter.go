@@ -5,16 +5,16 @@ import (
 	"os"
 	"time"
 
-	"main/src/goapi"
-	"main/src/itineris"
+	"github.com/btnguyen2k/docms/be-api/src/goapi"
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
 )
 
 /*
 Setup API filters: application register its api-handlers by calling router.SetHandler(apiName, apiHandlerFunc)
   - api-handler function must has the following signature: func (itineris.ApiContext, itineris.ApiAuth, itineris.ApiParams) *itineris.ApiResult
   - filters are LIFO:
-    - request goes through the last filter to the first one
-    - response goes through the first filter to the last one
+  - request goes through the last filter to the first one
+  - response goes through the first filter to the last one
 */
 func initApiFilters(apiRouter *itineris.ApiRouter) {
 	var apiFilter itineris.IApiFilter = nil
@@ -47,8 +47,8 @@ func initApiFilters(apiRouter *itineris.ApiRouter) {
 /*
 GVAFEAuthenticationFilter performs authentication check before calling API and issues new access token if existing one is about to expire.
 
-	- AppId must be "docms_fe"
-	- AccessToken must be valid (allocated and active)
+  - AppId must be "docms_fe"
+  - AccessToken must be valid (allocated and active)
 */
 type GVAFEAuthenticationFilter struct {
 	*itineris.BaseApiFilter
@@ -66,9 +66,9 @@ const ctxFieldSession = "_session"
 /*
 Call implements IApiFilter.Call
 
-	- This function first authenticates API call.
-	- If authentication is successful, *SessionClaims instance is populated to ctx under field "_session"
-	- Finally, if the login session is about to expire, this function renews the login token and returns it in result's "extra" field.
+  - This function first authenticates API call.
+  - If authentication is successful, *SessionClaims instance is populated to ctx under field "_session"
+  - Finally, if the login session is about to expire, this function renews the login token and returns it in result's "extra" field.
 */
 func (f *GVAFEAuthenticationFilter) Call(handler itineris.IApiHandler, ctx *itineris.ApiContext, auth *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	sessionClaim, err := f.authenticate(ctx, auth)
@@ -96,8 +96,8 @@ func (f *GVAFEAuthenticationFilter) Call(handler itineris.IApiHandler, ctx *itin
 /*
 authenticate authenticates an API call.
 
-	- This function expects auth.access_token is a JWT.
-	- Upon successful authentication, this function returns the SessionClaims decoded from JWT; otherwise, error is returned.
+  - This function expects auth.access_token is a JWT.
+  - Upon successful authentication, this function returns the SessionClaims decoded from JWT; otherwise, error is returned.
 */
 func (f *GVAFEAuthenticationFilter) authenticate(ctx *itineris.ApiContext, auth *itineris.ApiAuth) (*SessionClaims, error) {
 	publicApi, ok := publicApis[ctx.GetApiName()]
