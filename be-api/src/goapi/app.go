@@ -10,13 +10,13 @@ import (
 	"regexp"
 	"time"
 
+	pb "github.com/btnguyen2k/docms/be-api/grpc"
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
+	"github.com/btnguyen2k/docms/be-api/src/utils"
 	hocon "github.com/go-akka/configuration"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
-	pb "main/grpc"
-	"main/src/itineris"
-	"main/src/utils"
 )
 
 const (

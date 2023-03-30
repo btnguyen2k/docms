@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/btnguyen2k/docms/be-api/grpc"
+	"github.com/btnguyen2k/docms/be-api/src/itineris"
 	"github.com/golang/protobuf/ptypes/empty"
-	"main/grpc"
-	"main/src/itineris"
 )
 
 /*

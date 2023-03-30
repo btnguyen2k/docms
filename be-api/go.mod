@@ -1,4 +1,4 @@
-module main
+module github.com/btnguyen2k/docms/be-api
 
 go 1.17
 
@@ -24,6 +24,7 @@ require (
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	go.mongodb.org/mongo-driver v1.11.0
 	google.golang.org/grpc v1.50.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -66,5 +67,4 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

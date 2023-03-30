@@ -16,7 +16,7 @@ jobs:
         go-version: "1.17"
     - name: Install DOCLI
       run:
-        go install github.com/btnguyen2k/docms/docli@latest
+        go install github.com/btnguyen2k/docms/docli@aa917fe1647ae12afbb3e7efe0d3b017edbbb935
     - name: Build docs
       run:
         docli --version

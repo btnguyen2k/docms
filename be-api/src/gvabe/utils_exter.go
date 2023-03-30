@@ -15,10 +15,6 @@ import (
 
 	"github.com/btnguyen2k/consu/reddo"
 	"github.com/btnguyen2k/consu/semita"
-
-	"main/src/goapi"
-	userv2 "main/src/gvabe/bov2/user"
-	"main/src/utils"
 )
 
 var (
@@ -122,7 +118,7 @@ func goFetchExterInfo(sleepSeconds int) {
 	if sleepSeconds < 60 {
 		sleepSeconds = 60
 	}
-	for ; ; {
+	for {
 		resp, err := exterClient.Info()
 		if err != nil {
 			log.Printf("[ERROR] goFetchExterInfo - Error calling Exter api: 0/%s", err)
@@ -154,40 +150,4 @@ type ExterToken struct {
 	UserName  string `json:"name,omitempty"` // user's display name
 	UserId    string `json:"uid,omitempty"`  // user's id
 	Channel   string `json:"sub,omitempty"`  // login channel / identity source
-}
-
-// available since template-v0.2.0
-func parseExterJwt(jwtStr string) (*ExterToken, error) {
-	jwtData, err := parseJwt(jwtStr, exterRsaPubKey)
-	if err != nil || jwtData == nil {
-		return nil, err
-	}
-	js, _ := json.Marshal(jwtData)
-	result := ExterToken{}
-	return &result, json.Unmarshal(js, &result)
-}
-
-// available since template-v0.2.0
-func createUserFromExterToken(exterToken *ExterToken) (*userv2.User, error) {
-	if exterToken == nil {
-		return nil, nil
-	}
-	if exterToken.UserId == "" {
-		return nil, errors.New("no user-id found in Exter token")
-	}
-	user, err := userDaov2.Get(exterToken.UserId)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error while getting user [%s]: %e", exterToken.UserId, err))
-	}
-	if user == nil {
-		log.Printf("[INFO] Creating user [%s] from Exter token...", exterToken.UserId)
-		user = userv2.NewUser(goapi.AppVersionNumber, exterToken.UserId, utils.UniqueId())
-		displayName := exterToken.UserName
-		if displayName == "" {
-			displayName = user.GetMaskId()
-		}
-		user.SetDisplayName(displayName).SetAdmin(false)
-		_, err = userDaov2.Create(user)
-	}
-	return user, err
 }

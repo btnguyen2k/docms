@@ -17,17 +17,8 @@ import (
 	"strings"
 
 	"github.com/btnguyen2k/consu/reddo"
+	"github.com/btnguyen2k/docms/be-api/src/goapi"
 	"github.com/btnguyen2k/goyai"
-	"main/src/goapi"
-	blogv2 "main/src/gvabe/bov2/blog"
-	userv2 "main/src/gvabe/bov2/user"
-)
-
-var (
-	userDaov2        userv2.UserDao
-	blogPostDaov2    blogv2.BlogPostDao
-	blogCommentDaov2 blogv2.BlogCommentDao
-	blogVoteDaov2    blogv2.BlogVoteDao
 )
 
 // MyBootstrapper implements goapi.IBootstrapper
@@ -43,14 +34,12 @@ var Bootstrapper = &MyBootstrapper{name: "gvabe"}
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (b *MyBootstrapper) Bootstrap() error {
-	DEBUG_MODE,_ = reddo.ToBool(os.Getenv("DEBUG"))
-	DEMO_MODE,_ = reddo.ToBool(os.Getenv("DEMO"))
-	go routineUpdateSystemInfo()
+	DEBUG_MODE, _ = reddo.ToBool(os.Getenv("DEBUG"))
+	DEMO_MODE, _ = reddo.ToBool(os.Getenv("DEMO"))
 
 	initRsaKeys()
 	initI18n()
 	initExter()
-	initDaos()
 	initApiHandlers(goapi.ApiRouter)
 	initApiFilters(goapi.ApiRouter)
 	return nil
