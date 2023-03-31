@@ -1,0 +1,60 @@
+name: Trigger auto deployment for docms
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ docs ]
+    paths:
+    - '**'
+    - '.github/workflows/docms-AutoDeployTrigger-4a21acd8-b371-4aed-867c-d5a79ebfb954.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:      
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to container registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCMS_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCMS_REGISTRY_PASSWORD }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: btnguyen2k/docmsdocs:${{ github.sha }}
+          file: ./Dockerfile
+          context: ./
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DOCMS_AZURE_CREDENTIALS }}
+
+
+      - name: Deploy to containerapp
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az containerapp registry set -n docms -g poc-auseast-rg --server docker.io --username  ${{ secrets.DOCMS_REGISTRY_USERNAME }} --password ${{ secrets.DOCMS_REGISTRY_PASSWORD }}
+            az containerapp update -n docms -g poc-auseast-rg --image btnguyen2k/docmsdocs:${{ github.sha }}
