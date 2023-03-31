@@ -60,20 +60,9 @@ func apiInfo(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams)
 			"version":     goapi.AppConfig.GetString("app.version"),
 			"description": goapi.AppConfig.GetString("app.desc"),
 		},
-		"exter": map[string]interface{}{
-			"app_id":   exterAppId,
-			"base_url": exterBaseUrl,
-		},
 		"rsa_public_key": string(publicPEM),
 		"debug_mode":     DEBUG_MODE,
 		"demo_mode":      DEMO_MODE,
-	}
-	if DEMO_MODE {
-		result["demo"] = map[string]interface{}{
-			"user_id":   goapi.AppConfig.GetString("gvabe.init.admin_user_id"),
-			"user_pwd":  goapi.AppConfig.GetString("gvabe.init.admin_user_pwd"),
-			"user_name": goapi.AppConfig.GetString("gvabe.init.admin_user_name"),
-		}
 	}
 	if DEBUG_MODE || DEMO_MODE {
 		/*!!! demo purpose only! exposing memory usage is generally not a good idea !!!*/

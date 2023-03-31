@@ -14,7 +14,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/btnguyen2k/consu/reddo"
 	"github.com/btnguyen2k/docms/be-api/src/goapi"
@@ -26,7 +25,7 @@ type MyBootstrapper struct {
 	name string
 }
 
-var Bootstrapper = &MyBootstrapper{name: "gvabe"}
+var Bootstrapper = &MyBootstrapper{name: "docms"}
 
 // Bootstrap implements goapi.IBootstrapper.Bootstrap
 //
@@ -39,27 +38,9 @@ func (b *MyBootstrapper) Bootstrap() error {
 
 	initRsaKeys()
 	initI18n()
-	initExter()
 	initApiHandlers(goapi.ApiRouter)
 	initApiFilters(goapi.ApiRouter)
 	return nil
-}
-
-// available since template-v0.2.0
-func initExter() {
-	if exterAppId = goapi.AppConfig.GetString("gvabe.exter.app_id"); exterAppId == "" {
-		log.Printf("[WARN] No Exter app-id configured at [gvabe.exter.app_id], Exter login is disabled.")
-	} else if exterBaseUrl = goapi.AppConfig.GetString("gvabe.exter.base_url"); exterBaseUrl == "" {
-		log.Printf("[WARN] No Exter base-url configured at [gvabe.exter.base_url], default value will be used.")
-		exterBaseUrl = "https://exteross.gpvcloud.com"
-	}
-	exterBaseUrl = strings.TrimSuffix(exterBaseUrl, "/") // trim trailing slashes
-	if exterAppId != "" {
-		exterClient = NewExterClient(exterAppId, exterBaseUrl)
-	}
-	log.Printf("[INFO] Exter app-id: %s / Base Url: %s", exterAppId, exterBaseUrl)
-
-	go goFetchExterInfo(60)
 }
 
 // available since template-v0.4.0

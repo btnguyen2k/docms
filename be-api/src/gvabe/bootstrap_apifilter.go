@@ -11,7 +11,7 @@ import (
 
 /*
 Setup API filters: application register its api-handlers by calling router.SetHandler(apiName, apiHandlerFunc)
-  - api-handler function must has the following signature: func (itineris.ApiContext, itineris.ApiAuth, itineris.ApiParams) *itineris.ApiResult
+  - api-handler function must have the following signature: func (itineris.ApiContext, itineris.ApiAuth, itineris.ApiParams) *itineris.ApiResult
   - filters are LIFO:
   - request goes through the last filter to the first one
   - response goes through the first filter to the last one
@@ -22,7 +22,6 @@ func initApiFilters(apiRouter *itineris.ApiRouter) {
 	appVersion := goapi.AppConfig.GetString("app.version")
 
 	if DEBUG_MODE {
-		// apiFilter = itineris.NewAddPerfInfoFilter(goapi.ApiRouter, apiFilter)
 		apiFilter = itineris.NewLoggingFilter(
 			goapi.ApiRouter,
 			apiFilter,
@@ -32,14 +31,6 @@ func initApiFilters(apiRouter *itineris.ApiRouter) {
 	apiFilter = (&GVAFEAuthenticationFilter{
 		BaseApiFilter: &itineris.BaseApiFilter{ApiRouter: apiRouter, NextFilter: apiFilter},
 	}).Init()
-
-	// if DEBUG_MODE {
-	// 	// Request logger should be the last one to capture full request/response
-	// 	apiFilter = itineris.NewLoggingFilter(
-	// 		goapi.ApiRouter,
-	// 		apiFilter,
-	// 		itineris.NewWriterRequestLogger(os.Stdout, appName, appVersion))
-	// }
 
 	apiRouter.SetApiFilter(apiFilter)
 }
