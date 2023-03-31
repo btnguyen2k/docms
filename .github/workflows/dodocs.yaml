@@ -19,7 +19,7 @@ jobs:
         go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316
     - name: Build docs
       run:
-        docli --version \
-        pwd \
-        ls \
+        docli --version && \
+        pwd && \
+        ls && \
         docli build --purge --src dosrc --out dodata
