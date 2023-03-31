@@ -14,9 +14,24 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: "1.17"
+    - name: Set up NodeJS env
+      uses: actions/setup-node@v3
+      with:
+        node-version: "13"
     - name: Install DOCLI
-      run:
-        go install github.com/btnguyen2k/docms/docli@aa917fe1647ae12afbb3e7efe0d3b017edbbb935
+      run: |
+        go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316
+    - name: Check out code
+      uses: actions/checkout@v2
     - name: Build docs
-      run:
-        docli --version
+      run: |
+        cd $GITHUB_WORKSPACE && docli build --purge --src dosrc --out dodata
+    - name: Build FE
+      run: |
+        cd $GITHUB_WORKSPACE/fe-tpl-prettydocs && npm install && npm run build
+    - name: Build BE
+      run: |
+        cd $GITHUB_WORKSPACE/be-api && go build -tags netgo -a
+    - name: Build Docker image
+      run: |
+        cd $GITHUB_WORKSPACE && docker build -t test .
