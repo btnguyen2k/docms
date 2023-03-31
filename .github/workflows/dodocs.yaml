@@ -17,7 +17,7 @@ jobs:
     - name: Set up NodeJS env
       uses: actions/setup-node@v3
       with:
-        node-version: "13"
+        node-version: "17"
     - name: Install DOCLI
       run: |
         go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316
@@ -34,4 +34,4 @@ jobs:
         cd $GITHUB_WORKSPACE/be-api && go build -tags netgo -a
     - name: Build Docker image
       run: |
-        cd $GITHUB_WORKSPACE && docker build -t test .
+        cd $GITHUB_WORKSPACE && docker build --rm -t test .

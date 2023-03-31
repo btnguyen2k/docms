@@ -2,7 +2,7 @@
 # Sample build command:
 # docker build --rm -t docms:0.1.0 .
 
-FROM node:13-alpine AS builder_fe
+FROM node:18-alpine AS builder_fe
 RUN mkdir /build
 RUN apk add jq sed
 COPY . /build
@@ -49,6 +49,7 @@ RUN cd /build \
 FROM alpine:3.17
 LABEL maintainer="Thanh Nguyen <btnguyen2k@gmail.com>"
 RUN mkdir -p /app/frontend
+COPY ./dodata /app/dodata
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
 COPY --from=builder_fe /build/fe-tpl-prettydocs/dist /app/frontend
