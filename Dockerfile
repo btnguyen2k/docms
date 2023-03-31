@@ -2,7 +2,7 @@
 # Sample build command:
 # docker build --rm -t docms:0.1.0 .
 
-FROM node:12-alpine AS builder_fe
+FROM node:13-alpine AS builder_fe
 RUN mkdir /build
 RUN apk add jq sed
 COPY . /build
@@ -12,7 +12,7 @@ RUN cd /build \
     && export APP_INITIAL=`jq -r '.initial' appinfo.json` \
     && export APP_VERSION=`jq -r '.version' appinfo.json` \
     && export APP_DESC=`jq -r '.description' appinfo.json` \
-    && cd /build/fe-gui \
+    && cd /build/fe-tpl-prettydocs \
     && rm -rf .env \
     && rm -rf dist node_modules \
     && sed -i s/#{pageTitle}/"$APP_NAME v$APP_VERSION"/g public/index.html \
@@ -46,12 +46,12 @@ RUN cd /build \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g config/application.conf \
     && go build -o main
 
-FROM alpine:3.12
+FROM alpine:3.17
 LABEL maintainer="Thanh Nguyen <btnguyen2k@gmail.com>"
 RUN mkdir -p /app/frontend
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
-COPY --from=builder_fe /build/fe-gui/dist /app/frontend
+COPY --from=builder_fe /build/fe-tpl-prettydocs/dist /app/frontend
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
     && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime \
