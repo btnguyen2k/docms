@@ -14,7 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var Bootstrapper = &MyBootstrapper{name: "gvabe"}
+var Bootstrapper = &MyBootstrapper{name: "docms"}
 
 // MyBootstrapper implements goapi.IBootstrapper
 type MyBootstrapper struct {
@@ -41,7 +41,6 @@ func postInitEchoSetup(e *echo.Echo) error {
 	const confKeyFeTemplate = "docms.frontend.template"
 	feTemplate := goapi.AppConfig.GetString(confKeyFeTemplate)
 
-	// register handler for frontend's assets
 	if fePath == "" || feDir == "" || feTemplate == "" {
 		return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
 	}
@@ -51,14 +50,28 @@ func postInitEchoSetup(e *echo.Echo) error {
 	e.GET(fePath+"/:tid/:did/:img", serveImage)
 
 	feTemplateDir := feDir + "/" + feTemplate
-	e.Static(fePath, feTemplateDir)
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
-	e.GET(fePath+"/", func(c echo.Context) error {
+
+	// map frontend's static assets
+	dirContent, err := GetDirContent(feTemplateDir, nil)
+	if err != nil {
+		return err
+	}
+	for _, entry := range dirContent {
+		if entry.IsDir() {
+			e.Static(fePath+"/"+entry.Name()+"/*", feTemplateDir+"/"+entry.Name())
+		} else {
+			e.File(fePath+"/"+entry.Name(), feTemplateDir+"/"+entry.Name())
+		}
+	}
+
+	// finally route everything else to "index.html:
+	e.GET(fePath+"/*", func(c echo.Context) error {
 		if fcontent, err := os.ReadFile(feTemplateDir + "/index.html"); err != nil {
 			if os.IsNotExist(err) {
-				return c.HTML(http.StatusNotFound, "Not found: "+fePath+"/index.html")
+				return c.HTML(http.StatusNotFound, "Not found: "+c.Request().RequestURI)
 			} else {
 				return err
 			}
@@ -66,22 +79,11 @@ func postInitEchoSetup(e *echo.Echo) error {
 			return c.HTMLBlob(http.StatusOK, fcontent)
 		}
 	})
-	e.GET("/manifest.json", func(c echo.Context) error {
-		if fcontent, err := os.ReadFile(feTemplateDir + "/manifest.json"); err != nil {
-			if os.IsNotExist(err) {
-				return c.HTML(http.StatusNotFound, "Not found: manifest.json")
-			} else {
-				return err
-			}
-		} else {
-			return c.JSONBlob(http.StatusOK, fcontent)
-		}
-	})
 
 	return nil
 }
 
-var staticFileMime = map[string]string{
+var imgFileMime = map[string]string{
 	".jpg":  "image/jpeg",
 	".jpeg": "image/jpeg",
 	".png":  "image/png",
@@ -102,7 +104,7 @@ func serveImage(c echo.Context) error {
 	}
 
 	ext := filepath.Ext(imgName)
-	mimeType, ok := staticFileMime[ext]
+	mimeType, ok := imgFileMime[ext]
 	if !ok {
 		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
 	}
