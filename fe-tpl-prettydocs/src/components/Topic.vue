@@ -76,6 +76,7 @@
           Powered by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
           Theme <span style="font-family: monospace, monospace;">PrettyDocs</span> designed with <span class="sr-only">love</span><fa-icon icon="fas fa-heart"/> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers.
         </small>
+        <small v-if="siteMeta.tags.build" style="float: right">Build: {{ siteMeta.tags.build }}</small>
       </div>
     </footer>
   </div>
