@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli"
@@ -110,7 +111,20 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 	newMetadata.Contacts = siteMeta.Contacts
 
 	// tags
-	newMetadata.Tags = siteMeta.Tags
+	{
+		now := time.Now()
+		strDate := now.Format("20060102")
+		strTime := now.Format("150405")
+		strDatetime := now.Format("20060102T150405")
+		newMetadata.Tags = make(map[string]string)
+		for k, v := range siteMeta.Tags {
+			newMetadata.Tags[k] = strings.ReplaceAll(
+				strings.ReplaceAll(
+					strings.ReplaceAll(v, "${build_date}", strDate), "${build_time}", strTime,
+				), "${build_datetime}", strDatetime,
+			)
+		}
+	}
 
 	return newMetadata, checkPass
 }
