@@ -18,3 +18,10 @@ contacts:
   linkedin: "https://www.linkedin.com/in/btnguyen2k/"
   slack: ""
   twitter: ""
+tags:
+  # allowed placeholders are ${build_date}, ${build_time} and ${build_datetime}
+  # placeholder will be filled by DOCLI
+  # - build_date    : YYYYMMDD
+  # - build_time    : HHmmss
+  # - build_datetime: YYYYMMDDHHmmss
+  build: ${build_datetime}

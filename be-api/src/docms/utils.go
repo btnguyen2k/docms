@@ -37,6 +37,7 @@ type SiteMeta struct {
 	DefaultLanguage string            `json:"-",yaml:"-"`                     // site's default language
 	Icon            string            `json:"icon",yaml:"icon"`               // website's icon
 	Contacts        map[string]string `json:"contacts",yaml:"contacts"`       // site's contact info
+	Tags            map[string]string `json:"tags",yaml:"tags"`               // site's tags as map[string]string
 }
 
 func (sm *SiteMeta) init() error {

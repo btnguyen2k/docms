@@ -109,6 +109,9 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 	// contacts
 	newMetadata.Contacts = siteMeta.Contacts
 
+	// tags
+	newMetadata.Tags = siteMeta.Tags
+
 	return newMetadata, checkPass
 }
 

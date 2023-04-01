@@ -22,6 +22,7 @@ func apiGetSiteMeta(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.Api
 			"icon":            gSiteMeta.Icon,
 			"description":     gSiteMeta.GetDescriptionMap(),
 			"contacts":        gSiteMeta.Contacts,
+			"tags":            gSiteMeta.Tags,
 		})
 	}
 	return _apiResultGetSiteMeta
