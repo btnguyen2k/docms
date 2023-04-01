@@ -14,11 +14,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      BUILD_DATE: ${{ steps.setenv.outputs.BUILD_DATE }}
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
       - name: Setup build date
-        id: build-setenv
+        id: setenv
         run: |
           BUILD_DATE=`date +%Y%m%d`
           echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
@@ -44,6 +46,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    env:
+      BUILD_DATE: ${{needs.build.outputs.BUILD_DATE}}
     steps:
       - name: Azure Login
         uses: azure/login@v1
@@ -53,11 +57,10 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo --image "docker.io/${{ steps.build-setenv.outputs.BUILD_DATE }}/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}"
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp update \
               --subscription "${{ secrets.DOCMS_AZURE_SUBSCRIPTION_ID }}" \
               --name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_NAME }}" \
               --resource-group "${{ secrets.DOCMS_AZURE_CONTAINERAPP_RG }}" \
               --container-name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_CONTAINER_NAME }}" \
-              --image "docker.io/${{ secrets.DOCMS_REGISTRY_USERNAME }}/docmsdocs:${{ steps.build-setenv.outputs.BUILD_DATE }}-${{ github.sha }}"
+              --image "docker.io/${{ secrets.DOCMS_REGISTRY_USERNAME }}/docmsdocs:$BUILD_DATE-${{ github.sha }}"
