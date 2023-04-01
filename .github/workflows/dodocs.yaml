@@ -1,37 +1,56 @@
 name: dodocs
 
 on:
+  # Automatically trigger it there are changes in repo
   push:
-    branches: [ '*' ]
-#    paths: [ 'dosrc/**' ]
+    branches: [ docs ]
+    paths:
+    - 'dosrc/**'
+    - '.github/workflows/dodocs.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:
 
 jobs:
-  buildDocs:
-    name: Build docs
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go env
-      uses: actions/setup-go@v2
-      with:
-        go-version: "1.17"
-    - name: Set up NodeJS env
-      uses: actions/setup-node@v3
-      with:
-        node-version: "17"
-    - name: Install DOCLI
-      run: |
-        go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Build docs
-      run: |
-        cd $GITHUB_WORKSPACE && docli build --purge --src dosrc --out dodata
-    - name: Build FE
-      run: |
-        cd $GITHUB_WORKSPACE/fe-tpl-prettydocs && npm install && npm run build
-    - name: Build BE
-      run: |
-        cd $GITHUB_WORKSPACE/be-api && go build -tags netgo -a
-    - name: Build Docker image
-      run: |
-        cd $GITHUB_WORKSPACE && docker build --rm -t test .
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+      - name: Setup build date
+        run: |
+          BUILD_DATE=`date +%Y%m%d`
+          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Log in to container registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCMS_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCMS_REGISTRY_PASSWORD }}
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}
+            btnguyen2k/docmsdocs:latest
+          file: ./Dockerfile.docs
+          context: ./
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DOCMS_AZURE_CREDENTIALS }}
+      - name: Deploy to containerapp
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az containerapp registry set -n docms -g poc-auseast-rg --server docker.io --username  ${{ secrets.DOCMS_REGISTRY_USERNAME }} --password ${{ secrets.DOCMS_REGISTRY_PASSWORD }}
+            az containerapp update -n docms -g poc-auseast-rg --image btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}
