@@ -1,6 +1,6 @@
-## Dockerfile to package the whole application (backend + frontend) as a docker image.
+## Dockerfile to package DO CMS runtime.
 # Sample build command:
-# docker build --rm -t docms:test -f Dockerfile.dev .
+# docker build --rm -t docms:0.1.0 -f Dockerfile.cms .
 
 FROM node:18-alpine AS builder_fe
 RUN mkdir /build
@@ -26,8 +26,7 @@ RUN cd /build \
     && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/config.json \
     && sed -i s/#{appDescription}/"$APP_DESC"/g src/config.json \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g src/config.json \
-    && npm install \
-    && npm run build
+    && npm install && npm run build
 
 FROM golang:1.17-alpine AS builder_be
 RUN apk add git build-base jq sed
@@ -49,11 +48,11 @@ RUN cd /build \
 
 FROM alpine:3.17
 LABEL maintainer="Thanh Nguyen <btnguyen2k@gmail.com>"
-RUN mkdir -p /app/frontend/prettydocs
-COPY ./dodata /app/dodata
+RUN mkdir -p /app/frontend
+RUN mkdir -p /app/dodata
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
-COPY --from=builder_fe /build/fe-tpl-prettydocs/dist /app/frontend/prettydocs
+COPY --from=builder_fe /build/fe-tpl-prettydocs/dist /app/frontend
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
     && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime \
