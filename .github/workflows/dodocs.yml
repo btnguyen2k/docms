@@ -53,10 +53,9 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            echo az containerapp registry set --subscription "${{ secrets.DOCMS_AZURE_SUBSCRIPTION_ID }}" --name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_NAME }}" --resource-group "${{ secrets.DOCMS_AZURE_CONTAINERAPP_RG }}" --server docker.io --username  ${{ secrets.DOCMS_REGISTRY_USERNAME }} --password ${{ secrets.DOCMS_REGISTRY_PASSWORD }}
             az containerapp update \
               --subscription "${{ secrets.DOCMS_AZURE_SUBSCRIPTION_ID }}" \
               --name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_NAME }}" \
               --resource-group "${{ secrets.DOCMS_AZURE_CONTAINERAPP_RG }}" \
               --container-name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_CONTAINER_NAME }}" \
-              --image "docker.io/btnguyen2k/docmsdocs:${{ github.sha }}"
+              --image "docker.io/btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}"
