@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/consu/reddo"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 )
@@ -102,4 +103,63 @@ func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 		"content": gDocumentContent[topicId.(string)+":"+docId.(string)],
 	}
 	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
+}
+
+var apiResultFtiNotAvailable = itineris.NewApiResult(itineris.StatusNotImplemented).SetMessage("fulltext index not available")
+var apiResultInvalidSearchQuery = itineris.NewApiResult(itineris.StatusErrorClient).SetMessage("invalid search query")
+var reLocale = regexp.MustCompile(`^[\w-]+$`)
+
+// API handler "search"
+func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
+	if gFti == nil {
+		return apiResultFtiNotAvailable
+	}
+	query, err := params.GetParamAsType("query", reddo.TypeString)
+	if query == nil || err != nil || strings.TrimSpace(query.(string)) == "" {
+		return apiResultInvalidSearchQuery
+	}
+
+	clientLocale := ctx.GetClientLocale()
+	if !reLocale.MatchString(clientLocale) {
+		clientLocale = gSiteMeta.DefaultLanguage
+	}
+	searchQuery := bleve.NewBooleanQuery()
+	searchQuery.AddMust(
+		bleve.NewQueryStringQuery("lang:"+clientLocale),
+		bleve.NewMatchQuery(query.(string)),
+	)
+	search := bleve.NewSearchRequest(searchQuery)
+	searchResults, err := gFti.Search(search)
+	if err != nil {
+		return itineris.NewApiResult(itineris.StatusErrorServer).SetMessage(err.Error())
+	}
+
+	result := map[string]interface{}{
+		"total":    searchResults.Total,
+		"duration": searchResults.Took.Seconds(),
+	}
+	docs := make([]map[string]interface{}, 0)
+	for _, hit := range searchResults.Hits {
+		docId := hit.ID[:strings.LastIndex(hit.ID, ":")]
+		if gDocumentMeta[docId] != nil {
+			topicId := hit.ID[:strings.Index(hit.ID, ":")]
+			docs = append(docs, map[string]interface{}{
+				"id":      gDocumentMeta[docId].id,
+				"icon":    gDocumentMeta[docId].Icon,
+				"title":   gDocumentMeta[docId].GetTitleMap(),
+				"summary": gDocumentMeta[docId].GetSummaryMap(),
+				"topic": map[string]interface{}{
+					"id":          topicId,
+					"icon":        gTopicMeta[topicId].Icon,
+					"title":       gTopicMeta[topicId].GetTitleMap(),
+					"description": gTopicMeta[topicId].GetDescriptionMap(),
+				},
+			})
+			if len(docs) >= 10 {
+				break
+			}
+		}
+	}
+	result["docs"] = docs
+	return itineris.NewApiResult(itineris.StatusOk).SetData(result)
 }

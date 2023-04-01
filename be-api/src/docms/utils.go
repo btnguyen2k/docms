@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/blevesearch/bleve/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -27,6 +28,7 @@ var (
 	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
 	gDocumentMeta    = make(map[string]*DocumentMeta)     // map[topic-id:document-id]document-metadata
 	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
+	gFti             bleve.Index                          // Full-text index
 )
 
 // SiteMeta capture metadata of the website.

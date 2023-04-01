@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli"
 )
@@ -227,7 +228,7 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 	return newMetadata, checkPass
 }
 
-func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry) {
+func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry, fti bleve.Index) {
 	fmt.Printf("[INFO] building topic from <%s>...\n", opts.SrcDir+"/"+topicDir.Name())
 
 	topicMeta := _loadTopicMetadata(opts, topicDir)
@@ -245,16 +246,7 @@ func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntr
 	})
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
-		// if !dirEntry.IsDir() {
-		// 	fmt.Printf("[WARN]\t ignore <%s>: not directory\n", opts.SrcDir+"/"+topicDir.Name()+"/"+dirEntry.Name())
-		// 	continue
-		// }
-		// matches := reDirContent.FindStringSubmatch(dirEntry.Name())
-		// if len(matches) == 0 {
-		// 	fmt.Printf("[WARN]\t ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
-		// 	continue
-		// }
-		_buildDocDir(opts, siteMeta, topicDir, dirEntry)
+		_buildDocDir(opts, siteMeta, topicDir, dirEntry, fti)
 	}
 }
 
@@ -387,7 +379,7 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 	return newMetadata, checkPass
 }
 
-func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry) {
+func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry, fti bleve.Index) {
 	fmt.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name())
 
 	docMeta := _loadDocumentMetadata(opts, topicDir, docDir)
@@ -398,12 +390,34 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.D
 		fmt.Printf("[INFO]\t\t metadata verification done.\n")
 	}
 
+	// siteMeta.Languages
+	// titleMap := docMeta.GetTitleMap()
+	// summaryMap := docMeta.GetSummaryMap()
+
+	contentMap := make(map[string][]byte)
 	contentFiles := newDocMeta.GetContentFileMap()
-	for _, f := range contentFiles {
+	for lang, f := range contentFiles {
 		contentFile := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + f
 		if !isFile(contentFile) {
 			exitIfError(fmt.Errorf("content file <%s> not exists", contentFile))
 		}
+		buff, err := os.ReadFile(contentFile)
+		exitIfError(err)
+		contentMap[lang] = buff
+	}
+
+	docId := extractId(topicDir) + ":" + extractId(docDir)
+	for lang := range siteMeta.Languages {
+		if lang == "default" {
+			continue
+		}
+		doc := map[string]string{
+			"lang":    lang,
+			"content": string(contentMap[lang]),
+			"title":   docMeta.GetTitleMap()[lang],
+			"summary": docMeta.GetSummaryMap()[lang],
+		}
+		exitIfError(fti.Index(docId+":"+lang, doc))
 	}
 
 	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), dirPerm))
@@ -460,20 +474,17 @@ func actionBuild(c *cli.Context) {
 	}
 	exitIfError(writeFileYaml(opts.OutputDir+"/meta.yaml", newSiteMeta))
 
+	ftiDir := opts.OutputDir + "/fti.bleve"
+	ftiMapping := bleve.NewIndexMapping()
+	fti, err := bleve.New(ftiDir, ftiMapping)
+	exitIfError(err)
+	defer fti.Close()
+
 	srcDirEntries, err := docms.GetDirContent(opts.SrcDir, func(entry os.DirEntry) bool {
 		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
 	})
 	exitIfError(err)
 	for _, dirEntry := range srcDirEntries {
-		// if !dirEntry.IsDir() {
-		// 	fmt.Printf("[WARN] ignore <%s>: not directory\n", opts.SrcDir+"/"+dirEntry.Name())
-		// 	continue
-		// }
-		// matches := reDirContent.FindStringSubmatch(dirEntry.Name())
-		// if len(matches) == 0 {
-		// 	fmt.Printf("[WARN] ignore <%s>: invalid name for content directory\n", opts.SrcDir+"/"+dirEntry.Name())
-		// 	continue
-		// }
-		_buildTopicDir(opts, siteMeta, dirEntry)
+		_buildTopicDir(opts, siteMeta, dirEntry, fti)
 	}
 }

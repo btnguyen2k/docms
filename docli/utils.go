@@ -119,3 +119,8 @@ func copyDir(srcPath, destPath string, ignoreList ...string) error {
 	}
 	return nil
 }
+
+func extractId(dir os.DirEntry) string {
+	matches := docms.RexpContentDir.FindStringSubmatch(dir.Name())
+	return matches[2]
+}
