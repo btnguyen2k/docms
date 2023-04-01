@@ -35,6 +35,7 @@ jobs:
           push: true
           tags: |
             btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}
+            btnguyen2k/docmsdocs:${{ github.sha }}
             btnguyen2k/docmsdocs:latest
           file: ./Dockerfile.docs
           context: ./
@@ -58,4 +59,4 @@ jobs:
               --name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_NAME }}" \
               --resource-group "${{ secrets.DOCMS_AZURE_CONTAINERAPP_RG }}" \
               --container-name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_CONTAINER_NAME }}" \
-              --image "docker.io/btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}"
+              --image "docker.io/btnguyen2k/docmsdocs:${{ github.sha }}"
