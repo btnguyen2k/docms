@@ -56,9 +56,9 @@ class MyRenderer extends marked.Renderer {
 
     image(href, title, text) {
         const re = /^(https:)|(http:)|(\/)/i
-        if (!re.test(href)) {
+        let beBase = APP_CONFIG.api_client.be_api_base_url
+        if (beBase && !re.test(href)) {
             const imgUrl = new URL(href, document.baseURI)
-            var beBase = APP_CONFIG.api_client.be_api_base_url
             if (beBase.endsWith("/")) {
                 beBase = beBase.slice(0, beBase.length - 1)
             }
@@ -99,7 +99,7 @@ function unescapeHtml(html) {
 const reKatexId = /(__special_katext_id_\d+__)/g
 
 function replaceMathWithIds(text, el) {
-    if ( reKatexId.test(text) ) {
+    if (reKatexId.test(text)) {
         return text
     }
     // console.log("Test: ", text)

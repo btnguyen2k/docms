@@ -4,19 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
-	"net/http"
 	"os"
 	"regexp"
 	"time"
 
-	pb "github.com/btnguyen2k/docms/be-api/grpc"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 	"github.com/btnguyen2k/docms/be-api/src/utils"
 	hocon "github.com/go-akka/configuration"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -65,9 +61,6 @@ func Start(bootstrappers ...IBootstrapper) {
 		}
 	}
 
-	// initialize and start gRPC server
-	initGrpcServer()
-
 	// initialize and start echo server
 	initEchoServer()
 }
@@ -80,29 +73,6 @@ func initAppConfig() *hocon.Config {
 		configFile = defaultConfigFile
 	}
 	return loadAppConfig(configFile)
-}
-
-// @since template-v0.4.r2
-func initGrpcServer() {
-	const confKeyGrpcPort = "api.grpc.listen_port"
-	listenPort := AppConfig.GetInt32(confKeyGrpcPort, 0)
-	if listenPort <= 0 {
-		log.Printf("[%s] No valid [%s] configured, gRPC API gateway is disabled", logLevelWarning, confKeyGrpcPort)
-		return
-	}
-	listenAddr := AppConfig.GetString("api.grpc.listen_addr", "127.0.0.1")
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", listenAddr, listenPort))
-	if err != nil {
-		log.Printf("Failed to listen gRPC: %v", err)
-		return
-	}
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterPApiServiceServer(grpcServer, newGrpcGateway())
-	log.Printf("[%s] Starting [%s] gRPC server on [%s:%d]...",
-		logLevelInfo, AppConfig.GetString("app.name")+" v"+AppConfig.GetString("app.version"),
-		listenAddr, listenPort)
-	go grpcServer.Serve(lis)
 }
 
 func initEchoServer() {
@@ -127,41 +97,6 @@ func initEchoServer() {
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: allowOgirins,
 		}))
-	}
-
-	const confKeyFePath = "gvabe.frontend.path"
-	fePath := AppConfig.GetString(confKeyFePath)
-	const confKeyFeDir = "gvabe.frontend.directory"
-	feDir := AppConfig.GetString(confKeyFeDir)
-	if fePath == "" || feDir == "" {
-		log.Printf("[%s] Frontend path/directory is not defined at key [%s/%s]", logLevelWarning, confKeyFePath, confKeyFeDir)
-	} else {
-		e.Static(fePath, feDir)
-		e.GET("/", func(c echo.Context) error {
-			return c.Redirect(http.StatusFound, fePath+"/")
-		})
-		e.GET(fePath+"/", func(c echo.Context) error {
-			if fcontent, err := os.ReadFile(feDir + "/index.html"); err != nil {
-				if os.IsNotExist(err) {
-					return c.HTML(http.StatusNotFound, "Not found: "+fePath+"/index.html")
-				} else {
-					return err
-				}
-			} else {
-				return c.HTMLBlob(http.StatusOK, fcontent)
-			}
-		})
-		e.GET("/manifest.json", func(c echo.Context) error {
-			if fcontent, err := os.ReadFile(feDir + "/manifest.json"); err != nil {
-				if os.IsNotExist(err) {
-					return c.HTML(http.StatusNotFound, "Not found: manifest.json")
-				} else {
-					return err
-				}
-			} else {
-				return c.JSONBlob(http.StatusOK, fcontent)
-			}
-		})
 	}
 
 	// register API http endpoints
