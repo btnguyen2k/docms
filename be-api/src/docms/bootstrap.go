@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/docms/be-api/src/goapi"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 	"github.com/labstack/echo/v4"
@@ -192,6 +193,13 @@ func initCMSData() {
 	sort.Slice(gTopicList, func(i, j int) bool {
 		return gTopicList[i].index < gTopicList[j].index
 	})
+
+	// load fti if exists
+	gFti, err = bleve.Open(gDataDir + "/fti.bleve")
+	if err != nil {
+		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
+	}
+
 }
 
 // Setup API handlers: application register its api-handlers by calling router.SetHandler(apiName, apiHandlerFunc)
@@ -202,4 +210,5 @@ func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getTopics", apiGetTopics)
 	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
 	router.SetHandler("getDocument", apiGetDocument)
+	router.SetHandler("search", apiSearch)
 }
