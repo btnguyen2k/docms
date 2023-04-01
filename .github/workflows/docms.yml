@@ -9,7 +9,7 @@ on:
     - '.github/workflows/docms.yml'
 
   # Allow mannually trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
-      - name: Setup application version number
+      - name: Setup application version number and build date
         run: |
           APP_VERSION=`jq -r '.version' ./appinfo.json`
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV

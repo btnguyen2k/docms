@@ -1,0 +1,19 @@
+## Dockerfile to build and package website content as a Docker image.
+# Sample build command:
+# docker build --rm -t docms:docs -f Dockerfile.docs .
+
+FROM golang:1.17-alpine AS builder_docs
+RUN apk add git build-base jq sed
+RUN mkdir /build
+COPY . /build
+RUN cd /build \
+    && go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316 \
+    && docli build --purge --src dosrc --out dodata
+
+FROM btnguyen2k/docmsruntime:latest as docmsruntime
+LABEL maintainer="Thanh Nguyen <btnguyen2k@gmail.com>"
+COPY --from=builder_docs /build/dodata /app/dodata
+WORKDIR /app
+EXPOSE 8000
+CMD ["/app/main"]
+#ENTRYPOINT /app/main
