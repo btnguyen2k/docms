@@ -18,9 +18,11 @@ jobs:
       - name: Checkout to the branch
         uses: actions/checkout@v2
       - name: Setup build date
+        id: build-setenv
         run: |
           BUILD_DATE=`date +%Y%m%d`
           echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
+          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Log in to container registry
@@ -35,7 +37,6 @@ jobs:
           push: true
           tags: |
             btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}
-            btnguyen2k/docmsdocs:${{ github.sha }}
             btnguyen2k/docmsdocs:latest
           file: ./Dockerfile.docs
           context: ./
@@ -52,10 +53,11 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
+            echo --image "docker.io/${{ steps.build-setenv.outputs.BUILD_DATE }}/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}"
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp update \
               --subscription "${{ secrets.DOCMS_AZURE_SUBSCRIPTION_ID }}" \
               --name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_NAME }}" \
               --resource-group "${{ secrets.DOCMS_AZURE_CONTAINERAPP_RG }}" \
               --container-name "${{ secrets.DOCMS_AZURE_CONTAINERAPP_CONTAINER_NAME }}" \
-              --image "docker.io/btnguyen2k/docmsdocs:${{ env.BUILD_DATE }}-${{ github.sha }}"
+              --image "docker.io/${{ secrets.DOCMS_REGISTRY_USERNAME }}/docmsdocs:${{ steps.build-setenv.outputs.BUILD_DATE }}-${{ github.sha }}"
