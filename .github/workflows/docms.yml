@@ -17,6 +17,12 @@ jobs:
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
+      - name: Setup application version number
+        run: |
+          APP_VERSION=`jq -r '.version' ./appinfo.json`
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          BUILD_DATE=`date +%Y%m%d`
+          echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Log in to container registry
@@ -30,7 +36,7 @@ jobs:
         with:
           push: true
           tags: |
-            btnguyen2k/docmsruntime:${{ github.sha }}
+            btnguyen2k/docmsruntime:${{ env.BUILD_DATE }}-${{ github.sha }}
             btnguyen2k/docmsruntime:latest
           file: ./Dockerfile.cms
           context: ./
