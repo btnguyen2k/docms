@@ -54,11 +54,27 @@
     <footer class="footer text-center">
       <div class="container">
         <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
-        <small class="copyright">
+        <small class="copyright d-none d-lg-inline float-none">
           Powered by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
           Theme <span style="font-family: monospace, monospace;">PrettyDocs</span> designed with <span class="sr-only">love</span><fa-icon icon="fas fa-heart"/> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers.
         </small>
-        <small v-if="siteMeta.tags.build" style="float: right">Build: {{ siteMeta.tags.build }}</small>
+        <small class="copyright d-lg-none float-none">
+          <fa-icon icon="fas fa-bolt-lightning"></fa-icon> by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
+          <fa-icon icon="fas fa-pen-ruler"></fa-icon> <span style="font-family: monospace, monospace;">PrettyDocs</span> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a>.
+        </small>
+        <small v-if="siteMeta.tags.build" class="d-none d-lg-inline float-end">Build: {{ siteMeta.tags.build }}</small>
+        <ul class="nav nav-pills float-start align-middle" style="margin-top: -6px !important;"><!--style="font-size: 0.85em !important; "-->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><fa-icon icon="fas fa-gears"></fa-icon></a>
+            <ul class="dropdown-menu" style="font-size: small">
+              <li v-for="lang in _siteLanguages" v-bind:key="lang">
+                <a class="dropdown-item" href="#" @click="swichLanguage(lang, false)">{{siteMeta.languages[lang]}}</a>
+              </li>
+              <li class="d-lg-none"><hr class="dropdown-divider"></li>
+              <li v-if="siteMeta.tags.build" class="dropdown-item d-lg-none">Build: {{ siteMeta.tags.build }}</li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </footer>
   </div>
@@ -66,11 +82,13 @@
 
 <script>
 import { apiDoGet, apiSite, apiTopics } from "@/utils/api_client"
-import i18n from "@/i18n"
+import i18n, {swichLanguage} from "@/i18n"
 import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
+import {dropdown} from "bootstrap"
 
 export default {
   name: 'Home',
+  components: [dropdown],
   mounted() {
     this._fetchSiteMeta(this)
   },
@@ -81,8 +99,12 @@ export default {
     _siteNameLast() {
       return extractTrailingFromName(this.siteMeta.name)
     },
+    _siteLanguages() {
+      return Object.keys(this.siteMeta.languages).filter(value => {return value != 'default'})
+    },
   },
   methods: {
+    swichLanguage,
     _styleClassForTopic(topic) {
       const styleList = ["item-blue", "item-green", "item-red", "item-pink", "item-purple", "item-orange"]
       return styleByHash(topic.id, styleList)
@@ -122,7 +144,7 @@ export default {
           })
     },
     doSearch() {
-      this.$router.push({name: 'Search', query: {q: this.searchQuery}})
+      this.$router.push({name: 'Search', query: {q: this.searchQuery, l: i18n.global.locale}})
     },
   },
   data() {

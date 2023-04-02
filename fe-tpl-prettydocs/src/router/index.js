@@ -22,12 +22,12 @@ import {APP_CONFIG} from '@/utils/app_config'
 function configRoutes() {
     return [
         {
-            path: '/_search', name: 'Search', meta: {label: i18n.global.t('search')},
-            component: () => import('@/components/Search'), props: true,
-        },
-        {
             path: '/_editor', name: 'Editor', meta: {label: 'Editor'},
             component: () => import('@/components/Editor'),
+        },
+        {
+            path: '/_search', name: 'Search', meta: {label: i18n.global.t('search')},
+            component: () => import('@/components/Search'),
         },
         {
             path: '/:tid/:did/:img', name: 'CaptureImgLinks',
@@ -50,7 +50,7 @@ function configRoutes() {
             children: [
                 {
                     path: '', name: 'Home', meta: {label: i18n.global.t('home')},
-                    component: () => import('@/components/Home')
+                    component: () => import('@/components/Home'),
                 },
                 {
                     path: '/:tid', name: '_Topic', redirect: to => {
@@ -59,7 +59,7 @@ function configRoutes() {
                 },
                 {
                     path: '/:tid/', name: 'Topic', meta: {label: i18n.global.t('topic')},
-                    component: () => import('@/components/Topic')
+                    component: () => import('@/components/Topic'),
                 },
                 {
                     path: '/:tid/:did', name: '_Document', redirect: to => {
@@ -68,7 +68,7 @@ function configRoutes() {
                 },
                 {
                     path: '/:tid/:did/', name: 'Document', meta: {label: i18n.global.t('document')},
-                    component: () => import('@/components/Document')
+                    component: () => import('@/components/Document'),
                 }
             ]
         },
