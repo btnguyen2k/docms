@@ -14,7 +14,10 @@
 @import "bootstrap";
 
 /* Plugin: elegant font */
-@import "@/assets/plugins/elegant_font/css/style.css";
+/*@import "@/assets/plugins/elegant_font/css/style.css";*/
+
+/*@import "@coreui/coreui/dist/css/coreui.min.css";*/
+/*@import "@coreui/icons/css/all.min.css";*/
 
 /* Application's main style */
 @import "@/assets/css/styles.css";

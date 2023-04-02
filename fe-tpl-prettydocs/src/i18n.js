@@ -4,6 +4,10 @@ import { localStorageGet, localStorageSet } from '@/utils/app_utils'
 
 const messages = {
     en: {
+        _name: 'English',
+        _flag: 'cif-gb',
+
+        language: 'Language',
         wait: 'Please wait...',
         search: 'Search',
         search_prompt: 'Enter search term',
@@ -21,6 +25,10 @@ const messages = {
         empty_topic: 'This topic has no document page',
     },
     vi: {
+        _name: 'Tiếng Việt',
+        _flag: 'cif-vn',
+
+        language: 'Ngôn ngữ',
         wait: 'Vui lòng giờ giây lát...',
         search: 'Tìm kiếm',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
@@ -62,6 +70,7 @@ watchEffect(() => {
 export default i18n
 
 export function swichLanguage(locale, refreshPage) {
+    console.log(locale, oldLocale)
     if (locale !== oldLocale) {
         i18n.global.locale = locale
         if (refreshPage) {
