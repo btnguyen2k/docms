@@ -198,6 +198,7 @@ func initCMSData() {
 	gFti, err = bleve.Open(gDataDir + "/fti.bleve")
 	if err != nil {
 		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
+		gFti = nil
 	}
 
 }
