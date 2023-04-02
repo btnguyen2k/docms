@@ -144,7 +144,7 @@ export default {
           })
     },
     doSearch() {
-      this.$router.push({name: 'Search', query: {q: this.searchQuery}})
+      this.$router.push({name: 'Search', query: {q: this.searchQuery, l: i18n.global.locale}})
     },
   },
   data() {

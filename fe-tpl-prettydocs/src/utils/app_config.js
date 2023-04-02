@@ -14,5 +14,3 @@ export {
     APP_ID,
     APP_CONFIG
 }
-
-export default {}

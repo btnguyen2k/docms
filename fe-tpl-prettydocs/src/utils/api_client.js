@@ -9,6 +9,7 @@ import Axios from "axios"
 import { APP_ID, APP_CONFIG } from "./app_config"
 import { parseJwt, getLoginSession, saveLoginSession } from "./app_utils"
 import router from "@/router"
+import i18n from "@/i18n"
 
 const apiClient = Axios.create({
     baseURL: APP_CONFIG.api_client.be_api_base_url,
@@ -17,6 +18,7 @@ const apiClient = Axios.create({
 
 const headerAppId = APP_CONFIG.api_client.header_app_id
 const headerAccessToken = APP_CONFIG.api_client.header_access_token
+const headerLanguage = APP_CONFIG.api_client.header_language
 const appId = APP_ID
 
 // const apiInfo = "/info"
@@ -24,6 +26,7 @@ const apiSite = "/api/site"
 const apiTopics = "/api/topics"
 const apiDocuments = "/api/documents/:topic-id"
 const apiDocument = "/api/document/:topic-id/:document-id"
+const apiSearch = "/api/search"
 
 function _apiOnSuccess(method, resp, apiUri, callbackSuccessful) {
     if (method == 'GET' && Object.prototype.hasOwnProperty.call(resp, "data") && resp.data.status == 403) {
@@ -57,6 +60,15 @@ function setCacheExpiry(_cacheExpiryMs) {
     cacheExpiryMs = _cacheExpiryMs
 }
 
+function buildHeaders() {
+    const session = getLoginSession()
+    const headers = {}
+    headers[headerAppId] = appId
+    headers[headerAccessToken] = session != null ? session.token : ""
+    headers[headerLanguage] = i18n.global.locale
+    return headers
+}
+
 function apiDoGet(apiUri, callbackSuccessful, callbackError) {
     if (cacheExpiryMs > 0) {
         const cacheEntry = cache[apiUri]
@@ -65,10 +77,7 @@ function apiDoGet(apiUri, callbackSuccessful, callbackError) {
             return
         }
     }
-    const session = getLoginSession()
-    const headers = {}
-    headers[headerAppId] = appId
-    headers[headerAccessToken] = session != null ? session.token : ""
+    const headers = buildHeaders()
     return apiClient.get(apiUri, {
         headers: headers, cache: false
     }).then(res => {
@@ -78,6 +87,15 @@ function apiDoGet(apiUri, callbackSuccessful, callbackError) {
     }).catch(err => _apiOnError(err, apiUri, callbackError))
 }
 
+function apiDoPost(apiUri, data, callbackSuccessful, callbackError) {
+    const headers = buildHeaders()
+    return apiClient.post(apiUri, data, {
+            headers: headers,
+            cache: false,
+        }).then(res => _apiOnSuccess('POST', res, apiUri, callbackSuccessful))
+        .catch(err => _apiOnError(err, apiUri, callbackError))
+}
+
 export {
     setCacheExpiry,
 
@@ -85,8 +103,8 @@ export {
     apiTopics,
     apiDocuments,
     apiDocument,
+    apiSearch,
 
     apiDoGet,
+    apiDoPost,
 }
-
-export default {}

@@ -10,7 +10,9 @@ const messages = {
         language: 'Language',
         wait: 'Please wait...',
         search: 'Search',
-        search_prompt: 'Enter search term',
+        search_result: 'Search result',
+        search_no_result: 'Search returns no result, please try another query',
+        search_prompt: 'Enter search query',
         home: 'Home',
         topics: 'Topics',
         topic: 'Topic',
@@ -31,6 +33,8 @@ const messages = {
         language: 'Ngôn ngữ',
         wait: 'Vui lòng giờ giây lát...',
         search: 'Tìm kiếm',
+        search_result: 'Kết quả tìm kiếm',
+        search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
         home: 'Trang nhà',
         topics: 'Chủ đề',
@@ -70,9 +74,11 @@ watchEffect(() => {
 export default i18n
 
 export function swichLanguage(locale, refreshPage) {
-    console.log(locale, oldLocale)
+    if (locale=='') {
+        locale = localStorageGet('_l')
+    }
     if (locale !== oldLocale) {
-        i18n.global.locale = locale
+        i18n.global.locale = messages[locale] ? locale : 'en'
         if (refreshPage) {
             window.location.reload()
         }

@@ -120,6 +120,7 @@ export default {
           }
         }
     )
+    this.searchQuery = this.$route.query.q ? this.$route.query.q : ''
     this._fetchSiteMeta(this)
   },
   computed: {
@@ -221,7 +222,7 @@ export default {
       this.$router.push({name: 'Document', params: {tid: tid, did: did}})
     },
     doSearch() {
-      this.$router.push({name: 'Search', query: {q: this.searchQuery}})
+      this.$router.push({name: 'Search', query: {q: this.searchQuery, l: i18n.global.locale}})
     },
   },
   data() {
