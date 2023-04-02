@@ -4,10 +4,10 @@ title:
   vi: Hỗ trợ Markdown
 summary:
   # (string, or map[language-code]text)
-  en: "DO CMS supports GitHub Flavored Markdown (GFM), which is the dialect of Markdown that is currently supported for user content on GitHub.com and GitHub Enterprise."
-  vi: "DO CMS hỗ trợ GitHub Flavored Markdown (GFM), là một phương ngữ của Markdown hiện được hỗ trợ trên GitHub.com và phiên bản GitHub Enterprise."
+  en: "DO CMS supports GitHub Flavored Markdown (GFM), which is the dialect of Markdown that is currently supported for user content on GitHub.com and GitHub Enterprise. Furthermore, Mathematical and Chemical formulas are supported."
+  vi: "DO CMS hỗ trợ GitHub Flavored Markdown (GFM), là một phương ngữ của Markdown hiện được hỗ trợ trên GitHub.com và phiên bản GitHub Enterprise. Ngoài ra, các công thức Toán học và Hoá học cũng được hỗ trợ."
 icon: # (string) supporting FontAwesome icons
 file:
   # (map[language-code]filename)
   en: index-en.md
-  vi: index-en.md
+  vi: index-vi.md
