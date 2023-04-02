@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Local envinronment
+  vi: Môi trường local
+summary:
+  # (string, or map[language-code]text)
+  en: "Getting started with DO CMS on local envinronment is pretty simple. Minimum tools you need is Docker and a text editor."
+  vi: "Bắt đầu với DO CMS ở môi trường local khá đơn giản. Các công cụ tối thiểu cần là Docker và 1 trình soạn thảo văn bản."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md
