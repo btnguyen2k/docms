@@ -2,7 +2,7 @@ name: DO CMS # (string) site's name
 description:
   # (string, or map[language-code]text)
   en: Content Management System where its content is built through CI/CD pipeline
-  vi: Hệ thống Quản trị nội dung với dữ liệu được xây dựng trên qui trình CI/CD
+  vi: Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD
 icon: fas fa-code # (string) supporting FontAwesome icons
 languages:
   # (map[language-code]text) available languages

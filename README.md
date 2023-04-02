@@ -2,13 +2,15 @@ DO CMS is a Content Management System targeting developers as its users. Instead
 
 ## Highlighted features
 
--  **Markdown** is a simple yet powerful markup language for creating formatted text. DO CMS support [GitHub Flavored Markdown](https://github.github.com/gfm/) as well as extensions such as Mathematical and Chemical formulas.
+-  **Markdown** is a simple yet powerful markup language for creating formatted text. DO CMS supports [GitHub Flavored Markdown](https://github.github.com/gfm/) as well as extensions such as Mathematical and Chemical formulas.
 
 - **No Database** - website content is rendered from static data - which is Markdown text. Hence DO CMS needs no database to run, and it is blazing fast.
 
 - **Developer Friendly** - authoring website content is as similar as pushing code, making pull requests, builds, packages and deploying.
 
-- **Fulltext search** - website content is fulltext indexed and searchable using [bleve](https://blevesearch.com/).
+- **Fulltext Search** - website content is fulltext indexed and searchable.
+
+- **Multi-languages** - multi-language website content is support, switching languages is on-the-fly.
 
 See DO CMS in action and its documents at https://docms.btnguyen2k.me.
 
