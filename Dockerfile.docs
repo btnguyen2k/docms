@@ -7,7 +7,7 @@ RUN apk add git build-base jq sed
 RUN mkdir /build
 COPY . /build
 RUN cd /build \
-    && go install github.com/btnguyen2k/docms/docli@4f0d5dee6992a051780076669dba2ca2945a1316 \
+    && go install github.com/btnguyen2k/docms/docli \
     && docli build --purge --src dosrc --out dodata
 
 FROM btnguyen2k/docmsruntime:latest as docmsruntime
