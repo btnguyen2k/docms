@@ -17,7 +17,7 @@ var reDirContent = regexp.MustCompile(`^(\d)+-(\w+)$`)
 var commandBuild = cli.Command{
 	Name:        "build",
 	ShortName:   "b",
-	Usage:       "Build DO CMS data from source",
+	Usage:       "Build DO CMS data",
 	Description: "Build DO CMS data from source directory and write to output directory",
 	Flags: []cli.Flag{
 		flagSrc,

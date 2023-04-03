@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: DO CMS Runtime
+  vi: DO CMS Runtime
+summary:
+  # (string, or map[language-code]text)
+  en: "Pre-processing tool to check website content for errors and build fulltext index."
+  vi: "Công cụ tiền xử lý kiểm tra lỗi trong nội dung trang web và xây dựng chỉ mục toàn văn (fulltext index)."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md
