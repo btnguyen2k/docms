@@ -14,7 +14,7 @@ const (
 func main() {
 	app := cli.NewApp()
 	app.Name = "docli"
-	app.Usage = "Build content for DO CMS from repository"
+	app.Usage = "Pre-process and build content for DO CMS"
 	app.Version = Version
 	app.Commands = []cli.Command{
 		commandBuild,
