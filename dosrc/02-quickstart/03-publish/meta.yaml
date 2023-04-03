@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Publish website
+  vi: Xuất bản trang web
+summary:
+  # (string, or map[language-code]text)
+  en: "The simplest way to publish website is bundling the content directory to DO CMS runtime as a Docker image and deploy the image as a container."
+  vi: "Cách đơn giản nhất để xuất bản trang web là đóng gói thư mục nội dung vào trong DO CMS runtime ở dạng Docker image và triển khai image này ở dạng container."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md
