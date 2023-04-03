@@ -4,8 +4,8 @@ title:
   vi: DO CMS Runtime
 summary:
   # (string, or map[language-code]text)
-  en: "Pre-processing tool to check website content for errors and build fulltext index."
-  vi: "Công cụ tiền xử lý kiểm tra lỗi trong nội dung trang web và xây dựng chỉ mục toàn văn (fulltext index)."
+  en: "DO CMS runtime is the main component to render the website content. It also offers other features such as i18n and fulltext search."
+  vi: "DO CMS runtime là thành phần chính thể hiện nội dung trang web. Một số chức năng khác được hỗ trợ như i18n hoặc tìm kiếm toàn văn (fulltext search)."
 icon: # (string) supporting FontAwesome icons
 file:
   # (map[language-code]filename)
