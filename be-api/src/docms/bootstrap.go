@@ -8,11 +8,13 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"time"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/docms/be-api/src/goapi"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 	"github.com/labstack/echo/v4"
+	"github.com/radovskyb/watcher"
 )
 
 var Bootstrapper = &MyBootstrapper{name: "docms"}
@@ -124,6 +126,38 @@ func initCMSData() {
 	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
 	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 
+	if os.Getenv("DEBUG") == "true" {
+		w := watcher.New()
+		w.SetMaxEvents(1)
+		// w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
+		go func() {
+			for {
+				select {
+				case <-w.Event:
+					initCMSData()
+				case err := <-w.Error:
+					log.Fatalln(err)
+				case <-w.Closed:
+					return
+				}
+			}
+		}()
+		if err := w.AddRecursive(gDataDir); err != nil {
+			log.Fatalln(err)
+		}
+		go w.Start(10 * time.Second)
+	}
+
+	gTopicList = make([]*TopicMeta, 0)                    // list of topics, sorted by index
+	gTopicMeta = make(map[string]*TopicMeta)              // map[topic-id]topic-metadata
+	gDocumentList = make(map[string][]*DocumentMeta)      // list of documents, per topic, sorted by index
+	gDocumentMeta = make(map[string]*DocumentMeta)        // map[topic-id:document-id]document-metadata
+	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
+	if gFti != nil {
+		gFti.Close()
+		gFti = nil
+	}
+
 	var err error
 	// load site's metadata
 	gSiteMeta, err = LoadSiteMeta(gDataDir+"/"+metaFileYaml, gDataDir+"/"+metaFileJson)
@@ -198,6 +232,7 @@ func initCMSData() {
 	gFti, err = bleve.Open(gDataDir + "/fti.bleve")
 	if err != nil {
 		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
+		gFti = nil
 	}
 
 }

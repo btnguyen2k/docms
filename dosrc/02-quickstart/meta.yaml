@@ -1,7 +1,9 @@
 title:
+  # (string, or map[language-code]text)
   en: Quick start
   vi: Hướng dẫn nhanh
 description:
+  # (string, or map[language-code]text)
   en: "Getting started with DO CMS: installation and build content."
   vi: "Bắt đầu với DO CMS: cài đặt và xây dựng nội dung."
-icon: fas fa-paper-plane
+icon: fas fa-paper-plane # (string) supporting FontAwesome icons

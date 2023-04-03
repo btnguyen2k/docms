@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Pre-processing content
+  vi: Tiền sử lý nội dung
+summary:
+  # (string, or map[language-code]text)
+  en: "Pre-processing content with DOCLI tool to check for errors and build fulltext index."
+  vi: "Tiền xử lý nội dung với công cụ DOCLI để kiểm tra lỗi và xây dựng chỉ mục toàn văn (fulltext index)."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

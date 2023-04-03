@@ -8,6 +8,7 @@ require (
 	github.com/btnguyen2k/consu/reddo v0.1.7
 	github.com/go-akka/configuration v0.0.0-20200606091224-a002c0330665
 	github.com/labstack/echo/v4 v4.9.1
+	github.com/radovskyb/watcher v1.0.7
 	gopkg.in/yaml.v3 v3.0.1
 )
 

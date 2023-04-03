@@ -10,4 +10,4 @@ icon: # (string) supporting FontAwesome icons
 file:
   # (map[language-code]filename)
   en: index-en.md
-  vi: index-en.md
+  vi: index-vi.md
