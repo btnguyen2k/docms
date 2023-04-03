@@ -9,6 +9,8 @@ DO CMS utilities.
 import hljs from 'highlight.js/lib/common'  // only common languages
 // import hljs from 'highlight.js/lib/core' // no language
 import 'highlight.js/styles/default.css'
+/* additional languages if not include "all" */
+hljs.registerLanguage('dockerfile', require('highlight.js/lib/languages/dockerfile'));
 
 import katex from 'katex'
 import 'katex/contrib/mhchem/mhchem'

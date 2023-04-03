@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/blevesearch/bleve/v2"
@@ -122,7 +123,14 @@ func serveImage(c echo.Context) error {
 	return c.Blob(http.StatusOK, mimeType, buff)
 }
 
+var dataLock sync.Mutex
+
 func initCMSData() {
+	if !dataLock.TryLock() {
+		log.Printf("[%s] There is data lock, ignore loading...", logLevelWarning)
+		return
+	}
+	defer dataLock.Unlock()
 	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
 	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 
