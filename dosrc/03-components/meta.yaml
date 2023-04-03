@@ -1,7 +1,9 @@
 title:
+  # (string, or map[language-code]text)
   en: Components
   vi: Cấu phần
 description:
+  # (string, or map[language-code]text)
   en: "Components of DO CMS."
   vi: "Các cấu phần của DO CMS."
-icon: fas fa-puzzle-piece
+icon: fas fa-puzzle-piece # (string) supporting FontAwesome icons
