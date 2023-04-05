@@ -105,6 +105,7 @@ func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
 }
 
+var apiResultNoSearchResult = itineris.NewApiResult(itineris.StatusOk).SetData(map[string]interface{}{"total": 0, "duration": 0, "docs": make([]interface{}, 0)})
 var apiResultFtiNotAvailable = itineris.NewApiResult(itineris.StatusNotImplemented).SetMessage("fulltext index not available")
 var apiResultInvalidSearchQuery = itineris.NewApiResult(itineris.StatusErrorClient).SetMessage("invalid search query")
 var reLocale = regexp.MustCompile(`^[\w-]+$`)
@@ -116,7 +117,8 @@ func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.A
 	}
 	query, err := params.GetParamAsType("query", reddo.TypeString)
 	if query == nil || err != nil || strings.TrimSpace(query.(string)) == "" {
-		return apiResultInvalidSearchQuery
+		// return apiResultInvalidSearchQuery
+		return apiResultNoSearchResult
 	}
 
 	clientLocale := ctx.GetClientLocale()
