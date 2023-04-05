@@ -84,11 +84,9 @@
 import { apiDoGet, apiSite, apiTopics } from "@/utils/api_client"
 import i18n, {swichLanguage} from "@/i18n"
 import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
-import {dropdown} from "bootstrap"
 
 export default {
   name: 'Home',
-  components: [dropdown],
   mounted() {
     this._fetchSiteMeta(this)
   },

@@ -1,4 +1,4 @@
-# fe-tpl-prettydocs
+# fe-tpl-bootstrap
 
 ## Project setup
 ```

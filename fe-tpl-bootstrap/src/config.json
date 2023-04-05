@@ -1,5 +1,5 @@
 {
-  "_": "#DO CMS frontend: PrettyDocs template",
+  "_": "#DO CMS frontend: Bootstrap template",
   "app": {
     "name": "#{appName}",
     "initial": "#{appInitial}",

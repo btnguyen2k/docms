@@ -99,12 +99,10 @@ import {extractLeadingFromName, extractTrailingFromName} from "@/components/util
 import i18n, {swichLanguage} from "@/i18n"
 import {apiDoPost, apiDoGet, apiSite, apiSearch} from "@/utils/api_client";
 import { watch } from 'vue'
-import {dropdown} from "bootstrap"
 import {useRoute} from "vue-router";
 
 export default {
   name: 'Search',
-  components: [dropdown],
   mounted() {
     const vue = this
     const route = useRoute()

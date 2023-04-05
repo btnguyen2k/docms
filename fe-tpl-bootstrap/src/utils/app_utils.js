@@ -3,7 +3,7 @@ Misc utilities.
 
 @author Thanh Nguyen <btnguyen2k@gmail.com>
 @DOCMS
-@template PrettyDocs
+@template Bootstrap
 */
 import jsrsasign from 'jsrsasign'
 
