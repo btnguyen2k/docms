@@ -12,6 +12,23 @@ RUN cd /build \
     && export APP_INITIAL=`jq -r '.initial' appinfo.json` \
     && export APP_VERSION=`jq -r '.version' appinfo.json` \
     && export APP_DESC=`jq -r '.description' appinfo.json` \
+    && echo "Building fe-tpl-bootstrap..." \
+    && cd /build/fe-tpl-bootstrap \
+    && rm -rf .env \
+    && rm -rf dist node_modules \
+    && sed -i s/#{pageTitle}/"$APP_NAME v$APP_VERSION"/g public/index.html \
+    && sed -i s/#{appName}/"$APP_NAME"/g public/index.html \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g public/index.html \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g public/index.html \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g public/index.html \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g public/index.html \
+    && sed -i s/#{appName}/"$APP_NAME"/g src/config.json \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/config.json \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/config.json \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g src/config.json \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/config.json \
+    && npm install && npm run build \
+    && echo "Building fe-tpl-prettydocs..." \
     && cd /build/fe-tpl-prettydocs \
     && rm -rf .env \
     && rm -rf dist node_modules \
@@ -52,6 +69,7 @@ RUN mkdir -p /app/frontend
 RUN mkdir -p /app/dodata
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
+COPY --from=builder_fe /build/fe-tpl-bootstrap/dist /app/frontend/bootstrap
 COPY --from=builder_fe /build/fe-tpl-prettydocs/dist /app/frontend/prettydocs
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
