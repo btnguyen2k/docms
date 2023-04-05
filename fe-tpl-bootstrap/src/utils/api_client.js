@@ -3,7 +3,7 @@ Client to make call to API server using Axios.
 
 @author Thanh Nguyen <btnguyen2k@gmail.com>
 @DOCMS
-@template PrettyDocs
+@template Bootstrap
 */
 import Axios from "axios"
 import { APP_ID, APP_CONFIG } from "./app_config"

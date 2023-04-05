@@ -104,11 +104,9 @@ import i18n, {swichLanguage} from "@/i18n"
 import { styleByHash, extractLeadingFromName, extractTrailingFromName } from "./utils"
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
-import {dropdown} from "bootstrap"
 
 export default {
   name: 'Topic',
-  components: [dropdown],
   mounted() {
     const vue = this
     const route = useRoute()

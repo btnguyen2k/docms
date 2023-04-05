@@ -6,11 +6,10 @@
 /* FontAwesome */
 @import "assets/fontawesome-free-6.4.0-web/css/all.min.css";
 
-@import "bootstrap-icons";
-
 /* Bootstrap 5.x */
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap";
+@import "bootstrap-icons";
 
 .img-fit img {
   max-width: 95%;

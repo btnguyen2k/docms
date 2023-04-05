@@ -104,11 +104,9 @@ import { styleByHash, extractLeadingFromName, extractTrailingFromName, markdownR
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 import './markdown-gfm.css'
-import {dropdown} from "bootstrap"
 
 export default {
   name: 'Document',
-  components: [dropdown],
   mounted() {
     const vue = this
     const route = useRoute()

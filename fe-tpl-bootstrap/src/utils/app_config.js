@@ -3,7 +3,7 @@ Application configurations.
 
 @author Thanh Nguyen <btnguyen2k@gmail.com>
 @DOCMS
-@template PrettyDocs
+@template Bootstrap
 */
 const APP_CONFIG = require('@/config.json')
 if (!APP_CONFIG.api_client.be_api_base_url) {

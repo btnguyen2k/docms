@@ -1,4 +1,4 @@
-//#DO CMS frontend, template PrettyDocs
+//#DO CMS frontend, template Bootstrap
 //import 'core-js/stable'
 import { createApp } from 'vue'
 import App from './App'
@@ -17,7 +17,6 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(fab, far, fas)
-
 app.component('fa-icon', FontAwesomeIcon)
 
 import {Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover, ScrollSpy, Tab, Toast, Tooltip} from "bootstrap"

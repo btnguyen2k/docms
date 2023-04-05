@@ -44,12 +44,10 @@
 <script>
 import { localStorageGet, localStorageSet } from "@/utils/app_utils"
 import { markdownRender } from "./utils"
-import { tab } from "bootstrap"
 import './markdown-gfm.css'
 
 export default {
   name: 'Editor',
-  components: [tab],
   mounted() {
     //ref: https://css-tricks.com/snippets/javascript/support-tabs-in-textareas/
     HTMLTextAreaElement.prototype.getCaretPosition = function () { //return the caret position of the textarea

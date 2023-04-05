@@ -1,4 +1,4 @@
-//#DO CMS frontend, template PrettyDocs
+//#DO CMS frontend, template Bootstrap
 import { createI18n } from 'vue-i18n'
 import { localStorageGet, localStorageSet } from '@/utils/app_utils'
 
