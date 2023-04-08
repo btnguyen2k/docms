@@ -1,6 +1,6 @@
 //#DO CMS frontend, template Bootstrap
 //import 'core-js/stable'
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App'
 
 const app = createApp(App)
@@ -11,13 +11,14 @@ app.use(i18n)
 import router from './router'
 app.use(router)
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fab } from '@fortawesome/free-brands-svg-icons'
-import { far } from '@fortawesome/free-regular-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import globalPlugin from '@/components/plugin_app.js'
+app.use(globalPlugin)
+
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {fab} from '@fortawesome/free-brands-svg-icons'
+import {far} from '@fortawesome/free-regular-svg-icons'
+import {fas} from '@fortawesome/free-solid-svg-icons'
 library.add(fab, far, fas)
-app.component('fa-icon', FontAwesomeIcon)
 
 import {Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover, ScrollSpy, Tab, Toast, Tooltip} from "bootstrap"
 app.component(Alert)

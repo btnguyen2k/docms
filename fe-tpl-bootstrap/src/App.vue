@@ -4,7 +4,7 @@
 
 <style lang="css">
 /* FontAwesome */
-@import "assets/fontawesome-free-6.4.0-web/css/all.min.css";
+@import "@/assets/fontawesome-free-6.4.0-web/css/all.min.css";
 
 /* Bootstrap 5.x */
 @import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,10 +24,11 @@
 
 <script>
 import {triggerPopstate, triggerResize} from '@/components/utils'
+
 window.addEventListener('popstate', () => triggerPopstate())
 window.addEventListener('resize', () => triggerResize())
 
 export default {
-  name: 'App'
+  name: 'App',
 }
 </script>

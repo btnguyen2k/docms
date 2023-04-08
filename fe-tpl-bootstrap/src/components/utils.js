@@ -195,16 +195,6 @@ function triggerResize() {
     }
 }
 
-function styleByHash(input, styleList) {
-    let hash = 0
-    for (let i = 0; i < input.length; i++) {
-        hash = ((hash << 5) - hash) + input.charCodeAt(i)
-        hash = hash & hash
-    }
-    const mod = ((hash % styleList.length) + styleList.length) % styleList.length
-    return styleList[mod]
-}
-
 function extractLeadingFromName(input) {
     input = input.trim()
     let tokens = input.split(' ')
@@ -221,5 +211,5 @@ export {
     registerPopstate, unregisterPopstate, triggerPopstate,
     registerResize, unregisterResize, triggerResize,
     markdownRender,
-    styleByHash, extractLeadingFromName, extractTrailingFromName,
+    extractLeadingFromName, extractTrailingFromName,
 }
