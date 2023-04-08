@@ -29,7 +29,7 @@
         <h1 class="page-heading single-col-max mx-auto d-none d-md-inline">{{ $siteMeta.name }}</h1>
         <div class="page-intro single-col-max mx-auto">{{ $localedText($siteMeta.description) }}</div>
         <div class="main-search-box pt-3 d-block mx-auto">
-          <form class="search-form w-100" @submit.prevent="$search($global.searchQuery)">
+          <form class="search-form w-100" @submit.prevent="$doSearch">
             <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input" v-model="$global.searchQuery">
             <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search"></i></button>
           </form>
@@ -126,7 +126,6 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue.$global.siteMeta = apiResp.data
               vue._fetchTopics(vue)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
@@ -142,9 +141,7 @@ export default {
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
-            if (vue.status == 200) {
-              vue.$global.siteTopics = apiResp.data
-            } else {
+            if (vue.status != 200) {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
           },

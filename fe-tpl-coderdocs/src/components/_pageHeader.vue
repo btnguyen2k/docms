@@ -3,7 +3,7 @@
     <div class="branding docs-branding">
       <div class="container-fluid position-relative py-2">
         <div class="docs-logo-wrapper">
-          <button @click="coderDocsSidebarToggler" ref="docs-sidebar-toggler" id="docs-sidebar-toggler" class="docs-sidebar-toggler docs-sidebar-visible me-2 d-xl-none" type="button">
+          <button @click="$coderDocsSidebarToggler" ref="docs-sidebar-toggler" id="docs-sidebar-toggler" class="docs-sidebar-toggler docs-sidebar-visible me-2 d-xl-none" type="button">
             <span></span>
             <span></span>
             <span></span>
@@ -17,7 +17,7 @@
 
         <div class="docs-top-utilities d-flex justify-content-end align-items-center">
           <div class="top-search-box d-none d-lg-flex">
-            <form class="search-form" @submit.prevent="$search($global.searchQuery)">
+            <form class="search-form" @submit.prevent="$doSearch">
               <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input" v-model="$global.searchQuery">
               <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search"></i></button>
             </form>
@@ -37,19 +37,5 @@ export default {
   name: 'lego-page-header',
   inject: ['$global', '$siteMeta', '$siteFirstName', '$siteLastName'],
   components: {legoSocialList},
-  methods: {
-    coderDocsSidebarToggler() { // CoderDocs
-      const sidebar = this.$refs['docs-sidebar']
-      if (sidebar) {
-        if (sidebar.classList.contains('sidebar-visible')) {
-          sidebar.classList.remove('sidebar-visible');
-          sidebar.classList.add('sidebar-hidden');
-        } else {
-          sidebar.classList.remove('sidebar-hidden');
-          sidebar.classList.add('sidebar-visible');
-        }
-      }
-    },
-  }
 }
 </script>

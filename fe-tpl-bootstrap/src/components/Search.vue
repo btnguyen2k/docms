@@ -130,7 +130,7 @@ export default {
       )
     },
     _search(vue) {
-      this.$search(this.searchTerm,
+      vue.$search(vue.searchTerm,
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status

@@ -1,7 +1,7 @@
 <template>
   <div ref="docs-sidebar" id="docs-sidebar" class="docs-sidebar">
     <div class="top-search-box d-lg-none p-3">
-      <form class="search-form" @submit.prevent="$search($global.searchQuery)">
+      <form class="search-form" @submit.prevent="$doSearch">
         <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input" v-model="$global.searchQuery">
         <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search"></i></button>
       </form>

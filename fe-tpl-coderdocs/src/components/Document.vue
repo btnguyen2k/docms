@@ -39,7 +39,7 @@ const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteMeta', '$siteLanguages', '$siteTopics', '$coderDocsResponsiveSidebar'],
+  inject: ['$global', '$siteMeta', '$siteLanguages', '$siteTopics'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   unmounted() {
     unregisterPopstate(this.handleBackFoward)
@@ -80,7 +80,6 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue.$global.siteMeta = apiResp.data
               vue._fetchTopics(vue, vue.$route.params.tid)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
@@ -97,7 +96,6 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue.$global.siteTopics = apiResp.data
               vue.$global.siteTopics.forEach(t => {
                 if (t.id == topicId) {
                   vue.topic = t
