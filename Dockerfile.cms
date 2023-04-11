@@ -107,9 +107,9 @@ RUN mkdir -p /app/frontend
 RUN mkdir -p /app/dodata
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
-COPY --from=builder_fe_bootstrap /build/tpl-bootstrap/dist /app/frontend/bootstrap
-COPY --from=builder_fe_coderdocs /build/tpl-coderdocs/dist /app/frontend/coderdocs
-COPY --from=builder_fe_prettydocs /build/tpl-prettydocs/dist /app/frontend/prettydocs
+COPY --from=builder_fe_bootstrap /build/dist/tpl-bootstrap /app/frontend/bootstrap
+COPY --from=builder_fe_coderdocs /build/dist/tpl-coderdocs /app/frontend/coderdocs
+COPY --from=builder_fe_prettydocs /build/dist/tpl-prettydocs /app/frontend/prettydocs
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
     && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime \
