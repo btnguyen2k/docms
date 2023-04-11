@@ -1,8 +1,12 @@
 # DOCMS Release Notes
 
-## yyyy-MM-dd - v0.1.0
+## 2023-04-12 - v0.1.0
 
-First release:
+CLI:
+- Pre-process website content with command `docli build`.
+- Build fulltext index while pre-processing website content.
 
-- Feature 1
-- Feature 2
+Runtime:
+- Render website content, supporting 3 themes: `bootstrap` (default), `coderdocs` and `prettydocs`.
+- Fulltext search.
+- Multi-languages support.
