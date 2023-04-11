@@ -31,7 +31,12 @@ type MyBootstrapper struct {
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (m MyBootstrapper) Bootstrap() error {
-	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, postInitEchoSetup)
+	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, func(e *echo.Echo) error {
+		if err := postInitEchoSetup(e); err != nil {
+			panic(err)
+		}
+		return nil
+	})
 	initCMSData()
 	initApiHandlers(goapi.ApiRouter)
 	return nil
@@ -49,11 +54,20 @@ func postInitEchoSetup(e *echo.Echo) error {
 		return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
 	}
 
+	var re = regexp.MustCompile(`^[0-9a-zA-Z_-]+$`)
+	if !re.MatchString(feTemplate) {
+		return fmt.Errorf("invalid frontend template: %s", feTemplate)
+	}
+
+	feTemplateDir := feDir + "/" + feTemplate
+	if fi, err := os.Stat(feTemplateDir); err != nil || !fi.IsDir() {
+		return fmt.Errorf("invalid frontend template directory: %s", feTemplateDir)
+	}
+
 	// register handler for image files attached to documents
 	e.GET("/img/:tid/:did/:img", serveImage)
 	e.GET(fePath+"/:tid/:did/:img", serveImage)
 
-	feTemplateDir := feDir + "/" + feTemplate
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
