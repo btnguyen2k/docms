@@ -1,3 +1,8 @@
+[![MIT](https://img.shields.io/github/license/btnguyen2k/docms)](LICENSE.md)
+[![Actions Status](https://github.com/btnguyen2k/docms/workflows/docms-release/badge.svg)](https://github.com/btnguyen2k/docms/actions)
+[![Release](https://img.shields.io/github/release/btnguyen2k/docms.svg?style=flat-square)](RELEASE-NOTES.md)
+[![Demo](https://img.shields.io/badge/DO%20CMS-In%20Action-red)](https://docms.btnguyen2k.me)
+
 DO CMS is a Content Management System targeting developers as its users. Instead of relying on a GUI to create, publish and update website content, these operations are done via developer-friendly tools and flow: Git and CI/CD.
 
 ## Highlighted features
