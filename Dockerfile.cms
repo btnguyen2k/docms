@@ -22,11 +22,11 @@ RUN cd /build \
     && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g public/index.html \
     && sed -i s/#{appDescription}/"$APP_DESC"/g public/index.html \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g public/index.html \
-    && sed -i s/#{appName}/"$APP_NAME"/g src/config.json \
-    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/config.json \
-    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/config.json \
-    && sed -i s/#{appDescription}/"$APP_DESC"/g src/config.json \
-    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/config.json \
+    && sed -i s/#{appName}/"$APP_NAME"/g src/_shared/config.json \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/_shared/config.json \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/_shared/config.json \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g src/_shared/config.json \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/_shared/config.json \
     && npm install && npm run build:bootstrap
 
 FROM node:18-alpine AS builder_fe_coderdocs
@@ -49,11 +49,11 @@ RUN cd /build \
     && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g public/index.html \
     && sed -i s/#{appDescription}/"$APP_DESC"/g public/index.html \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g public/index.html \
-    && sed -i s/#{appName}/"$APP_NAME"/g src/config.json \
-    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/config.json \
-    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/config.json \
-    && sed -i s/#{appDescription}/"$APP_DESC"/g src/config.json \
-    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/config.json \
+    && sed -i s/#{appName}/"$APP_NAME"/g src/_shared/config.json \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/_shared/config.json \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/_shared/config.json \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g src/_shared/config.json \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/_shared/config.json \
     && npm install && npm run build:coderdocs
 
 FROM node:18-alpine AS builder_fe_prettydocs
@@ -76,11 +76,11 @@ RUN cd /build \
     && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g public/index.html \
     && sed -i s/#{appDescription}/"$APP_DESC"/g public/index.html \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g public/index.html \
-    && sed -i s/#{appName}/"$APP_NAME"/g src/config.json \
-    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/config.json \
-    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/config.json \
-    && sed -i s/#{appDescription}/"$APP_DESC"/g src/config.json \
-    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/config.json \
+    && sed -i s/#{appName}/"$APP_NAME"/g src/_shared/config.json \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/_shared/config.json \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/_shared/config.json \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g src/_shared/config.json \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/_shared/config.json \
     && npm install && npm run build:prettydocs
 
 FROM golang:1.19-alpine AS builder_be
