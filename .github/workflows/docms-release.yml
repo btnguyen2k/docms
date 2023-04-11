@@ -11,7 +11,7 @@ on:
 
 jobs:
   build_if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to the branch
