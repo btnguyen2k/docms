@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import { markdownRender } from "./utils"
-import { useRoute } from 'vue-router'
-import { watch } from 'vue'
+import {markdownRender} from "./utils"
+import {useRoute} from 'vue-router'
+import {watch} from 'vue'
 import './markdown-gfm.css'
 import {registerPopstate, unregisterPopstate} from "@/components/utils"
 import legoPageHeader from './_pageHeader.vue'

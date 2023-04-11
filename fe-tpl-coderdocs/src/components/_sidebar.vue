@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  name: 'lego-page-footer',
+  name: 'lego-sidebar',
   inject: ['$global', '$siteTopics'],
   props: ['topic-id', 'document-list', 'document-id'],
   mounted() {
