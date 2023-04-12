@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -12,12 +13,19 @@ const (
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "docli"
-	app.Usage = "Pre-process and build content for DO CMS"
-	app.Version = Version
-	app.Commands = []cli.Command{
-		commandBuild,
+	app := &cli.App{
+		Name:    "docli",
+		Usage:   "DO CMS website content preprocessing tool",
+		Version: Version,
+		Authors: []*cli.Author{
+			{Name: "Thanh Nguyen", Email: "btnguyen2k (at) gmail (dot) com"},
+		},
+		Copyright: "Copyright (c) 2023 - DO CMS",
+		Commands: []*cli.Command{
+			commandBuild,
+		},
 	}
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
