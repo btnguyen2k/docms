@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -13,12 +12,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var reDirContent = regexp.MustCompile(`^(\d)+-(\w+)$`)
-
 var commandBuild = &cli.Command{
 	Name:    "build",
 	Aliases: []string{"b"},
-	Usage:   "preprocess website content, ready for DO CMS runtime",
+	Usage:   "Preprocess website content, ready for DO CMS runtime",
 	Flags: []cli.Flag{
 		flagSrc,
 		flagOutput,
@@ -454,7 +451,7 @@ func actionBuild(c *cli.Context) error {
 		return err
 	} else if len(outputDirEntries) > 0 {
 		if !opts.PurgeOutputDir {
-			return fmt.Errorf("output directory <%s> is not empty, either empty it then retry or supply argument --%s", opts.OutputDir, flagPurge.Name)
+			return fmt.Errorf("output directory <%s> is not empty, empty it then retry or supply flag --%s", opts.OutputDir, flagPurge.Name)
 		}
 		log.Printf("[INFO] directory <%s> is not empty, clearning up...\n", opts.OutputDir)
 		for _, path := range outputDirEntries {

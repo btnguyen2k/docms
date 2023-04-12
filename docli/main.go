@@ -9,7 +9,7 @@ import (
 
 const (
 	// Version of DO CMS CLI
-	Version = "0.1.0"
+	Version = "0.1.1"
 )
 
 func main() {
@@ -23,6 +23,7 @@ func main() {
 		Copyright: "Copyright (c) 2023 - DO CMS",
 		Commands: []*cli.Command{
 			commandBuild,
+			commandNew,
 		},
 	}
 	if err := app.Run(os.Args); err != nil {

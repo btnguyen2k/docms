@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -10,52 +9,24 @@ import (
 )
 
 const (
-	defaultSrcFolder    = "dosrc"
-	defaultOutputFolder = "dodata"
+	defaultSrcFolder     = "dosrc"
+	defaultOutputFolder  = "dodata"
+	defaultDataFolder    = "dosrc"
+	defaultSiteIcon      = "fas fa-globe"
+	defaultSiteLanguages = "en:English,default:en"
 
 	dirPerm  = 0711
 	filePerm = 0600
 )
 
-func exitIfError(err error) {
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(1)
-	}
-}
-
 func isDir(path string) bool {
 	fi, err := os.Stat(path)
-	switch {
-	case err != nil:
-		return false
-	default:
-		return fi.IsDir()
-	}
+	return err == nil && fi.IsDir()
 }
-
-// func getDirContent(path string) ([]os.DirEntry, error) {
-// 	dirInfo, err := os.ReadDir(path)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	result := make([]os.DirEntry, 0)
-// 	for _, entry := range dirInfo {
-// 		if entry.Name() != "." && entry.Name() != ".." {
-// 			result = append(result, entry)
-// 		}
-// 	}
-// 	return result, nil
-// }
 
 func isFile(path string) bool {
 	fi, err := os.Stat(path)
-	switch {
-	case err != nil:
-		return false
-	default:
-		return !fi.IsDir()
-	}
+	return err == nil && !fi.IsDir()
 }
 
 func writeFileYaml(filePath string, content interface{}) error {
@@ -101,9 +72,6 @@ func copyDir(srcPath, destPath string, ignoreList ...string) error {
 		return err
 	}
 	for _, srcEntry := range srcDirEntries {
-		// if _inList(ignoreList, srcEntry.Name()) {
-		// 	continue
-		// }
 		if srcEntry.IsDir() {
 			if err := os.Mkdir(destPath+"/"+srcEntry.Name(), dirPerm); err != nil {
 				return err
