@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"os"
+	"regexp"
 
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"gopkg.in/yaml.v3"
@@ -14,9 +15,14 @@ const (
 	defaultDataFolder    = "dosrc"
 	defaultSiteIcon      = "fas fa-globe"
 	defaultSiteLanguages = "en:English,default:en"
+	defaultTopicIcon     = "fas fa-book"
 
 	dirPerm  = 0711
 	filePerm = 0600
+)
+
+var (
+	reId = regexp.MustCompile(`^[a-z0-9_]+$`)
 )
 
 func isDir(path string) bool {

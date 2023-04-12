@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/btnguyen2k/docms/be-api/src/docms"
@@ -29,6 +30,15 @@ var commandNew = &cli.Command{
 			},
 			Action: actionNewSite,
 		},
+		{
+			Name:    "topic",
+			Aliases: []string{"t"},
+			Usage:   "Create new topic metadata",
+			Flags: []cli.Flag{
+				flagTopicId, flagTopicIcon,
+			},
+			Action: actionNewTopic,
+		},
 	},
 }
 
@@ -41,6 +51,13 @@ func _validateDataDirMustBeValid(dir string) error {
 		return err
 	}
 	return nil
+}
+
+func _validateDataDirMustExist(dir string) error {
+	if fi, err := os.Stat(dir); err == nil && fi.IsDir() {
+		return nil
+	}
+	return fmt.Errorf("<%s> is not a directory or does not exist", dir)
 }
 
 // handle command "new site"
@@ -109,5 +126,83 @@ func actionNewSite(c *cli.Context) error {
 		siteMeta.Description.(map[string]string)[lang] = fmt.Sprintf("My awesome website (in %s)", lang)
 	}
 
-	return writeFileYaml(metaFile, siteMeta)
+	if err := writeFileYaml(metaFile, siteMeta); err != nil {
+		return err
+	}
+
+	log.Printf("[INFO] site metadata has been created at <%s>\n", metaFile)
+
+	return nil
+}
+
+// handle command "new topic"
+func actionNewTopic(c *cli.Context) error {
+	opts := Opts(c)
+
+	// data dir
+	if err := _validateDataDirMustExist(opts.DataDir); err != nil {
+		return err
+	}
+	siteMeta, err := docms.LoadSiteMeta(opts.DataDir+"/meta.yaml", opts.DataDir+"/meta.json")
+	if err != nil {
+		return err
+	}
+
+	// topic's id
+	topicId := opts.TopicId
+	if topicId == "" {
+		return fmt.Errorf("id of topic must not be empty, supply topic's id with flag --%s", fieldId)
+	}
+	if !reId.MatchString(topicId) {
+		return fmt.Errorf("invalid topic's id <%s>, should be lower cases and contain only letters and digits", topicId)
+	}
+
+	// topic's index
+	dirContent, err := docms.GetDirContent(opts.DataDir, func(entry os.DirEntry) bool {
+		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
+	})
+	index := 1
+	for _, dir := range dirContent {
+		tokens := docms.RexpContentDir.FindStringSubmatch(dir.Name())
+		if topicId == tokens[2] {
+			if !opts.OverrideTarget {
+				return fmt.Errorf("topic with id <%s> has already existed, remove it then retry or supply flag --%s", topicId, fieldOverride)
+			}
+			index, _ = strconv.Atoi(tokens[1])
+			break
+		}
+		i, _ := strconv.Atoi(tokens[1])
+		if i > index {
+			index = i
+		}
+	}
+
+	topicDir := fmt.Sprintf("%02d-%s", index, topicId)
+	metaFile := opts.DataDir + "/" + topicDir + "/meta.yaml"
+
+	if err := os.Mkdir(opts.DataDir+"/"+topicDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
+		return err
+	}
+
+	topicMeta := &docms.TopicMeta{
+		Title:       map[string]string{},
+		Description: map[string]string{},
+		Icon:        opts.TopicIcon,
+	}
+
+	for lang, _ := range siteMeta.Languages {
+		if lang == "default" {
+			continue
+		}
+		topicMeta.Title.(map[string]string)[lang] = fmt.Sprintf("The topic title (in %s)", lang)
+		topicMeta.Description.(map[string]string)[lang] = fmt.Sprintf("Short description about the topic (in %s)", lang)
+	}
+
+	if err := writeFileYaml(metaFile, topicMeta); err != nil {
+		return err
+	}
+
+	log.Printf("[INFO] topic metadata has been created at <%s>\n", metaFile)
+
+	return nil
 }
