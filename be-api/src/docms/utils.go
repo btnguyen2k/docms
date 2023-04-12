@@ -33,13 +33,13 @@ var (
 
 // SiteMeta capture metadata of the website.
 type SiteMeta struct {
-	Name            string            `json:"name",yaml:"name"`               // name of the website
-	Description     interface{}       `json:"description",yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Languages       map[string]string `json:"languages",yaml:"languages"`     // available languages of the website content
-	DefaultLanguage string            `json:"-",yaml:"-"`                     // site's default language
-	Icon            string            `json:"icon",yaml:"icon"`               // website's icon
-	Contacts        map[string]string `json:"contacts",yaml:"contacts"`       // site's contact info
-	Tags            map[string]string `json:"tags",yaml:"tags"`               // site's tags as map[string]string
+	Name            string            `json:"name" yaml:"name"`               // name of the website
+	Description     interface{}       `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
+	Languages       map[string]string `json:"languages" yaml:"languages"`     // available languages of the website content
+	DefaultLanguage string            `json:"-" yaml:"-"`                     // site's default language
+	Icon            string            `json:"icon" yaml:"icon"`               // website's icon
+	Contacts        map[string]string `json:"contacts" yaml:"contacts"`       // site's contact info
+	Tags            map[string]string `json:"tags" yaml:"tags"`               // site's tags as map[string]string
 }
 
 func (sm *SiteMeta) init() error {
@@ -70,14 +70,14 @@ func (sm *SiteMeta) GetDescriptionMap() map[string]string {
 }
 
 func LoadSiteMeta(yamlFilePath, jsonFilePath string) (*SiteMeta, error) {
-	if _, err := os.Stat(yamlFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadSiteMetaFromYaml(yamlFilePath)
 	}
-	if _, err := os.Stat(jsonFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadSiteMetaFromJson(jsonFilePath)
 	}
 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
@@ -113,12 +113,12 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 
 // TopicMeta capture metadata of a topic.
 type TopicMeta struct {
-	index       int         `json:"-",yaml:"-"`                     // topic index, for ordering
-	id          string      `json:"-",yaml:"-"`                     // topic id
-	dir         string      `json:"-",yaml:"-"`                     // name of directory where topic's data locates
-	Title       interface{} `json:"title",yaml:"title"`             // topic's title, can be a single string, or a map[language-code:string]string
-	Description interface{} `json:"description",yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Icon        string      `json:"icon",yaml:"icon"`               // topic's icon
+	index       int         `json:"-" yaml:"-"`                     // topic index, for ordering
+	id          string      `json:"-" yaml:"-"`                     // topic id
+	dir         string      `json:"-" yaml:"-"`                     // name of directory where topic's data locates
+	Title       interface{} `json:"title" yaml:"title"`             // topic's title, can be a single string, or a map[language-code:string]string
+	Description interface{} `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
+	Icon        string      `json:"icon" yaml:"icon"`               // topic's icon
 }
 
 func (tm *TopicMeta) setDirectory(dir string) bool {
@@ -167,14 +167,14 @@ func (tm *TopicMeta) GetTitleMap() map[string]string {
 }
 
 func LoadTopicMeta(yamlFilePath, jsonFilePath string) (*TopicMeta, error) {
-	if _, err := os.Stat(yamlFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadTopicMetaFromYaml(yamlFilePath)
 	}
-	if _, err := os.Stat(jsonFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadTopicMetaFromJson(jsonFilePath)
 	}
 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
@@ -202,12 +202,12 @@ func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 
 // DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
-	index       int         `json:"-",yaml:"-"`             // document index, for ordering
-	id          string      `json:"-",yaml:"-"`             // document id
-	dir         string      `json:"-",yaml:"-"`             // name of directory where document's data locates
+	index       int         `json:"-" yaml:"-"`             // document index, for ordering
+	id          string      `json:"-" yaml:"-"`             // document id
+	dir         string      `json:"-" yaml:"-"`             // name of directory where document's data locates
 	Title       interface{} `json:"title" yaml:"title"`     // title of the document, can be a single string, or a map[language-code:string]string
 	Summary     interface{} `json:"summary" yaml:"summary"` // document summary, can be a single string, or a map[language-code:string]string
-	Icon        string      `json:"icon",yaml:"icon"`       // document's icon
+	Icon        string      `json:"icon" yaml:"icon"`       // document's icon
 	ContentFile interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
 }
 
@@ -274,14 +274,14 @@ func (dm *DocumentMeta) GetContentFileMap() map[string]string {
 }
 
 func LoadDocumentMeta(yamlFilePath, jsonFilePath string) (*DocumentMeta, error) {
-	if _, err := os.Stat(yamlFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadDocumentMetaFromYaml(yamlFilePath)
 	}
-	if _, err := os.Stat(jsonFilePath); err != nil && errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
-	} else {
+	} else if err == nil {
 		return LoadDocumentMetaFromJson(jsonFilePath)
 	}
 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
