@@ -1,1 +1,1 @@
-This directory contains the packaged frontend.
+This directory is reserved for frontend's assets.
