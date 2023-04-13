@@ -69,6 +69,34 @@ func (sm *SiteMeta) GetDescriptionMap() map[string]string {
 	return result
 }
 
+func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
+	yamlFiles := []string{dir + "/meta.yaml", dir + "/meta.yml"}
+	for _, yamlFilePath := range yamlFiles {
+		siteMeta, err := LoadSiteMetaFromYaml(yamlFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return siteMeta, nil
+	}
+
+	jsonFiles := []string{dir + "/meta.json"}
+	for _, jsonFilePath := range jsonFiles {
+		siteMeta, err := LoadSiteMetaFromJson(jsonFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return siteMeta, nil
+	}
+
+	return nil, fmt.Errorf("no meta file found")
+}
+
 func LoadSiteMeta(yamlFilePath, jsonFilePath string) (*SiteMeta, error) {
 	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
@@ -164,6 +192,34 @@ func (tm *TopicMeta) GetTitleMap() map[string]string {
 		}
 	}
 	return result
+}
+
+func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
+	yamlFiles := []string{dir + "/meta.yaml", dir + "/meta.yml"}
+	for _, yamlFilePath := range yamlFiles {
+		topicMeta, err := LoadTopicMetaFromYaml(yamlFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return topicMeta, nil
+	}
+
+	jsonFiles := []string{dir + "/meta.json"}
+	for _, jsonFilePath := range jsonFiles {
+		topicMeta, err := LoadTopicMetaFromJson(jsonFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return topicMeta, nil
+	}
+
+	return nil, fmt.Errorf("no meta file found")
 }
 
 func LoadTopicMeta(yamlFilePath, jsonFilePath string) (*TopicMeta, error) {
@@ -271,6 +327,34 @@ func (dm *DocumentMeta) GetContentFileMap() map[string]string {
 		}
 	}
 	return result
+}
+
+func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
+	yamlFiles := []string{dir + "/meta.yaml", dir + "/meta.yml"}
+	for _, yamlFilePath := range yamlFiles {
+		documentMeta, err := LoadDocumentMetaFromYaml(yamlFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return documentMeta, nil
+	}
+
+	jsonFiles := []string{dir + "/meta.json"}
+	for _, jsonFilePath := range jsonFiles {
+		documentMeta, err := LoadDocumentMetaFromJson(jsonFilePath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		return documentMeta, nil
+	}
+
+	return nil, fmt.Errorf("no meta file found")
 }
 
 func LoadDocumentMeta(yamlFilePath, jsonFilePath string) (*DocumentMeta, error) {
