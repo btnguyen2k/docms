@@ -5,28 +5,34 @@ import (
 )
 
 const (
-	fieldSrc       = "src"
-	fieldOutput    = "out"
-	fieldPurge     = "purge"
-	fieldOverride  = "override"
-	fieldDir       = "dir"
-	fieldName      = "name"
-	fieldIcon      = "icon"
-	fieldLanguages = "languages"
-	fieldId        = "id"
+	fieldSrc          = "src"
+	fieldOutput       = "out"
+	fieldPurge        = "purge"
+	fieldOverride     = "override"
+	fieldDir          = "dir"
+	fieldName         = "name"
+	fieldIcon         = "icon"
+	fieldLanguages    = "languages"
+	fieldId           = "id"
+	fieldTopic        = "topic"
+	fieldUseTimestamp = "use-timestamp"
 )
 
 var (
-	flagSrc           = &cli.StringFlag{Name: fieldSrc, Value: defaultSrcFolder, Usage: "source directory"}
-	flagOutput        = &cli.StringFlag{Name: fieldOutput, Value: defaultOutputFolder, Usage: "output directory"}
-	flagPurge         = &cli.BoolFlag{Name: fieldPurge, Usage: "purge output directory if not empty"}
-	flagDir           = &cli.StringFlag{Name: fieldDir, Value: defaultDataFolder, Usage: "directory to store data"}
-	flagOverride      = &cli.BoolFlag{Name: fieldOverride, Usage: "override if destination exists"}
-	flagSiteName      = &cli.StringFlag{Name: fieldName, Usage: "(short) name of the website"}
-	flagSiteIcon      = &cli.StringFlag{Name: fieldIcon, Value: defaultSiteIcon, Usage: "icon of the website (support FontAwesome icons)"}
-	flagSiteLanguages = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>].<default:code>)"}
-	flagTopicId       = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
-	flagTopicIcon     = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
+	flagSrc            = &cli.StringFlag{Name: fieldSrc, Value: defaultSrcFolder, Usage: "source directory"}
+	flagOutput         = &cli.StringFlag{Name: fieldOutput, Value: defaultOutputFolder, Usage: "output directory"}
+	flagPurge          = &cli.BoolFlag{Name: fieldPurge, Usage: "purge output directory if not empty"}
+	flagDir            = &cli.StringFlag{Name: fieldDir, Value: defaultDataFolder, Usage: "directory to store data"}
+	flagOverride       = &cli.BoolFlag{Name: fieldOverride, Usage: "override if destination exists"}
+	flagSiteName       = &cli.StringFlag{Name: fieldName, Usage: "(short) name of the website"}
+	flagSiteIcon       = &cli.StringFlag{Name: fieldIcon, Value: defaultSiteIcon, Usage: "icon of the website (support FontAwesome icons)"}
+	flagSiteLanguages  = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>].<default:code>)"}
+	flagTopicId        = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
+	flagTopicIcon      = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
+	flagDocTopic       = &cli.StringFlag{Name: fieldTopic, Usage: "id of document's topic"}
+	flagDocId          = &cli.StringFlag{Name: fieldId, Usage: "document's unique id"}
+	flagDocIdTimestamp = &cli.BoolFlag{Name: fieldUseTimestamp, Aliases: []string{"ts", "timestamp", "use-ts"}, Usage: "use current timestamp as document's id"}
+	flagDocIcon        = &cli.StringFlag{Name: fieldIcon, Value: defaultDocumentIcon, Usage: "icon of the document (support FontAwesome icons)"}
 )
 
 type Options struct {
@@ -35,11 +41,15 @@ type Options struct {
 	PurgeOutputDir bool
 	OverrideTarget bool
 	DataDir        string
-	SiteName       string
-	SiteIcon       string
-	SiteLanguages  string
-	TopicId        string
-	TopicIcon      string
+	SiteName,
+	SiteIcon,
+	SiteLanguages string
+	TopicId,
+	TopicIcon string
+	DocTopic,
+	DocId,
+	DocIcon string
+	DocIdTimestamp bool
 }
 
 func Opts(c *cli.Context) *Options {
@@ -54,5 +64,9 @@ func Opts(c *cli.Context) *Options {
 		SiteLanguages:  c.String(fieldLanguages),
 		TopicId:        c.String(fieldId),
 		TopicIcon:      c.String(fieldIcon),
+		DocTopic:       c.String(fieldTopic),
+		DocId:          c.String(fieldId),
+		DocIdTimestamp: c.Bool(fieldUseTimestamp),
+		DocIcon:        c.String(fieldIcon),
 	}
 }

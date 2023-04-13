@@ -16,6 +16,7 @@ const (
 	defaultSiteIcon      = "fas fa-globe"
 	defaultSiteLanguages = "en:English,default:en"
 	defaultTopicIcon     = "fas fa-book"
+	defaultDocumentIcon  = "fas fa-file"
 
 	dirPerm  = 0711
 	filePerm = 0600
