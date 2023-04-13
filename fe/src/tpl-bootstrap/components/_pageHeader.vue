@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style="z-index: 9999 !important;">
     <div class="container px-5">
       <router-link :to="{name: 'Home'}" class="navbar-brand">
         <i v-if="$siteMeta.icon!=''" :class="$siteMeta.icon" style="padding-right: 4px"/>
