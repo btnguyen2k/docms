@@ -1,6 +1,6 @@
 # DOCMS Release Notes
 
-## 2023-04-13
+## 2023-04-13 - v0.1.1
 
 CLI `v0.1.1`:
 - Command `new` - helper to create assets with default metadata.
