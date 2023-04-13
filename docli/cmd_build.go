@@ -2,23 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var reDirContent = regexp.MustCompile(`^(\d)+-(\w+)$`)
-
-var commandBuild = cli.Command{
-	Name:        "build",
-	ShortName:   "b",
-	Usage:       "Build DO CMS data",
-	Description: "Build DO CMS data from source directory and write to output directory",
+var commandBuild = &cli.Command{
+	Name:    "build",
+	Aliases: []string{"b"},
+	Usage:   "Preprocess website content, ready for DO CMS runtime",
 	Flags: []cli.Flag{
 		flagSrc,
 		flagOutput,
@@ -27,40 +24,33 @@ var commandBuild = cli.Command{
 	Action: actionBuild,
 }
 
-func _loadSiteMetadata(opts *Options) *docms.SiteMeta {
-	metaFileYaml := opts.SrcDir + "/meta.yaml"
-	fmt.Printf("[INFO] looking for file <%s>...", metaFileYaml)
-	if isFile(metaFileYaml) {
-		fmt.Printf("found.\n")
-		siteMeta, err := docms.LoadSiteMetaFromYaml(metaFileYaml)
-		exitIfError(err)
-		return siteMeta
+func _loadSiteMetadata(opts *Options) (*docms.SiteMeta, error) {
+	for _, metaFileYaml := range []string{opts.SrcDir + "/meta.yaml", opts.SrcDir + "/meta.yml"} {
+		log.Printf("[INFO] looking for file <%s>...\n", metaFileYaml)
+		if isFile(metaFileYaml) {
+			return docms.LoadSiteMetaFromYaml(metaFileYaml)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	metaFileJson := opts.SrcDir + "/meta.json"
-	fmt.Printf("[INFO] looking for file <%s>...", metaFileJson)
-	if isFile(metaFileJson) {
-		fmt.Printf("found.\n")
-		siteMeta, err := docms.LoadSiteMetaFromJson(metaFileJson)
-		exitIfError(err)
-		return siteMeta
+	for _, metaFileJson := range []string{opts.SrcDir + "/meta.json"} {
+		log.Printf("[INFO] looking for file <%s>...\n", metaFileJson)
+		if isFile(metaFileJson) {
+			return docms.LoadSiteMetaFromJson(metaFileJson)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	exitIfError(fmt.Errorf("no <%s> or <%s> file found", metaFileYaml, metaFileJson))
-	return nil
+	return nil, fmt.Errorf("no metadata file found")
 }
 
 func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 	checkPass := true
 	newMetadata := &docms.SiteMeta{}
-	fmt.Printf("[INFO] veryfing metadata file...\n")
+	log.Printf("[INFO] veryfing metadata file...\n")
 
 	// "name" must not empty
 	{
 		if strings.TrimSpace(siteMeta.Name) == "" {
-			fmt.Printf("[ERROR] {name} must not be empty\n")
+			log.Printf("[ERROR] {name} must not be empty\n")
 			checkPass = false
 		}
 		newMetadata.Name = strings.TrimSpace(siteMeta.Name)
@@ -68,7 +58,7 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 
 	// "languages" if any, must me a map[string]string
 	if len(siteMeta.Languages) == 0 {
-		fmt.Printf("[WARN] cannot parse {languages} config or it does not exist, falling back to English...\n")
+		log.Printf("[WARN] cannot parse {languages} config or it does not exist, falling back to English...\n")
 		newMetadata.Languages = map[string]string{"en": "English"}
 	} else {
 		newMetadata.Languages = siteMeta.Languages
@@ -80,26 +70,26 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 		switch desc.(type) {
 		case string:
 			if strings.TrimSpace(desc.(string)) == "" {
-				fmt.Printf("[ERROR] {description} must not be empty\n")
+				log.Printf("[ERROR] {description} must not be empty\n")
 				checkPass = false
 			} else {
 				desc = strings.TrimSpace(desc.(string))
 			}
 		case map[string]interface{}:
 			if len(desc.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR] {description} must not be empty\n")
+				log.Printf("[ERROR] {description} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range desc.(map[string]interface{}) {
 				if _, ok := newMetadata.Languages[k]; !ok {
-					fmt.Printf("[WARN] language <%s> defined in {description} does not exist\n", k)
+					log.Printf("[WARN] language <%s> defined in {description} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			desc = temp
 		default:
-			fmt.Printf("[ERROR] cannot parse {description} config or it does not exist\n")
+			log.Printf("[ERROR] cannot parse {description} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.Description = desc
@@ -130,35 +120,28 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 	return newMetadata, checkPass
 }
 
-func _loadTopicMetadata(opts *Options, dir os.DirEntry) *docms.TopicMeta {
-	metaFileYaml := opts.SrcDir + "/" + dir.Name() + "/meta.yaml"
-	fmt.Printf("[INFO]\t looking for file <%s>...", metaFileYaml)
-	if isFile(metaFileYaml) {
-		fmt.Printf("found.\n")
-		topicMeta, err := docms.LoadTopicMetaFromYaml(metaFileYaml)
-		exitIfError(err)
-		return topicMeta
+func _loadTopicMetadata(opts *Options, dir os.DirEntry) (*docms.TopicMeta, error) {
+	for _, metaFileYaml := range []string{opts.SrcDir + "/" + dir.Name() + "/meta.yaml", opts.SrcDir + "/" + dir.Name() + "/meta.yml"} {
+		log.Printf("[INFO]\t looking for file <%s>...\n", metaFileYaml)
+		if isFile(metaFileYaml) {
+			return docms.LoadTopicMetaFromYaml(metaFileYaml)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	metaFileJson := opts.SrcDir + "/" + dir.Name() + "/meta.json"
-	fmt.Printf("[INFO]\t looking for file <%s>...", metaFileJson)
-	if isFile(metaFileJson) {
-		fmt.Printf("found.\n")
-		topicMeta, err := docms.LoadTopicMetaFromJson(metaFileJson)
-		exitIfError(err)
-		return topicMeta
+	for _, metaFileJson := range []string{opts.SrcDir + "/" + dir.Name() + "/meta.json"} {
+		log.Printf("[INFO]\t looking for file <%s>...\n", metaFileJson)
+		if isFile(metaFileJson) {
+			return docms.LoadTopicMetaFromJson(metaFileJson)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	exitIfError(fmt.Errorf("no <%s> or <%s> file found", metaFileYaml, metaFileJson))
-	return nil
+	return nil, fmt.Errorf("no metadata file found")
 }
 
 func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) (*docms.TopicMeta, bool) {
 	checkPass := true
 	newMetadata := &docms.TopicMeta{}
-	fmt.Printf("[INFO]\t veryfing metadata file...\n")
+	log.Printf("[INFO]\t veryfing metadata file...\n")
 
 	// "title" must be a string, or a map[string]string
 	{
@@ -166,26 +149,26 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 		switch title.(type) {
 		case string:
 			if strings.TrimSpace(title.(string)) == "" {
-				fmt.Printf("[ERROR]\t {title} must not be empty\n")
+				log.Printf("[ERROR]\t {title} must not be empty\n")
 				checkPass = false
 			} else {
 				title = strings.TrimSpace(title.(string))
 			}
 		case map[string]interface{}:
 			if len(title.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR]\t {title} must not be empty\n")
+				log.Printf("[ERROR]\t {title} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range title.(map[string]interface{}) {
 				if _, ok := siteMeta.Languages[k]; !ok {
-					fmt.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
+					log.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			title = temp
 		default:
-			fmt.Printf("[ERROR]\t cannot parse {title} config or it does not exist\n")
+			log.Printf("[ERROR]\t cannot parse {title} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.Title = title
@@ -197,26 +180,26 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 		switch desc.(type) {
 		case string:
 			if strings.TrimSpace(desc.(string)) == "" {
-				fmt.Printf("[ERROR]\t {description} must not be empty\n")
+				log.Printf("[ERROR]\t {description} must not be empty\n")
 				checkPass = false
 			} else {
 				desc = strings.TrimSpace(desc.(string))
 			}
 		case map[string]interface{}:
 			if len(desc.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR]\t {description} must not be empty\n")
+				log.Printf("[ERROR]\t {description} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range desc.(map[string]interface{}) {
 				if _, ok := siteMeta.Languages[k]; !ok {
-					fmt.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
+					log.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			desc = temp
 		default:
-			fmt.Printf("[ERROR]\t cannot parse {description} config or it does not exist\n")
+			log.Printf("[ERROR]\t cannot parse {description} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.Description = desc
@@ -228,57 +211,67 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 	return newMetadata, checkPass
 }
 
-func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry, fti bleve.Index) {
-	fmt.Printf("[INFO] building topic from <%s>...\n", opts.SrcDir+"/"+topicDir.Name())
+func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry, fti bleve.Index) error {
+	log.Printf("[INFO] building topic from <%s>...\n", opts.SrcDir+"/"+topicDir.Name())
 
-	topicMeta := _loadTopicMetadata(opts, topicDir)
+	topicMeta, err := _loadTopicMetadata(opts, topicDir)
+	if err != nil {
+		return err
+	}
 	newTopicMeta, ok := _verifyTopicMetadata(siteMeta, topicMeta)
 	if !ok {
-		exitIfError(fmt.Errorf("there is error while checking metadata file"))
-	} else {
-		fmt.Printf("[INFO]\t metadata verification done.\n")
+		return fmt.Errorf("there is error while checking metadata file")
 	}
-	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name(), dirPerm))
-	exitIfError(writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/meta.yaml", newTopicMeta))
+	log.Printf("[INFO]\t metadata verification done.\n")
+	if err := os.Mkdir(opts.OutputDir+"/"+topicDir.Name(), dirPerm); err != nil {
+		return err
+	}
+	if err := writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/meta.yaml", newTopicMeta); err != nil {
+		return err
+	}
 
 	srcDirEntries, err := docms.GetDirContent(opts.SrcDir+"/"+topicDir.Name(), func(entry os.DirEntry) bool {
 		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
 	})
-	exitIfError(err)
-	for _, dirEntry := range srcDirEntries {
-		_buildDocDir(opts, siteMeta, topicDir, dirEntry, fti)
+	if err != nil {
+		return err
 	}
+	idmap := map[string]bool{}
+	for _, dirEntry := range srcDirEntries {
+		matches := docms.RexpContentDir.FindStringSubmatch(dirEntry.Name())
+		if _, ok := idmap[matches[2]]; ok {
+			return fmt.Errorf("duplicated document-id at directory <%s>", topicDir.Name()+"/"+dirEntry.Name())
+		}
+		idmap[matches[2]] = true
+		if err := _buildDocDir(opts, siteMeta, topicDir, dirEntry, fti); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) *docms.DocumentMeta {
-	metaFileYaml := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yaml"
-	fmt.Printf("[INFO]\t\t looking for file <%s>...", metaFileYaml)
-	if isFile(metaFileYaml) {
-		fmt.Printf("found.\n")
-		docMeta, err := docms.LoadDocumentMetaFromYaml(metaFileYaml)
-		exitIfError(err)
-		return docMeta
+func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) (*docms.DocumentMeta, error) {
+	for _, metaFileYaml := range []string{opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yaml", opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yml"} {
+		log.Printf("[INFO]\t\t looking for file <%s>...\n", metaFileYaml)
+		if isFile(metaFileYaml) {
+			return docms.LoadDocumentMetaFromYaml(metaFileYaml)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	metaFileJson := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.json"
-	fmt.Printf("[INFO]\t\t looking for file <%s>...", metaFileJson)
-	if isFile(metaFileJson) {
-		fmt.Printf("found.\n")
-		docMeta, err := docms.LoadDocumentMetaFromJson(metaFileJson)
-		exitIfError(err)
-		return docMeta
+	for _, metaFileJson := range []string{opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.json"} {
+		log.Printf("[INFO]\t\t looking for file <%s>...\n", metaFileJson)
+		if isFile(metaFileJson) {
+			return docms.LoadDocumentMetaFromJson(metaFileJson)
+		}
 	}
 
-	fmt.Printf("not found.\n")
-	exitIfError(fmt.Errorf("no <%s> or <%s> file found", metaFileYaml, metaFileJson))
-	return nil
+	return nil, fmt.Errorf("no metadata file found")
 }
 
 func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMeta) (*docms.DocumentMeta, bool) {
 	checkPass := true
 	newMetadata := &docms.DocumentMeta{}
-	fmt.Printf("[INFO]\t\t veryfing metadata file...\n")
+	log.Printf("[INFO]\t\t veryfing metadata file...\n")
 
 	// "title" must be a string, or a map[string]string
 	{
@@ -286,26 +279,26 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 		switch title.(type) {
 		case string:
 			if strings.TrimSpace(title.(string)) == "" {
-				fmt.Printf("[ERROR]\t\t {title} must not be empty\n")
+				log.Printf("[ERROR]\t\t {title} must not be empty\n")
 				checkPass = false
 			} else {
 				title = strings.TrimSpace(title.(string))
 			}
 		case map[string]interface{}:
 			if len(title.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR]\t\t {title} must not be empty\n")
+				log.Printf("[ERROR]\t\t {title} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range title.(map[string]interface{}) {
 				if _, ok := siteMeta.Languages[k]; !ok {
-					fmt.Printf("[WARN]\t\t language <%s> defined in {description} does not exist\n", k)
+					log.Printf("[WARN]\t\t language <%s> defined in {description} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			title = temp
 		default:
-			fmt.Printf("[ERROR]\t\t cannot parse {title} config or it does not exist\n")
+			log.Printf("[ERROR]\t\t cannot parse {title} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.Title = title
@@ -317,26 +310,26 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 		switch summary.(type) {
 		case string:
 			if strings.TrimSpace(summary.(string)) == "" {
-				fmt.Printf("[ERROR]\t\t {summary} must not be empty\n")
+				log.Printf("[ERROR]\t\t {summary} must not be empty\n")
 				checkPass = false
 			} else {
 				summary = strings.TrimSpace(summary.(string))
 			}
 		case map[string]interface{}:
 			if len(summary.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR]\t\t {summary} must not be empty\n")
+				log.Printf("[ERROR]\t\t {summary} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range summary.(map[string]interface{}) {
 				if _, ok := siteMeta.Languages[k]; !ok {
-					fmt.Printf("[WARN]\t\t language <%s> defined in {summary} does not exist\n", k)
+					log.Printf("[WARN]\t\t language <%s> defined in {summary} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			summary = temp
 		default:
-			fmt.Printf("[ERROR]\t\t cannot parse {summary} config or it does not exist\n")
+			log.Printf("[ERROR]\t\t cannot parse {summary} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.Summary = summary
@@ -351,26 +344,26 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 		switch contentFile.(type) {
 		case string:
 			if strings.TrimSpace(contentFile.(string)) == "" {
-				fmt.Printf("[ERROR]\t\t {file} must not be empty\n")
+				log.Printf("[ERROR]\t\t {file} must not be empty\n")
 				checkPass = false
 			} else {
 				contentFile = strings.TrimSpace(contentFile.(string))
 			}
 		case map[string]interface{}:
 			if len(contentFile.(map[string]interface{})) == 0 {
-				fmt.Printf("[ERROR]\t\t {file} must not be empty\n")
+				log.Printf("[ERROR]\t\t {file} must not be empty\n")
 				checkPass = false
 			}
 			temp := make(map[string]string)
 			for k, v := range contentFile.(map[string]interface{}) {
 				if _, ok := siteMeta.Languages[k]; !ok {
-					fmt.Printf("[WARN]\t\t language <%s> defined in {file} does not exist\n", k)
+					log.Printf("[WARN]\t\t language <%s> defined in {file} does not exist\n", k)
 				}
 				temp[k] = fmt.Sprintf("%s", v)
 			}
 			contentFile = temp
 		default:
-			fmt.Printf("[ERROR]\t\t cannot parse {file} config or it does not exist\n")
+			log.Printf("[ERROR]\t\t cannot parse {file} config or it does not exist\n")
 			checkPass = false
 		}
 		newMetadata.ContentFile = contentFile
@@ -379,31 +372,31 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 	return newMetadata, checkPass
 }
 
-func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry, fti bleve.Index) {
-	fmt.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name())
+func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry, fti bleve.Index) error {
+	log.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name())
 
-	docMeta := _loadDocumentMetadata(opts, topicDir, docDir)
+	docMeta, err := _loadDocumentMetadata(opts, topicDir, docDir)
+	if err != nil {
+		return err
+	}
 	newDocMeta, ok := _verifyDocumentMetadata(siteMeta, docMeta)
 	if !ok {
-		exitIfError(fmt.Errorf("there is error while checking metadata file"))
-	} else {
-		fmt.Printf("[INFO]\t\t metadata verification done.\n")
+		return fmt.Errorf("there is error while checking metadata file")
 	}
-
-	// siteMeta.Languages
-	// titleMap := docMeta.GetTitleMap()
-	// summaryMap := docMeta.GetSummaryMap()
+	log.Printf("[INFO]\t\t metadata verification done.\n")
 
 	contentMap := make(map[string][]byte)
 	contentFiles := newDocMeta.GetContentFileMap()
 	for lang, f := range contentFiles {
 		contentFile := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + f
 		if !isFile(contentFile) {
-			exitIfError(fmt.Errorf("content file <%s> not exists", contentFile))
+			return fmt.Errorf("content file <%s> not exists", contentFile)
 		}
-		buff, err := os.ReadFile(contentFile)
-		exitIfError(err)
-		contentMap[lang] = buff
+		if buff, err := os.ReadFile(contentFile); err != nil {
+			return err
+		} else {
+			contentMap[lang] = buff
+		}
 	}
 
 	docId := extractId(topicDir) + ":" + extractId(docDir)
@@ -417,74 +410,99 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.D
 			"title":   docMeta.GetTitleMap()[lang],
 			"summary": docMeta.GetSummaryMap()[lang],
 		}
-		exitIfError(fti.Index(docId+":"+lang, doc))
+		if err := fti.Index(docId+":"+lang, doc); err != nil {
+			return err
+		}
 	}
 
-	exitIfError(os.Mkdir(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), dirPerm))
-	exitIfError(writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name()+"/meta.yaml", newDocMeta))
-
-	fmt.Printf("[INFO]\t\t building content directory <%s>...", opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name())
-	err := copyDir(opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name(), opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), "meta.yaml", "meta.json")
-	if err == nil {
-		fmt.Printf("done.\n")
-	} else {
-		fmt.Printf("\n")
-		exitIfError(err)
+	if err := os.Mkdir(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), dirPerm); err != nil {
+		return err
 	}
+	if err := writeFileYaml(opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name()+"/meta.yaml", newDocMeta); err != nil {
+		return err
+	}
+
+	log.Printf("[INFO]\t\t building content directory <%s>...\n", opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name())
+	if err := copyDir(opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name(), opts.OutputDir+"/"+topicDir.Name()+"/"+docDir.Name(), "meta.yaml", "meta.json"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // handle command "build"
-func actionBuild(c *cli.Context) {
+func actionBuild(c *cli.Context) error {
 	opts := Opts(c)
-	if !isDir(opts.SrcDir) {
-		exitIfError(fmt.Errorf("<%s> is not a directory or not readable", opts.SrcDir))
-	}
-	if !isDir(opts.OutputDir) {
-		fmt.Printf("[INFO] directory <%s> does not exist, try to create...\n", opts.OutputDir)
-		err := os.Mkdir(opts.OutputDir, dirPerm)
-		exitIfError(err)
+	if fi, err := os.Stat(opts.SrcDir); err != nil || !fi.IsDir() {
+		return fmt.Errorf("<%s> is not an existing directory or not readable", opts.SrcDir)
 	}
 
-	outputDirEntries, err := docms.GetDirContent(opts.OutputDir, nil)
-	exitIfError(err)
-	if len(outputDirEntries) > 0 {
-		if !opts.PurgeOutputDir {
-			exitIfError(fmt.Errorf("output directory <%s> is not empty, either empty it and retry or supply argument --%s", opts.OutputDir, flagPurge.Name))
+	if fi, err := os.Stat(opts.OutputDir); err == os.ErrNotExist {
+		log.Printf("[INFO] directory <%s> does not exist, try creating...\n", opts.OutputDir)
+		if err := os.Mkdir(opts.OutputDir, dirPerm); err != nil {
+			return err
 		}
-		fmt.Printf("[INFO] directory <%s> is not empty, clearning up...\n", opts.OutputDir)
+	} else if err == nil && !fi.IsDir() {
+		return fmt.Errorf("<%s> is not a directory", opts.OutputDir)
+	} else if err != nil {
+		return err
+	}
+
+	if outputDirEntries, err := docms.GetDirContent(opts.OutputDir, nil); err != nil {
+		return err
+	} else if len(outputDirEntries) > 0 {
+		if !opts.PurgeOutputDir {
+			return fmt.Errorf("output directory <%s> is not empty, empty it then retry or supply flag --%s", opts.OutputDir, flagPurge.Name)
+		}
+		log.Printf("[INFO] directory <%s> is not empty, clearning up...\n", opts.OutputDir)
 		for _, path := range outputDirEntries {
 			pathToRemove := opts.OutputDir + "/" + path.Name()
-			fmt.Printf("[INFO] removing <%s>...", pathToRemove)
-			err := os.RemoveAll(pathToRemove)
-			if err == nil {
-				fmt.Printf("done.\n")
-			} else {
-				fmt.Printf("\n")
+			log.Printf("[INFO] removing <%s>...\n", pathToRemove)
+			if err := os.RemoveAll(pathToRemove); err != nil {
+				return err
 			}
-			exitIfError(err)
 		}
 	}
 
-	siteMeta := _loadSiteMetadata(opts)
+	siteMeta, err := _loadSiteMetadata(opts)
+	if err != nil {
+		return err
+	}
 	newSiteMeta, ok := _verifySiteMetadata(siteMeta)
 	if !ok {
-		exitIfError(fmt.Errorf("there is error while checking metadata file"))
+		return fmt.Errorf("there is error while checking metadata file")
 	} else {
-		fmt.Printf("[INFO] metadata verification done.\n")
+		log.Printf("[INFO] metadata verification done.\n")
 	}
-	exitIfError(writeFileYaml(opts.OutputDir+"/meta.yaml", newSiteMeta))
+	if err := writeFileYaml(opts.OutputDir+"/meta.yaml", newSiteMeta); err != nil {
+		return err
+	}
 
 	ftiDir := opts.OutputDir + "/fti.bleve"
 	ftiMapping := bleve.NewIndexMapping()
 	fti, err := bleve.New(ftiDir, ftiMapping)
-	exitIfError(err)
+	if err != nil {
+		return err
+	}
 	defer fti.Close()
 
 	srcDirEntries, err := docms.GetDirContent(opts.SrcDir, func(entry os.DirEntry) bool {
 		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
 	})
-	exitIfError(err)
-	for _, dirEntry := range srcDirEntries {
-		_buildTopicDir(opts, siteMeta, dirEntry, fti)
+	if err != nil {
+		return err
 	}
+
+	idmap := map[string]bool{}
+	for _, dirEntry := range srcDirEntries {
+		matches := docms.RexpContentDir.FindStringSubmatch(dirEntry.Name())
+		if _, ok := idmap[matches[2]]; ok {
+			return fmt.Errorf("duplicated topic-id at directory <%s>", dirEntry.Name())
+		}
+		idmap[matches[2]] = true
+		if err := _buildTopicDir(opts, siteMeta, dirEntry, fti); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

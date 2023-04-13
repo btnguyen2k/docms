@@ -1,23 +1,32 @@
 package main
 
 import (
+	"log"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const (
 	// Version of DO CMS CLI
-	Version = "0.1.0"
+	Version = "0.1.1"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "docli"
-	app.Usage = "Pre-process and build content for DO CMS"
-	app.Version = Version
-	app.Commands = []cli.Command{
-		commandBuild,
+	app := &cli.App{
+		Name:    "docli",
+		Usage:   "DO CMS website content preprocessing tool",
+		Version: Version,
+		Authors: []*cli.Author{
+			{Name: "Thanh Nguyen", Email: "btnguyen2k (at) gmail (dot) com"},
+		},
+		Copyright: "Copyright (c) 2023 - DO CMS",
+		Commands: []*cli.Command{
+			commandBuild,
+			commandNew,
+		},
 	}
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -50,13 +50,15 @@ func postInitEchoSetup(e *echo.Echo) error {
 	const confKeyFeTemplate = "docms.frontend.template"
 	feTemplate := goapi.AppConfig.GetString(confKeyFeTemplate)
 
-	if fePath == "" || feDir == "" || feTemplate == "" {
-		return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
-	}
+	if os.Getenv("DEBUG") != "true" {
+		if fePath == "" || feDir == "" || feTemplate == "" {
+			return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
+		}
 
-	var re = regexp.MustCompile(`^[0-9a-zA-Z_-]+$`)
-	if !re.MatchString(feTemplate) {
-		return fmt.Errorf("invalid frontend template: %s", feTemplate)
+		var re = regexp.MustCompile(`^[0-9a-zA-Z_-]+$`)
+		if !re.MatchString(feTemplate) {
+			return fmt.Errorf("invalid frontend template: %s", feTemplate)
+		}
 	}
 
 	feTemplateDir := feDir + "/" + feTemplate

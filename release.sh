@@ -31,6 +31,8 @@ releaseRuntime() {
 
 releaseAll() {
 	tag="$1"
+	releaseCli "$tag"
+	releaseRuntime "$tag"
 	echo "Tagging $tag..."
 	git tag -f -a "$tag" -m "$tag"
 	git push origin "$tag" -f
