@@ -1,12 +1,15 @@
 # DOCMS Release Notes
 
-## 2023-04-13 - cli-v0.1.1
+## 2023-04-13
 
 CLI `v0.1.1`:
 - Command `new` - helper to create assets with default metadata.
   - `new site`: Create new site content metadata
   - `new topic`: Create new topic metadata
   - `new document`: Create new document metadata
+
+Runtime `v0.1.1`:
+- Bug fixes.
 
 ## 2023-04-12 - v0.1.0
 
