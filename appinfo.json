@@ -2,6 +2,6 @@
     "name"       : "DOCMS",
     "shortname"  : "docms",
     "initial"    : "DOCMS",
-    "version"    : "0.1.0",
+    "version"    : "0.1.1",
     "description": "Content Management System where its content is built through CI/CD pipeline"
 }
