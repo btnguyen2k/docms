@@ -1,6 +1,6 @@
 `DO CMS runtime` is responsible for rendering website content. It also offers other features such as i18n and fulltext search.
 
-For your convenience, `DO CMS runtime` has already been containerized as a Docker image <a href="https://hub.docker.com/r/btnguyen2k/docmsruntime" target="_blank">btnguyen2k/docmsruntime</a>.
+For your convenience, `DO CMS runtime` has already been containerized as a [Docker image](https://hub.docker.com/r/btnguyen2k/docmsruntime).
 
 The following command spins up an instance of `DO CMS runtime` from Docker image:
 

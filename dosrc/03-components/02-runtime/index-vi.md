@@ -1,8 +1,8 @@
 `DO CMS runtime` chịu trách nhiệm thể hiện nội dung trang web, và hỗ trợ một số tính năng khác như i18n hoặc tìm kiếm toàn văn (fulltext search).
 
-Để tiện sử dụng, `DO CMS runtime` đã được đóng gói sẵn thành Docker image <a href="https://hub.docker.com/r/btnguyen2k/docmsruntime" target="_blank">btnguyen2k/docmsruntime</a>.
+Để tiện sử dụng, `DO CMS runtime` đã được đóng gói sẵn thành [Docker image](https://hub.docker.com/r/btnguyen2k/docmsruntime).
 
-Câu lệnh sau sẽ chạy 1 bản `DO CMS runtime` từ Docker image:
+Câu lệnh sau sẽ chạy một bản `DO CMS runtime` từ Docker image:
 
 ```shell
 docker run --name docms \
