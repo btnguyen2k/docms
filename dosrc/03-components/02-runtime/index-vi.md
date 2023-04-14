@@ -30,3 +30,98 @@ docker run --name docms \
     -e DOCMS_DATA_DIR=/mydata \
     btnguyen2k/docmsruntime
 ```
+
+**FRONTEND_TEMPLATE** - chỉ định giao diện đồ hoạ cho phần thể hiện nội dung trang web. Hiện tại có 3 giao diện có thể lựa chọn là `bootstrap` (mặc định), `coderdocs` and `prettydocs`. Câu lệnh sau sẽ chỉ định `coderdocs` làm giao diện thể hiện:
+```shell
+docker run --name docms \
+    -p 8000:8000 \
+    -e FRONTEND_TEMPLATE=coderdocs \
+    btnguyen2k/docmsruntime
+```
+
+Giao diện **Bootstrap**:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang nhà</h5>
+            <div class="card-body">
+                <a href="bootstrap1.png" target="_blank"><img src="bootstrap1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang chủ đề</h5>
+            <div class="card-body">
+                <a href="bootstrap2.png" target="_blank"><img src="bootstrap2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang bài viết</h5>
+            <div class="card-body">
+                <a href="bootstrap3.png" target="_blank"><img src="bootstrap3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
+
+Giao diện **CoderDocs**:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang nhà</h5>
+            <div class="card-body">
+                <a href="coderdocs1.png" target="_blank"><img src="coderdocs1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang chủ đề</h5>
+            <div class="card-body">
+                <a href="coderdocs2.png" target="_blank"><img src="coderdocs2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang bài viết</h5>
+            <div class="card-body">
+                <a href="coderdocs3.png" target="_blank"><img src="coderdocs3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
+
+Giao diện **PrettyDocs**:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang nhà</h5>
+            <div class="card-body">
+                <a href="prettydocs1.png" target="_blank"><img src="prettydocs1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang chủ đề</h5>
+            <div class="card-body">
+                <a href="prettydocs2.png" target="_blank"><img src="prettydocs2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Trang bài viết</h5>
+            <div class="card-body">
+                <a href="prettydocs3.png" target="_blank"><img src="prettydocs3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
