@@ -1,6 +1,6 @@
 module github.com/btnguyen2k/docms
 
-go 1.13
+go 1.19
 
 require (
 	github.com/blevesearch/bleve/v2 v2.3.7
