@@ -40,7 +40,7 @@
     <section class="py-5 border-bottom">
       <div class="container px-5 my-5">
         <div class="row gx-5">
-          <div class="col-lg-4 col-md-6 col-12 mb-5 mb-lg-0" v-for="topic in $siteTopics" v-bind:key="topic.id">
+          <div class="col-lg-4 col-md-6 col-12 mb-5 mb-lg-0 pb-4" v-for="topic in $siteTopics" v-bind:key="topic.id">
             <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3" style="cursor: pointer" @click="$router.push({name:'Topic',params:{tid:topic.id}})">
               <i v-if="topic.icon!=''" :class="topic.icon" /><i v-else class="bi bi-square" />
             </div>
@@ -49,7 +49,7 @@
                 {{ $localedText(topic.title) }}
               </router-link>
             </h2>
-            <p>{{ $localedText(topic.description) }}</p>
+            <p style="margin-bottom: 0rem !important;">{{ $localedText(topic.description) }}</p>
             <router-link :to="{name: 'Topic', params: {tid: topic.id}}" class="text-decoration-none">
               {{ $t('explore') }} <i class="bi bi-arrow-right"></i>
             </router-link>
