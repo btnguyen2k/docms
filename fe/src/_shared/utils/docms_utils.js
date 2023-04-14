@@ -33,19 +33,38 @@ const mathExpMap = {}
 
 const reUrlWithProtocol = /^([a-z]+:)/i
 
+function renderBootstrapAlert(_style, text) {
+    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(_style.trim()) >= 0 ? _style.trim() : 'primary'
+    let result = '<div class="alert alert-' + style + '" role="alert">'
+    const lines = text.split(/[\r\n]+/)
+    if (lines[0] != '') {
+        result += '<h4 class="alert-heading">' + lines[0] + '</h4>'
+    }
+    for (let i = 1, n = lines.length; i < n; i++) {
+        if (lines[i].startsWith('--') || lines[i].startsWith('==')) {
+            result += '\n<hr/>'
+        } else {
+            result += '\n' + lines[i]
+        }
+    }
+    result += '</div>'
+    return result
+}
+
 class MyRenderer extends marked.Renderer {
     constructor(options) {
         super(options)
     }
 
     code(code, infoString, escaped) {
-        infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString
-        switch (infoString.toLowerCase()) {
-            case 'katex': {
-                const id = nextKatexId()
-                mathExpMap[id] = {type: 'block', expression: code/*, el: el*/}
-                return id
-            }
+        infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString.toLowerCase().trim()
+        if (infoString == 'katex') {
+            const id = nextKatexId()
+            mathExpMap[id] = {type: 'block', expression: code/*, el: el*/}
+            return id
+        }
+        if (infoString == 'bs-alert' || infoString.startsWith('bs-alert ')) {
+            return renderBootstrapAlert(infoString.slice('bs-alert'.length), code)
         }
         return super.code(code, infoString, escaped)
     }
