@@ -38,8 +38,19 @@ class MyRenderer extends marked.Renderer {
         super(options)
     }
 
+    code(code, infoString, escaped) {
+        infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString
+        switch (infoString.toLowerCase()) {
+            case 'katex': {
+                const id = nextKatexId()
+                mathExpMap[id] = {type: 'block', expression: code/*, el: el*/}
+                return id
+            }
+        }
+        return super.code(code, infoString, escaped)
+    }
+
     link(href, title, text) {
-        console.log(href, title, text)
         let result = super.link(href, title, text)
         if (reUrlWithProtocol.test(href)) {
             if (text.startsWith('<img')) {
@@ -51,23 +62,19 @@ class MyRenderer extends marked.Renderer {
         return result
     }
 
-    // listitem(text) {
-    //     console.log("ListItem: ", text)
-    //     return super.listitem(replaceMathWithIds(htmlDecode(text), 'listitem'))
-    // }
+    listitem(text) {
+        return super.listitem(replaceMathWithIds(htmlDecode(text), 'listitem'))
+    }
 
     paragraph(text) {
-        // console.log("Paragraph: ", text)
         return super.paragraph(replaceMathWithIds(htmlDecode(text), 'paragraph'))
     }
 
     // tablecell(content, flags) {
-    //     console.log("TableCell: ", content, flags)
     //     return super.tablecell(replaceMathWithIds(htmlDecode(content), 'tablecell'), flags)
     // }
 
     text(text) {
-        // console.log("Text: ", text)
         return super.text(replaceMathWithIds(htmlDecode(text), 'text'))
     }
 
@@ -119,24 +126,19 @@ function replaceMathWithIds(text, el) {
     if (reKatexId.test(text)) {
         return text
     }
-    // console.log("Test: ", text)
     // block Mathematics and Chemical formulas: allowing newlines between $$...$$
     text = text.replace(/\$\$\s([\s\S]+?)\s\$\$/g, (_match, expression) => {
         expression = unescapeHtml(expression).replace(/\\(\s)/g, (_match, capture) => {
             return '\\\\' + capture
         })
-        // console.log("\tBlock match: ", _match)
-        // console.log("\texpression: ", expression)
         const id = nextKatexId()
         mathExpMap[id] = {type: 'block', expression, el: el}
         return id
     })
 
     // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
-    text = text.replace(/[^$]\$([^$\n]+?)\$/g, (_match, expression) => {
+    text = text.replace(/\$([^$\n]+?)\$/g, (_match, expression) => {
         expression = unescapeHtml(expression)
-        // console.log("\tInline match: ", _match)
-        // console.log("\texpression: ", expression)
         const id = nextKatexId()
         mathExpMap[id] = {type: 'inline', expression, el: el}
         return id
