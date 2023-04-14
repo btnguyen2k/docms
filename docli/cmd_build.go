@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -436,8 +437,8 @@ func actionBuild(c *cli.Context) error {
 		return fmt.Errorf("<%s> is not an existing directory or not readable", opts.SrcDir)
 	}
 
-	if fi, err := os.Stat(opts.OutputDir); err == os.ErrNotExist {
-		log.Printf("[INFO] directory <%s> does not exist, try creating...\n", opts.OutputDir)
+	if fi, err := os.Stat(opts.OutputDir); errors.Is(err, os.ErrNotExist) {
+		log.Printf("[INFO] directory <%s> does not exist, try creating it...\n", opts.OutputDir)
 		if err := os.Mkdir(opts.OutputDir, dirPerm); err != nil {
 			return err
 		}
