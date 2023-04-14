@@ -31,9 +31,24 @@ let katexId = 0
 const nextKatexId = () => `__special_katext_id_${katexId++}__`
 const mathExpMap = {}
 
+const reUrlWithProtocol = /^([a-z]+:)/i
+
 class MyRenderer extends marked.Renderer {
     constructor(options) {
         super(options)
+    }
+
+    link(href, title, text) {
+        console.log(href, title, text)
+        let result = super.link(href, title, text)
+        if (reUrlWithProtocol.test(href)) {
+            if (text.startsWith('<img')) {
+                result = result.replaceAll('<a', '<a target="_blank" ')
+            } else {
+                result = result.replaceAll('<a', '<a class="external-link" target="_blank" ')
+            }
+        }
+        return result
     }
 
     // listitem(text) {

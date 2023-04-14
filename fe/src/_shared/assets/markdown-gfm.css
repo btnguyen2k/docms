@@ -6,11 +6,31 @@ by Thanh Nguyen
 .img-fit img {
     max-width: 95%;
 }
-  
+
 .img-center img {
     margin-left: auto;
     margin-right: auto;
     display: block;
+}
+
+/* ref https://stackoverflow.com/questions/5379752/css-style-external-links */
+a.external-link[href]:not(:where(
+  /* exclude hash only links */
+  [href^="#"],
+  /* exclude relative but not double slash only links */
+  [href^="/"]:not([href^="//"]),
+  /*!* domains to exclude *!*/
+  /*[href*="//stackoverflow.com"],*/
+  /*!* subdomains to exclude *!*/
+  /*[href*="//meta.stackoverflow.com"],*/
+)):after {
+    /*content: '↗️';*/
+    content: " " url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);
+    /*font-family: FontAwesome;*/
+    /*content: "\f08e";*/
+    /*font-size: 13px;*/
+    /*color: #ccc;*/
+    /*padding-left: 7px;*/
 }
 
 code {
