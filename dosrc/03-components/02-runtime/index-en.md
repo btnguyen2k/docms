@@ -1,6 +1,6 @@
 `DO CMS runtime` is responsible for rendering website content. It also offers other features such as i18n and fulltext search.
 
-For your convenience, `DO CMS runtime` has already been containerized as a Docker image <a href="https://hub.docker.com/r/btnguyen2k/docmsruntime" target="_blank">btnguyen2k/docmsruntime</a>.
+For your convenience, `DO CMS runtime` has already been containerized as a [Docker image](https://hub.docker.com/r/btnguyen2k/docmsruntime).
 
 The following command spins up an instance of `DO CMS runtime` from Docker image:
 
@@ -30,3 +30,98 @@ docker run --name docms \
     -e DOCMS_DATA_DIR=/mydata \
     btnguyen2k/docmsruntime
 ```
+
+**FRONTEND_TEMPLATE** - specify the GUI template to be used for the frontend. Currently there are 3 available templates `bootstrap`, `coderdocs` and `prettydocs` (default template is `bootstrap`). The following command switches the template to `coderdocs`:
+```shell
+docker run --name docms \
+    -p 8000:8000 \
+    -e FRONTEND_TEMPLATE=coderdocs \
+    btnguyen2k/docmsruntime
+```
+
+**Bootstrap** template:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Home page</h5>
+            <div class="card-body">
+                <a href="bootstrap1.png" target="_blank"><img src="bootstrap1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Topic page</h5>
+            <div class="card-body">
+                <a href="bootstrap2.png" target="_blank"><img src="bootstrap2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Document page</h5>
+            <div class="card-body">
+                <a href="bootstrap3.png" target="_blank"><img src="bootstrap3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
+
+**CoderDocs** template:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Home page</h5>
+            <div class="card-body">
+                <a href="coderdocs1.png" target="_blank"><img src="coderdocs1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Topic page</h5>
+            <div class="card-body">
+                <a href="coderdocs2.png" target="_blank"><img src="coderdocs2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Document page</h5>
+            <div class="card-body">
+                <a href="coderdocs3.png" target="_blank"><img src="coderdocs3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
+
+**PrettyDocs** template:
+
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Home page</h5>
+            <div class="card-body">
+                <a href="prettydocs1.png" target="_blank"><img src="prettydocs1.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Topic page</h5>
+            <div class="card-body">
+                <a href="prettydocs2.png" target="_blank"><img src="prettydocs2.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+    <div class="col pb-2">
+        <div class="card">
+            <h5 class="card-header">Document page</h5>
+            <div class="card-body">
+                <a href="prettydocs3.png" target="_blank"><img src="prettydocs3.png" /></a>
+            </div>
+        </div>
+    </div><!-- col -->
+</div>
