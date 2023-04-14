@@ -26,7 +26,7 @@ var (
 	flagOverride       = &cli.BoolFlag{Name: fieldOverride, Usage: "override if destination exists"}
 	flagSiteName       = &cli.StringFlag{Name: fieldName, Usage: "(short) name of the website"}
 	flagSiteIcon       = &cli.StringFlag{Name: fieldIcon, Value: defaultSiteIcon, Usage: "icon of the website (support FontAwesome icons)"}
-	flagSiteLanguages  = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>].<default:code>)"}
+	flagSiteLanguages  = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>],<default:code>)"}
 	flagTopicId        = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
 	flagTopicIcon      = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
 	flagDocTopic       = &cli.StringFlag{Name: fieldTopic, Usage: "id of document's topic"}
