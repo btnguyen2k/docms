@@ -17,7 +17,7 @@ title:
   vi: Giới thiệu
 ```
 
-Khi `title` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text`. Điều đó có nghĩa là dòng chỉ thị như sau
+Khi `title` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text]`. Điều đó có nghĩa là dòng chỉ thị như sau
 ```yaml
 title: "Giới thiệu"
 ```
@@ -40,7 +40,7 @@ description:
   vi: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```
 
-Khi `description` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text`. Điều đó có nghĩa là dòng chỉ thị như sau
+Khi `description` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text]`. Điều đó có nghĩa là dòng chỉ thị như sau
 ```yaml
 description: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```

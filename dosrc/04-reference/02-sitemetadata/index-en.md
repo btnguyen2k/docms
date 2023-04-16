@@ -34,7 +34,7 @@ description:
   vi: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
 ```
 
-When the `description` field is a string, it is equivalent to `map[default-language-code:text`. That means, the following setting
+When the `description` field is a string, it is equivalent to `map[default-language-code:text]`. That means, the following setting
 ```yaml
 description: "Content Management System where its content is built through CI/CD pipeline"
 ```

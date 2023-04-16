@@ -34,7 +34,7 @@ description:
   vi: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
 ```
 
-Khi `description` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text`. Điều đó có nghĩa là dòng chỉ thị như sau
+Khi `description` là một string, nó sẽ tương đương với `map[ngôn-ngữ-mặc-định:text]`. Điều đó có nghĩa là dòng chỉ thị như sau
 ```yaml
 description: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
 ```

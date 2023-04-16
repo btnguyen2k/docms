@@ -17,7 +17,7 @@ title:
   vi: Giới thiệu
 ```
 
-When the `title` field is a string, it is equivalent to `map[default-language-code:text`. That means, the following setting
+When the `title` field is a string, it is equivalent to `map[default-language-code:text]`. That means, the following setting
 ```yaml
 title: "Introduction"
 ```
@@ -40,7 +40,7 @@ description:
   vi: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```
 
-When the `description` field is a string, it is equivalent to `map[default-language-code:text`. That means, the following setting
+When the `description` field is a string, it is equivalent to `map[default-language-code:text]`. That means, the following setting
 ```yaml
 description: "An introduction of DO CMS: what it is and how it work."
 ```
