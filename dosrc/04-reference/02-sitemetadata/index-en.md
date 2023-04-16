@@ -1,0 +1,99 @@
+The site metadata file resides at the `root directory` and contains the following fields:
+
+**name** - `string`, website's short name, example:
+```yaml
+name: DO CMS
+```
+
+**icon** - `string`, website's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
+```yaml
+icon: fas fa-globe
+```
+
+**languages** - `map[language-code:display-label]`, website's support languages, example:
+```yaml
+languages:
+  en: English
+  vi: Tiếng Việt
+  default: en # default language
+```
+
+> Language codes should follow [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+>
+> The special entry `default: en` sets `en` as the default language.
+
+**description** - `string` or `map[language-code:text]`, website's short description, example:
+```yaml
+description: "Content Management System where its content is built through CI/CD pipeline"
+```
+
+or
+```yaml
+description:
+  en: "Content Management System where its content is built through CI/CD pipeline"
+  vi: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
+```
+
+When the `description` field is a string, it is equivalent to `map[default-language-code:text`. That means, the following setting
+```yaml
+description: "Content Management System where its content is built through CI/CD pipeline"
+```
+is equivalent to:
+```yaml
+description:
+  en: "Content Management System where its content is built through CI/CD pipeline"
+```
+as `en` is the default language specified in the `languages` field above.
+
+**contacts** - `map[string:string]`, website's contact information, example:
+```yaml
+contacts:
+  website: "https://github.com/btnguyen2k/docms"
+  email: "btnguyen2k (at) gmail (dot) com"
+  github: "https://github.com/btnguyen2k/"
+  facebook: ""
+  linkedin: "https://www.linkedin.com/in/btnguyen2k/"
+  slack: ""
+  twitter: ""
+  discord: ""
+```
+
+**tags** - `map[string:string]`, extra key-value data attached to site metadata, example:
+```yaml
+tags:
+  build: ${build_datetime}
+  mytag: My value
+```
+
+> Special placeholders will be replaced with value by `DO CLI` when pre-processing website content:
+> - `${build_datetime}` - pre-processing timestamp, format `YYYYMMDDHHmmss`
+> - `${build_date}` - pre-processing timestamp, format `YYYYMMDD`
+> - `${build_time}` - pre-processing timestamp, format `HHmmss`
+
+Example of a full site metadata file:
+```yaml
+name: DO CMS
+description:
+  en: Content Management System where its content is built through CI/CD pipeline
+  vi: Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD
+icon: fas fa-code
+languages:
+  en: English
+  vi: Tiếng Việt
+  default: en
+contacts:
+  website: "https://github.com/btnguyen2k/docms"
+  email: "btnguyen2k (at) gmail (dot) com"
+  github: "https://github.com/btnguyen2k/"
+  facebook: ""
+  linkedin: "https://www.linkedin.com/in/btnguyen2k/"
+  slack: ""
+  twitter: ""
+  discord: ""
+tags:
+  build: ${build_datetime}
+```
+
+See also:
+- [Topic metadata file](../topicmetadata/)
+- [Docment metadata file](../documentmetadata/)

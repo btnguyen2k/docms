@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Site metadata file
+  vi: Tập tin metadata trang web
+summary:
+  # (string, or map[language-code]text)
+  en: "The site metadata file resides at the root direcoty and contains information such as name, description or contact details of the website."
+  vi: "Tập tin metadata trang web nằm ở thư mục gốc và lưu giữ thông tin về như tên, mô tả hoặc địa chỉ liên lạc của trang web."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md
