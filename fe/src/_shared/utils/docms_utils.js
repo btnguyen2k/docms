@@ -33,6 +33,13 @@ const mathExpMap = {}
 
 const reUrlWithProtocol = /^([a-z]+:)/i
 
+function renderGithubGist(gist) {
+    const srcScript = "https://gist.github.com/" + gist.trim() + ".js"
+    const srcIframe = "data:text/html;charset=utf-8,&lt;head>&lt;base target='_blank' />&lt;/head>&lt;body>&lt;script src='" + srcScript + "'>&lt;/script>&lt;/body>"
+    let result = "<div class=\"ratio ratio-16x9\"><iframe title=\"GitHub Gist\" src=\"" + srcIframe + "\"></iframe></div>"
+    return result
+}
+
 function renderBootstrapAlert(_style, text) {
     const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(_style.trim()) >= 0 ? _style.trim() : 'primary'
     let result = '<div class="alert alert-' + style + '" role="alert">'
@@ -62,6 +69,9 @@ class MyRenderer extends marked.Renderer {
             const id = nextKatexId()
             mathExpMap[id] = {type: 'block', expression: code/*, el: el*/}
             return id
+        }
+        if (infoString.startsWith('gh-gist ')) {
+            return renderGithubGist(infoString.slice('gh-gist'.length))
         }
         if (infoString == 'bs-alert' || infoString.startsWith('bs-alert ')) {
             return renderBootstrapAlert(infoString.slice('bs-alert'.length), code)
@@ -186,7 +196,10 @@ function markdownRender(markdownInput, sanitize) {
             throwOnError: false
         })
     })
-    return sanitize ? latexHtml : DOMPurify.sanitize(latexHtml, {ADD_ATTR: ['target']})
+    return sanitize ? DOMPurify.sanitize(latexHtml, {
+        ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // needed for embed GitHug Gist
+        ADD_ATTR: ['target'],
+    }) : latexHtml
 }
 
 /*----------------------------------------------------------------------*/

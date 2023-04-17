@@ -3,8 +3,11 @@
     <div class="container">
       <nav class="pb-2">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle" type="button" role="tab" aria-controls="nav-hstyle" aria-selected="true"><strong>Horizontal Editor</strong></button>
-          <button class="nav-link" id="nav-vstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-vstyle" type="button" role="tab" aria-controls="nav-vstyle" aria-selected="false"><strong>Vertical Editor</strong></button>
+          <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle"
+                  type="button" role="tab" aria-controls="nav-hstyle" aria-selected="true"><strong>Horizontal
+            Editor</strong></button>
+          <button class="nav-link" id="nav-vstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-vstyle" type="button"
+                  role="tab" aria-controls="nav-vstyle" aria-selected="false"><strong>Vertical Editor</strong></button>
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
@@ -12,13 +15,17 @@
           <div class="row">
             <div class="col-6">
               <form>
-                <label for="hmarkdown" class="form-label"><strong>Markdown</strong> (<input type="checkbox" v-model="textWrap"/> text wrap)</label>
-                <textarea id="hmarkdown" :class="'form-control '+(textWrap?'text-wrap':'text-nowrap')" style="height: 75vh !important;" v-model="markdownContent"></textarea>
+                <label for="hmarkdown" class="form-label"><strong>Markdown</strong> (<input type="checkbox"
+                                                                                            v-model="textWrap"/> text
+                  wrap)</label>
+                <textarea id="hmarkdown" :class="'form-control '+(textWrap?'text-wrap':'text-nowrap')"
+                          style="height: 75vh !important;" v-model="markdownContent"></textarea>
               </form>
             </div>
             <div class="col-6">
               <label for="hhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important; overflow: auto;" v-html="markdownRendered"></div>
+              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important; overflow: auto;"
+                   v-html="markdownRendered"></div>
             </div>
           </div>
         </div>
@@ -26,13 +33,17 @@
           <div class="row">
             <div class="col-12">
               <form>
-                <label for="vmarkdown" class="form-label"><strong>Markdown</strong> (<input type="checkbox" v-model="textWrap"/> text wrap)</label>
-                <textarea id="vmarkdown" :class="'form-control '+(textWrap?'text-wrap':'text-nowrap')" style="height: 45vh !important;" v-model="markdownContent"></textarea>
+                <label for="vmarkdown" class="form-label"><strong>Markdown</strong> (<input type="checkbox"
+                                                                                            v-model="textWrap"/> text
+                  wrap)</label>
+                <textarea id="vmarkdown" :class="'form-control '+(textWrap?'text-wrap':'text-nowrap')"
+                          style="height: 45vh !important;" v-model="markdownContent"></textarea>
               </form>
             </div>
             <div class="col-12">
               <label for="vhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="vhtml" class="form-control img-fit img-center" style="height: 45vh !important; overflow: auto;" v-html="markdownRendered"></div>
+              <div id="vhtml" class="form-control img-fit img-center" style="height: 45vh !important; overflow: auto;"
+                   v-html="markdownRendered"></div>
             </div>
           </div>
         </div>
@@ -105,7 +116,7 @@ export default {
     document.getElementById('vmarkdown').onkeydown = fnOnKeyDown
 
     const savedContent = localStorageGet("_editor")
-    if (savedContent ) {
+    if (savedContent) {
       this.markdownContent = savedContent
     }
     this.stopTimer()
@@ -124,7 +135,7 @@ export default {
       this.timerInterval = setInterval(() => (localStorageSet("_editor", this.markdownContent)), 5000);
     },
     stopTimer() {
-      if ( this.timerInterval ) {
+      if (this.timerInterval) {
         clearInterval(this.timerInterval)
       }
     }
