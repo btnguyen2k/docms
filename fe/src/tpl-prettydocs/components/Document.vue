@@ -9,7 +9,7 @@
       <div class="doc-wrapper">
         <div class="container">
           <div id="doc-header" class="doc-header text-center">
-            <h1 class="doc-title"><fa-icon v-if="document.icon" :icon="document.icon"></fa-icon> {{ $localedText(document.title) }}</h1>
+            <h1 class="doc-title"><i v-if="document.icon" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
             <!--<div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
           </div>
           <div class="doc-body row">
