@@ -36,7 +36,7 @@ const reUrlWithProtocol = /^([a-z]+:)/i
 function renderGithubGist(gist) {
     const srcScript = "https://gist.github.com/" + gist.trim() + ".js"
     const srcIframe = "data:text/html;charset=utf-8,&lt;head>&lt;base target='_blank' />&lt;/head>&lt;body>&lt;script src='" + srcScript + "'>&lt;/script>&lt;/body>"
-    let result = "<div class=\"ratio ratio-16x9\"><iframe title=\"GitHub Gist\" src=\"" + srcIframe + "\"></iframe></div>"
+    let result = "<div class=\"ratio ratio-21x9\"><iframe title=\"GitHub Gist\" src=\"" + srcIframe + "\"></iframe></div>"
     return result
 }
 
