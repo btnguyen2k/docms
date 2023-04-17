@@ -40,10 +40,28 @@ function renderGithubGist(gist) {
     return result
 }
 
-function renderBootstrapAlert(params, text) {
+function _parseParams(params, ignoreFirstN) {
+    let result = {}
     const tokens = params.trim().split(/\s+/)
-    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(tokens[0]) >= 0 ? tokens[0] : 'primary'
-    const flex = tokens.length > 1 && tokens[1] == 'flex'
+    if (ignoreFirstN > 0) {
+        for (let i = 0; i < ignoreFirstN && i < tokens.length; i++) {
+            const k = '$' + i
+            result[k] = tokens[i].trim()
+        }
+    } else {
+        ignoreFirstN = 0
+    }
+    for (let i = ignoreFirstN; i < tokens.length; i++) {
+        const k = tokens[i].trim()
+        result[k] = true
+    }
+    return result
+}
+
+function renderBootstrapAlert(paramsStr, text) {
+    const params = _parseParams(paramsStr, 1)
+    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(params['$1']) >= 0 ? params['$1'] : 'primary'
+    const flex = params['flex'] ? true : false
     let result = '<div class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
     const lines = text.split(/[\r\n]+/)
     const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim() : ''
@@ -59,6 +77,50 @@ function renderBootstrapAlert(params, text) {
     }
     result += '</div>'
     return result
+}
+
+let bsTabsGroupId = 0
+let bsTabsGroupArr = []
+
+function renderBootstrapTabs(paramsStr, text) {
+    const params = _parseParams(paramsStr)
+    const savedIndex = bsTabsGroupId
+    bsTabsGroupArr.push([])
+    markdownRender(text.replaceAll(/^ {4}/gms, ''), true)
+    bsTabsGroupId++
+    let tabHeader = '<ul class="nav ' + (params['vertical'] ? 'nav-pills flex-column me-3' : 'nav-tabs') + '" id="tabGroup-' + savedIndex + '" role="tablist"' + (params['vertical'] ? ' aria-orientation="vertical"' : '') + '>'
+    let tabContent = '<div class="tab-content">'
+    for (let i = 0; i < bsTabsGroupArr[savedIndex].length; i++) {
+        const tabId = 'tab-' + savedIndex + '-' + i
+        const tabTarget = 'tabtarget-' + savedIndex + '-' + i
+
+        const btn = '<button class="${btn-class}" id="${tab-id}" data-bs-toggle="tab" data-bs-target="#${tab-target}" type="button" role="tab" aria-controls="${tab-target}" aria-selected="${selected}">${tab-title}</button>'
+            .replaceAll('${btn-class}', 'nav-link' + (i == 0 ? ' active' : ''))
+            .replaceAll('${tab-id}', tabId)
+            .replaceAll('${tab-target}', tabTarget)
+            .replaceAll('${selected}', i == 0 ? 'true' : 'false')
+            .replaceAll('${tab-title}', escapeHtml(bsTabsGroupArr[savedIndex][i].title))
+        tabHeader += '<li class="nav-item" role="presentation">' + btn + '</li>'
+
+        const pane = '<div class="${pane-class}" id="${tab-target}" role="tabpanel" aria-labelledby="${tab-id}">${tab-body}</div>'
+            .replaceAll('${pane-class}', 'tab-pane fade' + (i == 0 ? ' show active' : '') + (params['vertical'] ? ' p-0' : ' p-2 border'))
+            .replaceAll('${tab-id}', tabId)
+            .replaceAll('${tab-target}', tabTarget)
+            .replaceAll('${tab-body}', markdownRender(bsTabsGroupArr[savedIndex][i].body, true))
+        tabContent += pane
+    }
+    tabHeader += '</ul>'
+    tabContent += '</div>'
+    let result = '<div class="container mb-4' + (params['vertical'] ? ' d-flex align-items-start' : '') + '">' + tabHeader + tabContent + '</div>'
+    return result
+}
+
+function renderBootstrapTab(params, text) {
+    const lines = text.split(/[\r\n]+/)
+    const tabTitle = lines[0].trim()
+    const tabBody = lines.length > 1 ? lines.slice(1).join('\n') : ''
+    bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
+    return ''
 }
 
 class MyRenderer extends marked.Renderer {
@@ -78,6 +140,12 @@ class MyRenderer extends marked.Renderer {
         }
         if (infoString == 'bs-alert' || infoString.startsWith('bs-alert ')) {
             return renderBootstrapAlert(infoString.slice('bs-alert'.length), code)
+        }
+        if (infoString == 'bs-tabs' || infoString.startsWith('bs-tabs ')) {
+            return renderBootstrapTabs(infoString.slice('bs-tabs'.length), code)
+        }
+        if (infoString == 'bs-tab' || infoString.startsWith('bs-tab ')) {
+            return renderBootstrapTab(infoString.slice('bs-tab'.length), code)
         }
         return super.code(code, infoString, escaped)
     }
@@ -144,6 +212,14 @@ class MyRenderer extends marked.Renderer {
 }
 
 const myRenderer = new MyRenderer()
+
+function escapeHtml(html) {
+    return html.replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/&/g, '&amp;')
+}
 
 function unescapeHtml(html) {
     return html.replace(/&lt;/g, '<')
