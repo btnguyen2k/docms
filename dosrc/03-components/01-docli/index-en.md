@@ -4,7 +4,7 @@
 
 ## Installation
 
-Firstly, <a href="https://go.dev/doc/install" target="_blank">download</a> and install Go. Then install `DOCLI` with the following command:
+Firstly, [download](https://go.dev/doc/install) and install Go. Then install `DOCLI` with the following command:
 ```shell
 go install github.com/btnguyen2k/docms/docli@latest
 ```

@@ -1,7 +1,7 @@
 Cách đơn giản nhất để bắt đầu với DO CMS ở môi trường local là sử dụng Docker và 1 trình soạn thảo văn bản (nếu hỗ trợ Markdown thì càng tốt).
 
 - Đầu tiên, tạo một cấu trúc thư mục để lưu nội dung trang web. Chi tiết về cấu trúc thư mục sẽ được giới thiệu ở ngay phần sau.
-- Kế tiếp, bắt đầu tạo nội dung cho trang web với trình soạn thảo văn bản ưa thích của bạn. DO CMS hỗ trợ <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a> và các công thức Toán học cũng như Hoá học.
+- Kế tiếp, bắt đầu tạo nội dung cho trang web với trình soạn thảo văn bản ưa thích của bạn. DO CMS hỗ trợ [GitHub Flavored Markdown](https://github.github.com/gfm/) và các công thức Toán học cũng như Hoá học.
 - Cuối cùng, khởi chạy một bản `DO CMS runtime` ở dạng Docker container với thư mục nội dung được mount vào trong container.
 
 ## Cấu trúc thư mục nội dung
