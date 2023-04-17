@@ -60,7 +60,7 @@ function _parseParams(params, ignoreFirstN) {
 
 function renderBootstrapAlert(paramsStr, text) {
     const params = _parseParams(paramsStr, 1)
-    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(params['$1']) >= 0 ? params['$1'] : 'primary'
+    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(params['$0']) >= 0 ? params['$0'] : 'primary'
     const flex = params['flex'] ? true : false
     let result = '<div class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
     const lines = text.split(/[\r\n]+/)
@@ -86,10 +86,41 @@ function renderBootstrapTabs(paramsStr, text) {
     const params = _parseParams(paramsStr)
     const savedIndex = bsTabsGroupId
     bsTabsGroupArr.push([])
-    markdownRender(text.replaceAll(/^ {4}/gms, ''), true)
+
+    const lines = text.replaceAll(/^ {4}/gms, '').split(/[\r\n]+/)
+    let intab = false
+    let tabTitle = ''
+    let tabBody = ''
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i] == '[[bs-tab' || lines[i].startsWith('[[bs-tab ')) {
+            if (intab) {
+                //error
+                return '<pre>' + text + '</pre>'
+            }
+            intab = true
+            tabTitle = lines[i].slice('[[bs-tab'.length).trim()
+        } else if (lines[i] == ']]') {
+            if (!intab) {
+                //error
+                return '<pre>' + text + '</pre>'
+            }
+            intab = false
+            bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
+            tabTitle = ''
+            tabBody = ''
+        } else {
+            if (intab) {
+                tabBody += lines[i] + '\n'
+            } else if (lines[i].trim()!=''){
+                //error
+                return '<pre>' + text + '</pre>'
+            }
+        }
+    }
     bsTabsGroupId++
+    
     let tabHeader = '<ul class="nav ' + (params['vertical'] ? 'nav-pills flex-column me-3' : 'nav-tabs') + '" id="tabGroup-' + savedIndex + '" role="tablist"' + (params['vertical'] ? ' aria-orientation="vertical"' : '') + '>'
-    let tabContent = '<div class="tab-content">'
+    let tabContent = '<div class="tab-content' + (params['vertical'] ? '' : ' border') + '">'
     for (let i = 0; i < bsTabsGroupArr[savedIndex].length; i++) {
         const tabId = 'tab-' + savedIndex + '-' + i
         const tabTarget = 'tabtarget-' + savedIndex + '-' + i
@@ -103,7 +134,7 @@ function renderBootstrapTabs(paramsStr, text) {
         tabHeader += '<li class="nav-item" role="presentation">' + btn + '</li>'
 
         const pane = '<div class="${pane-class}" id="${tab-target}" role="tabpanel" aria-labelledby="${tab-id}">${tab-body}</div>'
-            .replaceAll('${pane-class}', 'tab-pane fade' + (i == 0 ? ' show active' : '') + (params['vertical'] ? ' p-0' : ' p-2 border'))
+            .replaceAll('${pane-class}', 'tab-pane fade' + (i == 0 ? ' show active' : '') + (params['vertical'] ? ' p-0' : ' p-2'))
             .replaceAll('${tab-id}', tabId)
             .replaceAll('${tab-target}', tabTarget)
             .replaceAll('${tab-body}', markdownRender(bsTabsGroupArr[savedIndex][i].body, true))
@@ -111,7 +142,7 @@ function renderBootstrapTabs(paramsStr, text) {
     }
     tabHeader += '</ul>'
     tabContent += '</div>'
-    let result = '<div class="container mb-4' + (params['vertical'] ? ' d-flex align-items-start' : '') + '">' + tabHeader + tabContent + '</div>'
+    let result = '<div class="container mb-3' + (params['vertical'] ? ' d-flex align-items-start' : '') + '">' + tabHeader + tabContent + '</div>'
     return result
 }
 
