@@ -44,15 +44,16 @@ function renderBootstrapAlert(_style, text) {
     const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(_style.trim()) >= 0 ? _style.trim() : 'primary'
     let result = '<div class="alert alert-' + style + '" role="alert">'
     const lines = text.split(/[\r\n]+/)
-    if (lines[0] != '') {
-        result += '<h4 class="alert-heading">' + lines[0] + '</h4>'
+    const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim : ''
+    let body = ''
+    if (lines.length > 1) {
+        body = lines.slice(1).join("\n")
     }
-    for (let i = 1, n = lines.length; i < n; i++) {
-        if (lines[i].startsWith('--') || lines[i].startsWith('==')) {
-            result += '\n<hr/>'
-        } else {
-            result += '\n' + lines[i]
-        }
+    if (title != '') {
+        result += '<h4 class="alert-heading">' + title + '</h4>'
+    }
+    if (body != '') {
+        result += markdownRender(body, true)
     }
     result += '</div>'
     return result
@@ -108,6 +109,7 @@ class MyRenderer extends marked.Renderer {
     }
 
     image(href, title, text) {
+        // console.log(href, title, text)
         const re = /^(https:)|(http:)|(\/)/i
         let beBase = APP_CONFIG.api_client.be_api_base_url
         if (beBase && !re.test(href)) {
