@@ -40,11 +40,13 @@ function renderGithubGist(gist) {
     return result
 }
 
-function renderBootstrapAlert(_style, text) {
-    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(_style.trim()) >= 0 ? _style.trim() : 'primary'
-    let result = '<div class="alert alert-' + style + '" role="alert">'
+function renderBootstrapAlert(params, text) {
+    const tokens = params.trim().split(/\s+/)
+    const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(tokens[0]) >= 0 ? tokens[0] : 'primary'
+    const flex = tokens.length > 1 && tokens[1] == 'flex'
+    let result = '<div class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
     const lines = text.split(/[\r\n]+/)
-    const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim : ''
+    const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim() : ''
     let body = ''
     if (lines.length > 1) {
         body = lines.slice(1).join("\n")
@@ -53,7 +55,7 @@ function renderBootstrapAlert(_style, text) {
         result += '<h4 class="alert-heading">' + title + '</h4>'
     }
     if (body != '') {
-        result += markdownRender(body, true)
+        result += '<div>' + markdownRender(body, true) + '</div>'
     }
     result += '</div>'
     return result
