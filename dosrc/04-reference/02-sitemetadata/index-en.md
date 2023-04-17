@@ -5,9 +5,19 @@ The site metadata file resides at the `root directory` and contains the followin
 name: DO CMS
 ```
 
-**icon** - `string`, website's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
+**icon** - `string`, website's icon, example:
 ```yaml
 icon: fas fa-globe
+```
+
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-2"></i>
+`DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
+```
+
+```bs-alert warning flex
+<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd party, please check their documentations.
 ```
 
 **languages** - `map[language-code:display-label]`, website's support languages, example:

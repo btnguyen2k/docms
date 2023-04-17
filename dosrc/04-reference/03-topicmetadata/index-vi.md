@@ -5,6 +5,16 @@ Mỗi một `thư mục chủ đề` có một tập tin metadata riêng. Tập 
 icon: fas fa-book
 ```
 
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-2"></i>
+`DO CMS runtime` hỗ trợ bộ biểu tượng [FontAwesome](https://fontawesome.com/search?m=free) và [Bootstrap](https://icons.getbootstrap.com/).
+```
+
+```bs-alert warning flex
+<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
+```
+
 **title** - `string` or `map[language-code:text]`, tiêu đề ngắn gọn, ví dụ:
 ```yaml
 title: "Giới thiệu"

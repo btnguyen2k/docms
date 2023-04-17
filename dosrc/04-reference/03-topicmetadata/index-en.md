@@ -5,6 +5,16 @@ Each `topic directory` has its own metadata file. This topic metadata file conta
 icon: fas fa-book
 ```
 
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-2"></i>
+`DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
+```
+
+```bs-alert warning flex
+<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd party, please check their documentations.
+```
+
 **title** - `string` or `map[language-code:text]`, topic's title, example:
 ```yaml
 title: "Introduction"
