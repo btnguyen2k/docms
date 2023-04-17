@@ -3,3 +3,8 @@ Làm việc với DO CMS tương tự như công việc hàng ngày của một 
 Toàn bộ qui trình được tóm tắt trong sơ đồ sau:
 
 ![DO CMS - Cách thức hoạt động](docms-howitwork.svg "cách thức hoạt động")
+
+Xem thêm:
+- [Công cụ DOCLI](../../components/cli/)
+- [DO CMS runtime](../../components/runtime/)
+- [Các cú pháp Markdown được hỗ trợ](../../reference/markdown/)

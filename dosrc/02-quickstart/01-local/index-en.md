@@ -59,3 +59,5 @@ docker run -p 8000:8000 -v ./dodata:/app/dodata btnguyen2k/docmsrutime:latest
 ```
 
 Then open http://localhost:8000 in a browser.
+
+See details of the directory structure and metadata files [here](../../reference/metafile/).

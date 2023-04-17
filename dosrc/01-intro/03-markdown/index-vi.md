@@ -70,3 +70,5 @@ $$
 
 > Lưu ý: Dấu đô-la-đôi (`$$`) phải đặt riêng trên 1 dòng.
 > Nếu để cùng dòng với công thức (Toán hoặc Hoá) sẽ không hoạt động: `$$a+b=c$$`
+
+Xem danh sách các cú pháp Markdown được hỗ trợ [ở đây](../../reference/markdown/).

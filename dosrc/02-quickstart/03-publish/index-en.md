@@ -30,3 +30,7 @@ CMD ["/app/main"]
 ```
 
 Those steps can be done manually, or automatically via CI/CD pipelines. A working GitHub Actions flow that pre-processes website content, bundles with `DO CMS runtime` and publishes to Azure Container App can be found <a href="https://github.com/btnguyen2k/docms/blob/main/.github/workflows/dodocs.yml" target="_blank">here</a>.
+
+See more:
+- [DOCLI tool](../../components/cli/)
+- [DO CMS runtime](../../components/runtime/)

@@ -70,3 +70,5 @@ $$
 
 > Note: The two double-dollar signs (`$$`) must be on their own lines in order for block formulas to work.
 > That means, the following will not work: `$$a+b=c$$`
+
+See detailed supported Markdown syntax [here](../../reference/markdown/).

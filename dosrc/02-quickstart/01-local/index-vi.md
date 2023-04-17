@@ -59,3 +59,5 @@ docker run -p 8000:8000 -v ./dodata:/app/dodata btnguyen2k/docmsrutime:latest
 ```
 
 Sau đó mở địa chỉ http://localhost:8000 trong một trình duyệt để truy cập vào trang web.
+
+Xem thông tin chi tiết về cấu trúc cây thư mục và các tập tin metadata [ở đây](../../reference/metafile/).
