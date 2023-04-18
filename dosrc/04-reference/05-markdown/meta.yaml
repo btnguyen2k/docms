@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Supported Markdown
+  vi: Cú pháp Markdown
+summary:
+  # (string, or map[language-code]text)
+  en: "DO CMS supports GitHub Flavored Markdown (GFM) as well as many extensions, such as Mathematical and Chemical formulas. This document describes all supported Markdown syntaxes in details."
+  vi: "DO CMS hỗ trợ GitHub Flavored Markdown (GFM) và nhiều cú pháp mở rộng khác, ví dụ như công thức Toán học và Hoá học. Tài liệu này mô tả chi tiết các cú pháp Markdown được hỗ trợ bởi DO CMS."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

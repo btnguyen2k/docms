@@ -7,12 +7,12 @@ icon: fas fa-file
 
 ```bs-alert info flex
 <i class="fas fa-circle-info fa-2xl me-2"></i>
-`DO CMS runtime` hỗ trợ bộ biểu tượng [FontAwesome](https://fontawesome.com/search?m=free) và [Bootstrap](https://icons.getbootstrap.com/).
+`DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
 <i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
-Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
+FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
 **title** - `string` or `map[language-code:text]`, document's title, example:
