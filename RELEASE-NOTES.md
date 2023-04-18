@@ -1,6 +1,6 @@
 # DOCMS Release Notes
 
-## 2023-04-xx
+## 2023-04-18
 
 Runtime `v0.2.0`:
 - Support [KaTeX](https://katex.org/) block with syntax <code>```katex_</code>
