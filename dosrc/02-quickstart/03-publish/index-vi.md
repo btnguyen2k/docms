@@ -29,4 +29,8 @@ EXPOSE 8000
 CMD ["/app/main"]
 ```
 
-Các bước trên có thể được thực hiện bằng cách gõ lệnh tay, hoặc tự động thông qua qui trình CI/CD. Bạn có thể tham khảo ví dụ sử dụng GitHub Actions để tiền xử lý, đóng gói nội dung trang web và triển khai lên Azure Container App <a href="https://github.com/btnguyen2k/docms/blob/main/.github/workflows/dodocs.yml" target="_blank">ở đây</a>.
+Các bước trên có thể được thực hiện bằng cách gõ lệnh tay, hoặc tự động thông qua qui trình CI/CD. Bạn có thể tham khảo ví dụ sử dụng GitHub Actions để tiền xử lý, đóng gói nội dung trang web và triển khai lên Azure Container App [ở đây](https://github.com/btnguyen2k/docms/blob/main/.github/workflows/dodocs.yml).
+
+Xem thêm:
+- [Công cụ DOCLI](../../components/cli/)
+- [DO CMS runtime](../../components/runtime/)

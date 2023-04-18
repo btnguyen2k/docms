@@ -4,7 +4,7 @@
       <div class="branding">
         <h1 class="logo">
           <router-link :to="{ name: 'Home' }">
-            <fa-icon v-if="$siteMeta.icon!=''" aria-hidden="true" class="icon" style="padding-right: 8px" :icon="$siteMeta.icon" />
+            <i v-if="$siteMeta.icon!=''" aria-hidden="true" class="icon" style="padding-right: 8px" :class="$siteMeta.icon" />
             <span class="text-highlight">{{ $siteFirstName }}</span><span class="text-bold">{{ $siteLastName }}</span>
           </router-link>
         </h1>
@@ -24,7 +24,7 @@
       <div class="top-search-box">
         <form class="form-inline search-form justify-content-center" @submit.prevent="$doSearch" method="get">
           <input type="text" :placeholder="$t('search')" name="q" class="form-control search-input" v-model="$global.searchQuery">
-          <button type="submit" class="btn search-btn" :value="$t('search')"><fa-icon icon="fas fa-search"></fa-icon></button>
+          <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search"></i></button>
         </form>
       </div>
     </div>

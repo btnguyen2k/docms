@@ -7,7 +7,7 @@
         <div class="container">
           <div class="branding">
             <h1 class="logo">
-              <fa-icon v-if="$siteMeta.icon!=''" aria-hidden="true" class="icon" style="padding-right: 8px" :icon="$siteMeta.icon" />
+              <i v-if="$siteMeta.icon!=''" aria-hidden="true" class="icon" style="padding-right: 8px" :class="$siteMeta.icon" />
               <span class="text-highlight">{{ $siteFirstName }}</span><span class="text-bold">{{ $siteLastName }}</span>
             </h1>
           </div>
@@ -19,20 +19,20 @@
           <div class="main-search-box pt-3 pb-4 d-inline-block">
             <form class="form-inline search-form justify-content-center" @submit.prevent="$doSearch" method="get">
               <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control search-input" v-model="$global.searchQuery">
-              <button type="submit" class="btn search-btn" :value="$t('search')"><fa-icon icon="fas fa-search" /></button>
+              <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search" /></button>
             </form>
           </div>
 
           <div class="social-container" v-if="Object.keys($siteMeta.contacts).length > 0">
             {{ $t('contact_info') }}
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.website" :title="$siteMeta.contacts.website" :href="$siteMeta.contacts.website" target="_blank"><fa-icon icon="fas fa-globe" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.email" :title="$siteMeta.contacts.email" :href="'mailto:'+$siteMeta.contacts.email" target="_blank"><fa-icon icon="fas fa-envelope" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.github" :title="$siteMeta.contacts.github" :href="$siteMeta.contacts.github" target="_blank"><fa-icon icon="fab fa-github" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.facebook" :title="$siteMeta.contacts.facebook" :href="$siteMeta.contacts.facebook" target="_blank"><fa-icon icon="fab fa-facebook" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.linkedin" :title="$siteMeta.contacts.linkedin" :href="$siteMeta.contacts.linkedin" target="_blank"><fa-icon icon="fab fa-linkedin" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.slack" :title="$siteMeta.contacts.slack" :href="$siteMeta.contacts.slack" target="_blank"><fa-icon icon="fab fa-slack" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.twitter" :title="$siteMeta.contacts.twitter" :href="$siteMeta.contacts.twitter" target="_blank"><fa-icon icon="fab fa-twitter" /></a>
-            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.discord" :title="$siteMeta.contacts.discord" :href="$siteMeta.contacts.discord" target="_blank"><fa-icon icon="fab fa-discord" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.website" :title="$siteMeta.contacts.website" :href="$siteMeta.contacts.website" target="_blank"><i class="fas fa-globe" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.email" :title="$siteMeta.contacts.email" :href="'mailto:'+$siteMeta.contacts.email" target="_blank"><i class="fas fa-envelope" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.github" :title="$siteMeta.contacts.github" :href="$siteMeta.contacts.github" target="_blank"><i class="fab fa-github" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.facebook" :title="$siteMeta.contacts.facebook" :href="$siteMeta.contacts.facebook" target="_blank"><i class="fab fa-facebook" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.linkedin" :title="$siteMeta.contacts.linkedin" :href="$siteMeta.contacts.linkedin" target="_blank"><i class="fab fa-linkedin" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.slack" :title="$siteMeta.contacts.slack" :href="$siteMeta.contacts.slack" target="_blank"><i class="fab fa-slack" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.twitter" :title="$siteMeta.contacts.twitter" :href="$siteMeta.contacts.twitter" target="_blank"><i class="fab fa-twitter" /></a>
+            <a class="link p-1 fa-lg" v-if="$siteMeta.contacts.discord" :title="$siteMeta.contacts.discord" :href="$siteMeta.contacts.discord" target="_blank"><i class="fab fa-discord" /></a>
           </div>
         </div>
       </header>
@@ -42,7 +42,7 @@
           <div id="cards-wrapper" class="cards-wrapper row">
             <div v-for="topic in $siteTopics" v-bind:key="topic.id" :class="_styleClassForTopic(topic)+' item col-12 col-lg-4'">
               <div class="item-inner">
-                <div v-if="topic.icon!=''" class="icon-holder icon"><fa-icon :icon="topic.icon"/></div>
+                <div v-if="topic.icon!=''" class="icon-holder icon"><i :class="topic.icon"/></div>
                 <h3 class="title">{{ $localedText(topic.title) }}</h3>
                 <p class="intro">{{ $localedText(topic.description) }}</p>
                 <router-link class="link" :to="{ name: 'Topic', params: { tid: topic.id } }"><span></span></router-link>

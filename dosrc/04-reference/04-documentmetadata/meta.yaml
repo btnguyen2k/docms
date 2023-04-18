@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Document metadata file
+  vi: Tập tin metadata bài viết
+summary:
+  # (string, or map[language-code]text)
+  en: "Document metadata files reside at each document directory and contains information such as document's title or summary."
+  vi: "Tập tin metadata bài viết nằm ở mỗi thư mục bài viết và lưu giữ thông tin về bài viết như tiêu đề hoặc tóm tắt."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

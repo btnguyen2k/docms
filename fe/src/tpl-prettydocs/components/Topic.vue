@@ -9,7 +9,7 @@
       <div class="doc-wrapper">
         <div class="container">
           <div id="doc-header" class="doc-header text-center">
-            <h1 class="doc-title"><fa-icon v-if="topic.icon" :icon="topic.icon"></fa-icon> {{ $localedText(topic.title) }}</h1>
+            <h1 class="doc-title"><i v-if="topic.icon" :class="topic.icon"></i> {{ $localedText(topic.title) }}</h1>
             <!--<div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
           </div>
           <div class="doc-body row">
@@ -23,7 +23,7 @@
                   <div v-if="documentList.length==0" class="alert alert-warning" role="alert">{{ $t('empty_topic') }}</div>
                   <div v-else v-for="doc in documentList" v-bind:key="doc.id" class="section-block">
                     <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="nav-link">
-                      <h3 class="block-title"><fa-icon v-if="doc.icon!=''" :icon="doc.icon" class="pe-1"/>{{ $localedText(doc.title) }}</h3>
+                      <h3 class="block-title"><i v-if="doc.icon!=''" :class="doc.icon" class="pe-1"/>{{ $localedText(doc.title) }}</h3>
                     </router-link>
                     <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="text-decoration-none text-muted">
                       {{ $localedText(doc.summary) }}
@@ -34,7 +34,7 @@
               </div>
             </div>
 
-            <lego-sidebar :topic-id="topic.id" />
+            <lego-sidebar :topic-id="topic.id" :document-list="documentList" />
           </div>
         </div>
       </div>

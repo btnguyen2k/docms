@@ -1,5 +1,15 @@
 # DOCMS Release Notes
 
+## 2023-04-18
+
+Runtime `v0.2.0`:
+- Support [KaTeX](https://katex.org/) block with syntax <code>```katex_</code>
+- Links to external websites will open new windows/tabs.
+- Embed GitHub Gist with syntax <code>```gh-gist</code>
+- Support [Bootstrap components](https://getbootstrap.com/docs/5.0/components/):
+  - `Alerts` with syntax <code>```bs-alert</code>
+  - `Tabs` with syntax <code>```bs-tabs</code>
+
 ## 2023-04-13
 
 CLI `v0.1.1`:
@@ -11,13 +21,13 @@ CLI `v0.1.1`:
 Runtime `v0.1.1`:
 - Bug fixes.
 
-## 2023-04-12 - v0.1.0
+## 2023-04-12
 
-CLI:
+CLI `v0.1.0`:
 - Pre-process website content with command `docli build`.
 - Build fulltext index while pre-processing website content.
 
-Runtime:
+Runtime `v0.1.0`:
 - Render website content, supporting 3 themes: `bootstrap` (default), `coderdocs` and `prettydocs`.
 - Fulltext search.
 - Multi-languages support.

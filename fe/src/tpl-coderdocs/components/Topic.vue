@@ -28,7 +28,7 @@
             </section>
           </article>
 
-          <lego-page-footer/>
+          <lego-page-footer />
         </div>
       </div>
     </div>
