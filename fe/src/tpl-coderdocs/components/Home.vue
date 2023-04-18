@@ -82,17 +82,17 @@
           Theme <span style="font-family: monospace, monospace;">CoderDocs</span> designed with <span class="sr-only">love</span><i class="fas fa-heart" style="color: #fb866a;"></i> by <a class="theme-link" href="http://themes.3rdwavemedia.com" target="_blank">Xiaoying Riley</a> for developers.
         </small>
         <small class="copyright d-none d-sm-none d-md-inline d-lg-none float-none">
-          <fa-icon icon="fas fa-bolt-lightning"></fa-icon> by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
-          <fa-icon icon="fas fa-pen-ruler"></fa-icon> <span style="font-family: monospace, monospace;">CoderDocs</span> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a>.
+          <i class="fas fa-bolt-lightning"></i> by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
+          <i class="fas fa-pen-ruler"></i> <span style="font-family: monospace, monospace;">CoderDocs</span> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a>.
         </small>
         <small class="copyright d-md-none d-lg-none float-none">
-          <fa-icon icon="fas fa-bolt-lightning"></fa-icon> by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
-          <fa-icon icon="fas fa-pen-ruler"></fa-icon> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a>.
+          <i class="fas fa-bolt-lightning"></i> by <a href="https://github.com/btnguyen2k/docms" target="_blank">DO CMS</a>.
+          <i class="fas fa-pen-ruler"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a>.
         </small>
         <small v-if="$siteMeta.tags.build" class="d-none d-lg-inline float-end">Build: {{ $siteMeta.tags.build }}</small>
         <ul class="nav nav-pills float-start align-middle" style="margin-top: -6px !important;">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><fa-icon icon="fas fa-language"></fa-icon></a>
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><i class="fas fa-language"></i></a>
             <ul class="dropdown-menu" style="font-size: small">
               <li v-for="lang in $siteLanguages" v-bind:key="lang">
                 <a class="dropdown-item" href="#" @click="swichLanguage(lang, false)"><span class="badge text-dark">{{ lang }}</span> {{$siteMeta.languages[lang]}}</a>

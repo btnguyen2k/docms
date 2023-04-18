@@ -17,7 +17,7 @@
                   <div v-if="searchHits.length==0" class="alert alert-secondary" role="alert">{{ $t('search_no_result') }}</div>
                   <div v-else v-for="doc in searchHits" v-bind:key="doc.id" class="section-block">
                     <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}, query: {q: searchTerm}}" class="nav-link">
-                      <h3 class="block-title"><fa-icon v-if="doc.icon!=''" :icon="doc.icon" class="pe-1"/>{{ $localedText(doc.title) }}</h3>
+                      <h3 class="block-title"><i v-if="doc.icon!=''" :class="doc.icon" class="pe-1"/>{{ $localedText(doc.title) }}</h3>
                     </router-link>
                     <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="text-decoration-none text-muted">
                       {{ $localedText(doc.summary) }}

@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <lego-sidebar :topic-id="topic.id" />
+        <lego-sidebar :topic-id="topic.id" :document-list="documentList" />
       </div>
     </div>
 

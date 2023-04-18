@@ -16,13 +16,15 @@
               <template v-for="topic in $siteTopics" v-bind:key="topic.id">
                 <router-link :to="{name: 'Topic', params: {tid: topic.id}}"
                              :class="'nav-link'+($props['topicId']==topic.id?' active':'')" style="padding-top: 0px !important; padding-bottom: 0px !important;">
-                  <i v-if="topic.icon!=''" :class="topic.icon+' fa-fw'"/> {{ $localedText(topic.title) }}
+                  <i :class="'fa-fw '+(topic.icon!=''?topic.icon:'fas fa-square')" :style="topic.icon==''?'color: transparent !important;':''" />
+                  {{ $localedText(topic.title) }}
                 </router-link>
-                <nav v-if="$props['topicId']==topic.id" class="nav flex-column ps-5">
+                <nav v-if="$props['topicId']==topic.id" class="nav flex-column ps-4">
                   <router-link v-for="document in $props['documentList']" v-bind:key="document.id"
                                :to="{name: 'Document', params: {tid: topic.id, did: document.id}}"
                                :class="'nav-link'+($props['documentId']?' active':'')" style="padding-top: 0px !important; padding-bottom: 0px !important;">
-                    <i v-if="document.icon!=''" :class="document.icon+' fa-fw'"/> {{ $localedText(document.title) }}
+                    <i :class="'fa-fw '+(document.icon!=''?document.icon:'fas fa-square')" :style="document.icon==''?'color: transparent !important;':''" />
+                    {{ $localedText(document.title) }}
                   </router-link>
                 </nav>
               </template>
