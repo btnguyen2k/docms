@@ -1,4 +1,4 @@
-DO CMS hỗ trợ <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a> (viết tắt GFM), cùng với phong cách <a href="https://getbootstrap.com/docs/5.0/content/tables/" target="_blank">Bootstrap</a>.
+DO CMS hỗ trợ [GitHub Flavored Markdown](https://github.github.com/gfm/) (viết tắt GFM), cùng với phong cách [Bootstrap](https://getbootstrap.com/docs/5.0/).
 
 Một số tính năng Markdown đáng chú ý được DO CMS hỗ trợ:
 
@@ -45,7 +45,7 @@ int main() {
 
 ## Mathematical and Chemical formulas
 
-DO CMS sử dụng thư viện <a href="https://katex.org/docs/support_table.html" target="_blank">KaTeX</a> và <a href="https://mhchem.github.io/MathJax-mhchem/" target="_blank">mhchem</a> để hỗ trợ hiển thị các công thức Toán học và Hoá học.
+DO CMS sử dụng thư viện [KaTeX](https://katex.org/docs/support_table.html) và [mhchem](https://mhchem.github.io/MathJax-mhchem/) để hỗ trợ hiển thị các công thức Toán học và Hoá học.
 
 Các công thức Toán học nhúng được đặt giữa 2 dấu đô-la-đơn (`$`): $x^2 + y^2 = z^2$
 
@@ -70,3 +70,5 @@ $$
 
 > Lưu ý: Dấu đô-la-đôi (`$$`) phải đặt riêng trên 1 dòng.
 > Nếu để cùng dòng với công thức (Toán hoặc Hoá) sẽ không hoạt động: `$$a+b=c$$`
+
+Xem danh sách các cú pháp Markdown được hỗ trợ [ở đây](../../reference/markdown/).

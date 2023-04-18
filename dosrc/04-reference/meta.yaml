@@ -1,0 +1,9 @@
+title:
+  # (string, or map[language-code]text)
+  en: Reference
+  vi: Tra cứu
+description:
+  # (string, or map[language-code]text)
+  en: "In-depth refernce guides for content authors"
+  vi: "Thông tin tra cứu chi tiết dành cho soạn giả"
+icon: fas fa-circle-info # (string) supporting FontAwesome icons

@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Topic metadata file
+  vi: Tập tin metadata chủ đề
+summary:
+  # (string, or map[language-code]text)
+  en: "Topic metadata files reside at each topic directory and contains information such as topic's title or description."
+  vi: "Tập tin metadata chủ đề nằm ở mỗi thư mục chủ đề và lưu giữ thông tin về chủ đề như tên hoặc mô tả."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

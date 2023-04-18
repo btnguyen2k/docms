@@ -1,7 +1,7 @@
 The simplest way to get started with DO CMS locally is a Docker environment and a text editor (better if it supports Markdown).
 
 - Firstly, create a directory structure for your website content. Details of the directory structure will come shortly.
-- Secondly, start writing content for your website using your favourite text editor. DO CMS supports <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a> as well as Mathematics and Chemical formulas.
+- Secondly, start writing content for your website using your favourite text editor. DO CMS supports [GitHub Flavored Markdown](https://github.github.com/gfm/) as well as Mathematics and Chemical formulas.
 - Lastly, spin up a `DO CMS runtime` instance as Docker container with the directory storing website content mounted to the container.
 
 ## Directory to store website content
@@ -59,3 +59,5 @@ docker run -p 8000:8000 -v ./dodata:/app/dodata btnguyen2k/docmsrutime:latest
 ```
 
 Then open http://localhost:8000 in a browser.
+
+See details of the directory structure and metadata files [here](../../reference/metafile/).
