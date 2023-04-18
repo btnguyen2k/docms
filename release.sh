@@ -29,10 +29,10 @@ releaseRuntime() {
 	release rt "$1"
 }
 
-releaseAll() {
+releaseCore() {
 	tag="$1"
-	releaseCli "$tag"
-	releaseRuntime "$tag"
+	#releaseCli "$tag"
+	#releaseRuntime "$tag"
 	echo "Tagging $tag..."
 	git tag -f -a "$tag" -m "$tag"
 	git push origin "$tag" -f
@@ -49,8 +49,8 @@ case "$1" in
 	"runtime"|"rt")
 		releaseRuntime "$2"
 		;;
-	"all")
-		releaseAll "$2"
+	"core")
+		releaseCore "$2"
 		;;
 	*)
 		usage
