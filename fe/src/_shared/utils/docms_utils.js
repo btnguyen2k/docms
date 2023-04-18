@@ -63,7 +63,7 @@ function renderBootstrapAlert(paramsStr, text) {
     const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(params['$0']) >= 0 ? params['$0'] : 'primary'
     const flex = params['flex'] ? true : false
     let result = '<div class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
-    const lines = text.split(/[\r\n]+/)
+    const lines = text.split(/\n/)
     const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim() : ''
     let body = ''
     if (lines.length > 1) {
@@ -87,7 +87,7 @@ function renderBootstrapTabs(paramsStr, text) {
     const savedIndex = bsTabsGroupId
     bsTabsGroupArr.push([])
 
-    const lines = text.replaceAll(/^ {4}/gms, '').split(/[\r\n]+/)
+    const lines = text.replaceAll(/^ {4}/gms, '').split(/\n/)
     let intab = false
     let tabTitle = ''
     let tabBody = ''
@@ -106,8 +106,7 @@ function renderBootstrapTabs(paramsStr, text) {
             }
             intab = false
             bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
-            tabTitle = ''
-            tabBody = ''
+            tabTitle = tabBody = ''
         } else {
             if (intab) {
                 tabBody += lines[i] + '\n'
@@ -118,7 +117,7 @@ function renderBootstrapTabs(paramsStr, text) {
         }
     }
     bsTabsGroupId++
-    
+
     let tabHeader = '<ul class="nav ' + (params['vertical'] ? 'nav-pills flex-column me-3' : 'nav-tabs') + '" id="tabGroup-' + savedIndex + '" role="tablist"' + (params['vertical'] ? ' aria-orientation="vertical"' : '') + '>'
     let tabContent = '<div class="tab-content' + (params['vertical'] ? '' : ' border') + '">'
     for (let i = 0; i < bsTabsGroupArr[savedIndex].length; i++) {
@@ -146,13 +145,13 @@ function renderBootstrapTabs(paramsStr, text) {
     return result
 }
 
-function renderBootstrapTab(params, text) {
-    const lines = text.split(/[\r\n]+/)
-    const tabTitle = lines[0].trim()
-    const tabBody = lines.length > 1 ? lines.slice(1).join('\n') : ''
-    bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
-    return ''
-}
+// function renderBootstrapTab(params, text) {
+//     const lines = text.split(/[\r\n]+/)
+//     const tabTitle = lines[0].trim()
+//     const tabBody = lines.length > 1 ? lines.slice(1).join('\n') : ''
+//     bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
+//     return ''
+// }
 
 class MyRenderer extends marked.Renderer {
     constructor(options) {
@@ -175,9 +174,9 @@ class MyRenderer extends marked.Renderer {
         if (infoString == 'bs-tabs' || infoString.startsWith('bs-tabs ')) {
             return renderBootstrapTabs(infoString.slice('bs-tabs'.length), code)
         }
-        if (infoString == 'bs-tab' || infoString.startsWith('bs-tab ')) {
-            return renderBootstrapTab(infoString.slice('bs-tab'.length), code)
-        }
+        // if (infoString == 'bs-tab' || infoString.startsWith('bs-tab ')) {
+        //     return renderBootstrapTab(infoString.slice('bs-tab'.length), code)
+        // }
         return super.code(code, infoString, escaped)
     }
 
