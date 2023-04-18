@@ -11,6 +11,14 @@ docker run --name docms \
     btnguyen2k/docmsruntime
 ```
 
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-2"></i>
+Bản Docker image được đánh thẻ như sau:
+
+`:stable` hoặc `:version` (ví dụ `:1.2.3`): bản phát hành ổn định<br/>
+`:latest` hoặc `:yyyymmdd` hoặc `:yyyymmdd-hash`: bản phát hành có thể có 1 số lỗi nhỏ, nhưng luôn bao gồm các tính năng mới nhất (tính tới thời điểm build).
+```
+
 ## Biến môi trường
 
 **HTTP_LISTEN_ADDR** và **HTTP_LISTEN_PORT** - chỉ định địa chỉ & cổng lắng nghe. Giá trị mặc định của HTTP_LISTEN_ADDR là `0.0.0.0` và HTTP_LISTEN_PORT là `8000`. Câu lệnh sau chi định `DO CMS runtime` lắng nghe `127.0.0.1:3000`:
