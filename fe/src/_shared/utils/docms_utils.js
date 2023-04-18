@@ -145,14 +145,6 @@ function renderBootstrapTabs(paramsStr, text) {
     return result
 }
 
-// function renderBootstrapTab(params, text) {
-//     const lines = text.split(/[\r\n]+/)
-//     const tabTitle = lines[0].trim()
-//     const tabBody = lines.length > 1 ? lines.slice(1).join('\n') : ''
-//     bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
-//     return ''
-// }
-
 class MyRenderer extends marked.Renderer {
     constructor(options) {
         super(options)
@@ -174,9 +166,6 @@ class MyRenderer extends marked.Renderer {
         if (infoString == 'bs-tabs' || infoString.startsWith('bs-tabs ')) {
             return renderBootstrapTabs(infoString.slice('bs-tabs'.length), code)
         }
-        // if (infoString == 'bs-tab' || infoString.startsWith('bs-tab ')) {
-        //     return renderBootstrapTab(infoString.slice('bs-tab'.length), code)
-        // }
         return super.code(code, infoString, escaped)
     }
 
