@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Metadata file
+  vi: Tập tin metadata
+summary:
+  # (string, or map[language-code]text)
+  en: "Metadata files captures information about the website, topics and documents. They also play an important part in instructing how the content would be rendered. All you need to know about metadata files can be found here."
+  vi: "Các tập tin metadata lưu giữ thông tin về trang web, chủ đề và bài viết. Chúng cũng đóng vai trò quan trọng trong hướng dẫn cách nội dung sẽ được thể hiện. Tất cả những gì bạn cần biết về các tập tin metadata có thể được tìm thấy tại đây."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

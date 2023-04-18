@@ -1,4 +1,4 @@
-DO CMS supports <a href="https://github.github.com/gfm/" target="_blank">GitHub Flavored Markdown</a>, or often shortened as GFM, with <a href="https://getbootstrap.com/docs/5.0/content/tables/" target="_blank">Bootstrap</a> style.
+DO CMS supports [GitHub Flavored Markdown](https://github.github.com/gfm/), or often shortened as GFM, with [Bootstrap](https://getbootstrap.com/docs/5.0/) style.
 
 Some notable Markdown features supported by Do CMS are as the following:
 
@@ -45,7 +45,7 @@ int main() {
 
 ## Mathematical and Chemical formulas
 
-DO CMS supports Mathematical and Chemical formulas using <a href="https://katex.org/docs/support_table.html" target="_blank">KaTeX</a> and <a href="https://mhchem.github.io/MathJax-mhchem/" target="_blank">mhchem</a>.
+DO CMS supports Mathematical and Chemical formulas using [KaTeX](https://katex.org/docs/support_table.html) and [mhchem](https://mhchem.github.io/MathJax-mhchem/).
 
 Inline Mathematical formulas are enclosed between two single-dollar signs (`$`): $x^2 + y^2 = z^2$
 
@@ -70,3 +70,5 @@ $$
 
 > Note: The two double-dollar signs (`$$`) must be on their own lines in order for block formulas to work.
 > That means, the following will not work: `$$a+b=c$$`
+
+See detailed supported Markdown syntax [here](../../reference/markdown/).

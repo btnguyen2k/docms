@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: Bootstrap components
+  vi: Giao diện Bootstrap
+summary:
+  # (string, or map[language-code]text)
+  en: "Since the frontend templates already imported Bootstrap and Markdown supports HTML by default, you can embed Bootstrap components to your documents. However, it could be more convenient if there are Markdown syntaxes for that."
+  vi: "Phần giao diện đồ hoạ được tích hợp sẵn Bootstrap và Markdown cũng hỗ trợ HTML, do vậy bạn hoàn toàn có thể nhúng các thành phần giao diện Bootstrap vào tài liệu. Tuy nhiên sẽ tiện lợi hơn nếu có sẵn các cú pháp Markdown để làm chuyện đó."
+icon: # (string) supporting FontAwesome icons
+file:
+  # (map[language-code]filename)
+  en: index-en.md
+  vi: index-vi.md

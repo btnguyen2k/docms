@@ -4,7 +4,7 @@
 
 ## Cài đặt
 
-Đầu tiên, <a href="https://go.dev/doc/install" target="_blank">tải</a> và cài đặt Go. Sau đó cài đặt `DOCLI` bằng câu lệnh sau:
+Đầu tiên, [tải](https://go.dev/doc/install) và cài đặt Go. Sau đó cài đặt `DOCLI` bằng câu lệnh sau:
 ```shell
 go install github.com/btnguyen2k/docms/docli@latest
 ```
