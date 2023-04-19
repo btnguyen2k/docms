@@ -184,7 +184,7 @@ func initCMSData() {
 
 	var err error
 	// load site's metadata
-	gSiteMeta, err = LoadSiteMeta(gDataDir+"/"+metaFileYaml, gDataDir+"/"+metaFileJson)
+	gSiteMeta, err = LoadSiteMetaAuto(gDataDir)
 	if err != nil {
 		panic(err)
 	}
@@ -201,7 +201,7 @@ func initCMSData() {
 		log.Printf("[%s] Loading Topic data from <%s>...", logLevelInfo, topicDirPath)
 
 		// load topic metadata
-		topicMeta, err := LoadTopicMeta(topicDirPath+"/"+metaFileYaml, topicDirPath+"/"+metaFileJson)
+		topicMeta, err := LoadTopicMetaAuto(topicDirPath)
 		if err != nil {
 			panic(err)
 		}
@@ -222,7 +222,7 @@ func initCMSData() {
 			log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
 
 			// load document metadata
-			docMeta, err := LoadDocumentMeta(docDirPath+"/"+metaFileYaml, docDirPath+"/"+metaFileYaml)
+			docMeta, err := LoadDocumentMetaAuto(docDirPath)
 			if err != nil {
 				panic(err)
 			}
