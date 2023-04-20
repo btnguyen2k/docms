@@ -23,12 +23,13 @@ const (
 var (
 	gDataDir         string
 	gSiteMeta        *SiteMeta
-	gTopicList       = make([]*TopicMeta, 0)              // list of topics, sorted by index
-	gTopicMeta       = make(map[string]*TopicMeta)        // map[topic-id]topic-metadata
-	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
-	gDocumentMeta    = make(map[string]*DocumentMeta)     // map[topic-id:document-id]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
-	gFti             bleve.Index                          // Full-text index
+	gTopicList       = make([]*TopicMeta, 0)                // list of topics, sorted by index
+	gTopicMeta       = make(map[string]*TopicMeta)          // map[topic-id]topic-metadata
+	gDocumentList    = make(map[string][]*DocumentMeta)     // list of documents, per topic, sorted by index
+	gDocumentMeta    = make(map[string]*DocumentMeta)       // map["topic-id:document-id"]document-metadata
+	gDocumentContent = make(map[string]map[string]string)   // map["topic-id:document-id"]map[language-code]document-content
+	gFti             bleve.Index                            // Full-text index
+	gDocumentTags    = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
 )
 
 // SiteMeta capture metadata of the website.

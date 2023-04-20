@@ -153,7 +153,7 @@ func initCMSData() {
 	if os.Getenv("DEBUG") == "true" {
 		w := watcher.New()
 		w.SetMaxEvents(1)
-		// w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
+		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
 		go func() {
 			for {
 				select {
@@ -175,8 +175,9 @@ func initCMSData() {
 	gTopicList = make([]*TopicMeta, 0)                    // list of topics, sorted by index
 	gTopicMeta = make(map[string]*TopicMeta)              // map[topic-id]topic-metadata
 	gDocumentList = make(map[string][]*DocumentMeta)      // list of documents, per topic, sorted by index
-	gDocumentMeta = make(map[string]*DocumentMeta)        // map[topic-id:document-id]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
+	gDocumentMeta = make(map[string]*DocumentMeta)        // map["topic-id:document-id"]document-metadata
+	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
+	gDocumentTags = make(map[string]map[string][]string)  // map[language-code]map[tag][]"topic-id:document-id"
 	if gFti != nil {
 		gFti.Close()
 		gFti = nil
@@ -230,6 +231,16 @@ func initCMSData() {
 			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
 			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
 			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
+			for lang, tags := range docMeta.GetTagsMap() {
+				tagDocMap := gDocumentTags[lang]
+				if tagDocMap == nil {
+					tagDocMap = make(map[string][]string)
+					gDocumentTags[lang] = tagDocMap
+				}
+				for _, tag := range tags {
+					tagDocMap[tag] = append(tagDocMap[tag], topicMeta.id+":"+docMeta.id)
+				}
+			}
 
 			// load document content
 			docFileContentMap := docMeta.GetContentFileMap()

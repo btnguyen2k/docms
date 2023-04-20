@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="container">
-      <nav class="pb-2">
+      <nav class="pb-2 g-0">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle"
                   type="button" role="tab" aria-controls="nav-hstyle" aria-selected="true"><strong>Horizontal
@@ -127,7 +127,14 @@ export default {
   },
   computed: {
     markdownRendered() {
-      return markdownRender(this.markdownContent, true)
+      return markdownRender(this.markdownContent, {sanitize: true, tags: {
+          build: new Date(),
+          map: {
+            key: 'value'
+          },
+          arr: [1, "2", true]
+        }
+      })
     },
   },
   methods: {

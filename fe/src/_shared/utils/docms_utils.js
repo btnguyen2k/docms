@@ -19,12 +19,12 @@ import {marked} from "marked"
 import DOMPurify from "dompurify"
 import {APP_CONFIG} from "@/_shared/utils/app_config"
 
-function htmlDecode(html) {
-    // TODO
-    return html
-    // const doc = new DOMParser().parseFromString(html, "text/html")
-    // return doc.documentElement.textContent
-}
+// function htmlDecode(html) {
+//     // TODO
+//     return html
+//     // const doc = new DOMParser().parseFromString(html, "text/html")
+//     // return doc.documentElement.textContent
+// }
 
 //ref: https://github.com/markedjs/marked/issues/1538#issuecomment-575838181
 let katexId = 0
@@ -110,7 +110,7 @@ function renderBootstrapTabs(paramsStr, text) {
         } else {
             if (intab) {
                 tabBody += lines[i] + '\n'
-            } else if (lines[i].trim()!=''){
+            } else if (lines[i].trim() != '') {
                 //error
                 return '<pre>' + text + '</pre>'
             }
@@ -145,16 +145,47 @@ function renderBootstrapTabs(paramsStr, text) {
     return result
 }
 
+const reKatexId = /(__special_katext_id_\d+__)/g
+
 class MyRenderer extends marked.Renderer {
     constructor(options) {
         super(options)
+    }
+
+    _inlineMathToIds(text) {
+        if (reKatexId.test(text)) {
+            return text
+        }
+        // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
+        text = text.replace(/\$(.+?)\$/g, (_match, expression) => {
+            expression = unescapeHtml(expression)
+            const id = nextKatexId()
+            mathExpMap[id] = {type: 'inline', expression}
+            return id
+        })
+
+        return text
+    }
+
+    _renderDoTags(text, tags) {
+        text = text.replace(/\[\[do-tag\s(.+?)\]\]/g, (_match, _exp) => {
+            const exp = _exp.trim()
+            return tags[exp] !== undefined ? tags[exp] : '<code title="Error: Tag not foun!">' + _exp + '</code>'
+        })
+        return text
+    }
+
+    processInlineElements(text) {
+        let result = this._inlineMathToIds(text)
+        result = this._renderDoTags(result, typeof this.options['tags'] == 'object' ? this.options['tags'] : {})
+        return result
     }
 
     code(code, infoString, escaped) {
         infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString.toLowerCase().trim()
         if (infoString == 'katex') {
             const id = nextKatexId()
-            mathExpMap[id] = {type: 'block', expression: code/*, el: el*/}
+            mathExpMap[id] = {type: 'block', expression: code}
             return id
         }
         if (infoString.startsWith('gh-gist ')) {
@@ -182,23 +213,22 @@ class MyRenderer extends marked.Renderer {
     }
 
     listitem(text) {
-        return super.listitem(replaceMathWithIds(htmlDecode(text), 'listitem'))
+        return super.listitem(this.processInlineElements(text))
     }
 
     paragraph(text) {
-        return super.paragraph(replaceMathWithIds(htmlDecode(text), 'paragraph'))
+        return super.paragraph(this.processInlineElements(text))
     }
 
-    // tablecell(content, flags) {
-    //     return super.tablecell(replaceMathWithIds(htmlDecode(content), 'tablecell'), flags)
-    // }
+    tablecell(content, flags) {
+        return super.tablecell(this.processInlineElements(content), flags)
+    }
 
     text(text) {
-        return super.text(replaceMathWithIds(htmlDecode(text), 'text'))
+        return super.text(this.processInlineElements(text))
     }
 
     image(href, title, text) {
-        // console.log(href, title, text)
         const re = /^(https:)|(http:)|(\/)/i
         let beBase = APP_CONFIG.api_client.be_api_base_url
         if (beBase && !re.test(href)) {
@@ -248,34 +278,32 @@ function unescapeHtml(html) {
         .replace(/&amp;/g, '&')
 }
 
-const reKatexId = /(__special_katext_id_\d+__)/g
+// function replaceMathWithIds(text) {
+//     if (reKatexId.test(text)) {
+//         return text
+//     }
+//     // block Mathematics and Chemical formulas: allowing newlines between $$...$$
+//     text = text.replace(/\$\$\s([\s\S]+?)\s\$\$/g, (_match, expression) => {
+//         expression = unescapeHtml(expression).replace(/\\(\s)/g, (_match, capture) => {
+//             return '\\\\' + capture
+//         })
+//         const id = nextKatexId()
+//         mathExpMap[id] = {type: 'block', expression}
+//         return id
+//     })
+//
+//     // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
+//     text = text.replace(/\$([^$\n]+?)\$/g, (_match, expression) => {
+//         expression = unescapeHtml(expression)
+//         const id = nextKatexId()
+//         mathExpMap[id] = {type: 'inline', expression}
+//         return id
+//     })
+//
+//     return text
+// }
 
-function replaceMathWithIds(text, el) {
-    if (reKatexId.test(text)) {
-        return text
-    }
-    // block Mathematics and Chemical formulas: allowing newlines between $$...$$
-    text = text.replace(/\$\$\s([\s\S]+?)\s\$\$/g, (_match, expression) => {
-        expression = unescapeHtml(expression).replace(/\\(\s)/g, (_match, capture) => {
-            return '\\\\' + capture
-        })
-        const id = nextKatexId()
-        mathExpMap[id] = {type: 'block', expression, el: el}
-        return id
-    })
-
-    // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
-    text = text.replace(/\$([^$\n]+?)\$/g, (_match, expression) => {
-        expression = unescapeHtml(expression)
-        const id = nextKatexId()
-        mathExpMap[id] = {type: 'inline', expression, el: el}
-        return id
-    })
-
-    return text
-}
-
-const markedOpts = {
+const defaultMarkedOpts = {
     gfm: true,
     renderer: myRenderer,
     langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class
@@ -285,7 +313,13 @@ const markedOpts = {
     },
 }
 
-function markdownRender(markdownInput, sanitize) {
+function markdownRender(markdownInput, opts) {
+    let markedOpts = {...defaultMarkedOpts}
+    if (typeof opts == 'object') {
+        markedOpts = {...markedOpts, ...opts}
+    }
+    delete markedOpts['sanitize']
+    markedOpts.renderer = new MyRenderer(markedOpts)
     const html = marked.parse(markdownInput, markedOpts)
     const latexHtml = html.replace(reKatexId, (_match, capture) => {
         const token = mathExpMap[capture]
@@ -295,6 +329,7 @@ function markdownRender(markdownInput, sanitize) {
             throwOnError: false
         })
     })
+    const sanitize = typeof opts == 'boolean' ? opts : (typeof opts == 'object' ? opts['sanitize'] : false)
     return sanitize ? DOMPurify.sanitize(latexHtml, {
         ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // needed for embed GitHug Gist
         ADD_ATTR: ['target'],
