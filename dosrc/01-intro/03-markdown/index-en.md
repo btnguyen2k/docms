@@ -49,8 +49,8 @@ DO CMS supports Mathematical and Chemical formulas using [KaTeX](https://katex.o
 
 Inline Mathematical formulas are enclosed between two single-dollar signs (`$`): $x^2 + y^2 = z^2$
 
-Block Mathematical formulas are enclosed between two double-dollar signs (`$$`):
-$$
+Block Mathematical formulas are simply `code` blocks with language `katex`:
+```katex
 \begin{equation}
 \begin{split}
 (a - b)^2 &= (a - b)(a - b) \\
@@ -59,16 +59,13 @@ $$
 &= a^2 + 2ab + b^2          \nonumber
 \end{split}
 \end{equation}
-$$
+```
 
 Similar syntax for inline Chemical formulas: $\ce{CO2 + C -> 2 CO}$
 
 and block Chemical formulas:
-$$
+```katex
 C_p[\ce{H2O(l)}] = \pu{75.3 J // mol K}
-$$
-
-> Note: The two double-dollar signs (`$$`) must be on their own lines in order for block formulas to work.
-> That means, the following will not work: `$$a+b=c$$`
+```
 
 See detailed supported Markdown syntax [here](../../reference/markdown/).
