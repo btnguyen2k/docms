@@ -39,7 +39,7 @@ const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteTopics', '$coderDocsResponsiveSidebar'],
+  inject: ['$global', '$siteMeta', '$siteTopics', '$coderDocsResponsiveSidebar'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   unmounted() {
     unregisterPopstate(this.handleBackFoward)
@@ -62,7 +62,10 @@ export default {
   },
   computed: {
     documentContentRendered() {
-      return markdownRender(this.$localedText(this.document.content), true)
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
     },
   },
   methods: {

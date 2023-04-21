@@ -129,10 +129,13 @@ export default {
     markdownRendered() {
       return markdownRender(this.markdownContent, {sanitize: true, tags: {
           build: new Date(),
-          map: {
-            key: 'value'
-          },
-          arr: [1, "2", true]
+          demo: {
+            tag1: {
+              key1: 'value 1',
+              key2: 'value 2'
+            },
+            tag2: [1, "2", true]
+          }
         }
       })
     },
