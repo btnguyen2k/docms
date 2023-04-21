@@ -3,6 +3,7 @@
 # docker build --rm -t docms:docs -f Dockerfile.docs .
 
 FROM golang:1.19-alpine AS builder_docs
+RUN apk add git build-base jq sed
 RUN mkdir /build
 COPY . /build
 RUN cd /build \
