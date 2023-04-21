@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
@@ -104,17 +103,9 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 
 	// tags
 	{
-		now := time.Now()
-		strDate := now.Format("20060102")
-		strTime := now.Format("150405")
-		strDatetime := now.Format("20060102T150405")
-		newMetadata.Tags = make(map[string]string)
+		newMetadata.Tags = make(map[string]interface{})
 		for k, v := range siteMeta.Tags {
-			newMetadata.Tags[k] = strings.ReplaceAll(
-				strings.ReplaceAll(
-					strings.ReplaceAll(v, "${build_date}", strDate), "${build_time}", strTime,
-				), "${build_datetime}", strDatetime,
-			)
+			newMetadata.Tags[k] = deepPopulatePlaceholders(v)
 		}
 	}
 
@@ -338,6 +329,9 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 
 	// icon
 	newMetadata.Icon = docMeta.Icon
+
+	// tags
+	newMetadata.Tags = docMeta.GetTagsMap()
 
 	// "content file" must be a string, or a map[string]string
 	{
