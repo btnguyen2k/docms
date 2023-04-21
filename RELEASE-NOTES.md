@@ -1,5 +1,15 @@
 # DOCMS Release Notes
 
+## 2023-04-xx
+
+Runtime `v0.3.0`:
+- Support tags at site metadata level
+- Support tags at document metadata level
+- Render tag value with syntax <code>[[do-tag</code>
+
+CLI `v0.3.0`:
+- Pre-process tags, to be in-sync with the runtime.
+
 ## 2023-04-18
 
 Runtime `v0.2.0`:

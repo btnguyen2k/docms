@@ -42,7 +42,7 @@ import legoSidebar from './_sidebar.vue'
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteTopics'],
+  inject: ['$global', '$siteMeta', '$siteTopics'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
@@ -60,7 +60,10 @@ export default {
   },
   computed: {
     documentContentRendered() {
-      return markdownRender(this.$localedText(this.document.content), true)
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
     },
   },
   methods: {
