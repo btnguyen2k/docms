@@ -115,7 +115,7 @@ func actionNewSite(c *cli.Context) error {
 				"twitter":  "https://follow/me/on/twitter/(optional)",
 				"discord":  "https://join/my/discord/(optional)",
 			},
-			Tags: map[string]string{
+			Tags: map[string]interface{}{
 				"build": "${build_datetime}",
 			},
 			Languages:   map[string]string{},
