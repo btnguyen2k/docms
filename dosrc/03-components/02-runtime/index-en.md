@@ -12,7 +12,7 @@ docker run --name docms \
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 The Docker image offer the following tags:
 
 `:stable` or `:version` (i.e. `:1.2.3`): stable releases<br/>

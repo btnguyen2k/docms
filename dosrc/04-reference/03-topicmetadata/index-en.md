@@ -6,12 +6,12 @@ icon: fas fa-book
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 `DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"></i>
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 

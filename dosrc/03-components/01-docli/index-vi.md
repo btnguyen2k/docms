@@ -14,9 +14,12 @@ Cài đặt chỉ định một phiên bản cụ thể (*) qua câu lệnh:
 go install github.com/btnguyen2k/docms/docli@cli-v0.1.1
 ```
 
-> `DOCLI` được cài đặt vào thư mục `$GOPATH/bin`. Lưu ý đưa thư mục này vào đường dẫn hệ thống.
->
-> (*) Danh sách các phiên bản có thể tìm thấy [ở đây](https://github.com/btnguyen2k/docms/tags).
+```bs-alert warning
+
+`DOCLI` được cài đặt vào thư mục `$GOPATH/bin`. Lưu ý đưa thư mục này vào đường dẫn hệ thống.
+
+(*) Danh sách các phiên bản có thể tìm thấy [ở đây](https://github.com/btnguyen2k/docms/tags).
+```
 
 ## Cách sử dụng
 
@@ -101,7 +104,10 @@ Lệnh `new` có các tham số chung sau, áp dụng cho toàn bộ các lệnh
 |`--dir value`|không|`doscr`|thư mục lưu nội các tập tin metadata|
 |`--override`|không||ghi đè nội dung mới nếu tập tin metadata đã tồn tại|
 
-> Các tham số chung phải được đặt _trước_ lệnh con (tức là ngay sau `new`).
+```bs-alert warning
+
+Các tham số chung phải được đặt _trước_ lệnh con (tức là ngay sau `new`).
+```
 
 **Lệnh `new site`**
 
@@ -119,7 +125,10 @@ Các tham số của lệnh:
 |`--icon value`|false|`fas fa-globe`|icon của trang web (hỗ trợ icon [FontAwesome](https://fontawesome.com/search?m=free))|
 |`--languages value`|false|`en:english,default:en`|các ngôn ngữ mà trang web hỗ trợ, định dạng `<mã1:tên1>[,<mã2:tên2>...],<default:mã>`|
 
-> Mã ngôn ngữ nên tuân theo chuẩn [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+```bs-alert warning
+
+Mã ngôn ngữ nên tuân theo chuẩn [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+```
 
 **Lệnh `new topic`**
 
@@ -136,9 +145,12 @@ Các tham số của lệnh:
 |`--id value`|true||định danh của chủ đề|
 |`--icon value`|false|`fas fa-book`|icon của chủ đề (hỗ trợ icon [FontAwesome](https://fontawesome.com/search?m=free))|
 
-> Định danh của chủ đề phải là duy nhất (không trùng lắp), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
->
-> Tên thư mục lưu nôi dung chủ đề sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của chủ đề trên trang web.
+```bs-alert warning
+
+Định danh của chủ đề phải là duy nhất (không trùng lắp), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
+
+Tên thư mục lưu nôi dung chủ đề sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của chủ đề trên trang web.
+```
 
 **Lệnh `new document`**
 
@@ -157,6 +169,9 @@ Các tham số của lệnh:
 |`--icon value`|false|`fas fa-file`|icon của bài viết (hỗ trợ icon [FontAwesome](https://fontawesome.com/search?m=free))|
 |`--use-timestamp`|false||sử dụng thời gian hiện tại (định dạng `yyyyMMddHHmm`) gắn vào trước tên thư mục bài viết, xem thêm bên dưới (*)|
 
-> Định danh của bài viết phải là duy nhất trong chủ đề (trong cùng 1 chủ đề không có bài viết trùng lắp định danh), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
->
-> (*) Tên thư mục lưu nôi dung bài viết sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của bài viết trên trang web. Nếu tham số `--use-timestamp` được sử dụng, thời gian hiện tại (định dạng `yyyyMMddHHmm`) sẽ được sử dụng làm chuỗi số tiền tố.
+```bs-alert warning
+
+Định danh của bài viết phải là duy nhất trong chủ đề (trong cùng 1 chủ đề không có bài viết trùng lắp định danh), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
+
+(*) Tên thư mục lưu nôi dung bài viết sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của bài viết trên trang web. Nếu tham số `--use-timestamp` được sử dụng, thời gian hiện tại (định dạng `yyyyMMddHHmm`) sẽ được sử dụng làm chuỗi số tiền tố.
+```

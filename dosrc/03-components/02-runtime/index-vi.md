@@ -12,7 +12,7 @@ docker run --name docms \
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 Bản Docker image được đánh thẻ như sau:
 
 `:stable` hoặc `:version` (ví dụ `:1.2.3`): bản phát hành ổn định<br/>

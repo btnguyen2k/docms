@@ -1,5 +1,5 @@
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"> </i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"> </i>
 Các cú pháp Markdown mô tả trong tài liệu này áp dụng cho các giao diện đồ hoạ đi kèm với phiên bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 

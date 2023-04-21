@@ -6,12 +6,12 @@ icon: fas fa-file
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 `DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"></i>
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
@@ -84,6 +84,29 @@ file:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
+**tags** - `Array("tag1","tag2",...)` or `map[language-code:Array("tag1","tag2",...)]`, arbitrary info attached to the document, example:
+```yaml
+tags: [cloud, virtual machine]
+```
+
+or
+```yaml
+tags:
+  en: [cloud, virtual machine]
+  vi: [đám mây, máy ảo]
+```
+
+When the `tags` field is an array, it is equivalent to `map[default-language-code:Array(...)]`. That means, the following setting
+```yaml
+tags: [cloud, virtual machine]
+```
+is equivalent to:
+```yaml
+tags:
+  en: [cloud, virtual machine]
+```
+as `en` is the default language specified in the [site metadata file](../sitemetadata/).
+
 Example of a full document metadata file:
 ```yaml
 title:
@@ -96,6 +119,9 @@ icon:
 file:
   en: index-en.md
   vi: index-vi.md
+tags:
+  en: [cms, content, devops]
+  vi: [cms, nội dung, devops]
 ```
 
 See also:

@@ -11,12 +11,12 @@ icon: fas fa-globe
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 `DO CMS runtime` supports [FontAwesome icons](https://fontawesome.com/search?m=free) and [Bootstrap icons](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"></i>
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
@@ -68,17 +68,28 @@ contacts:
   discord: ""
 ```
 
-**tags** - `map[string:string]`, extra key-value data attached to site metadata, example:
+**tags** - `map[string:object]`, extra key-object data attached to site metadata, example:
 ```yaml
 tags:
   build: ${build_datetime}
-  mytag: My value
+  tags1:
+    key1: value 1
+    key2: value 2
+  tags2: [1, 2, 3]
 ```
 
-> Special placeholders will be replaced with value by `DO CLI` when pre-processing website content:
-> - `${build_datetime}` - pre-processing timestamp, format `YYYYMMDDHHmmss`
-> - `${build_date}` - pre-processing timestamp, format `YYYYMMDD`
-> - `${build_time}` - pre-processing timestamp, format `HHmmss`
+```bs-alert primary
+
+Special placeholders will be replaced with value by `DO CLI` when pre-processing website content:
+- `${build_datetime}` - pre-processing timestamp, format `YYYYMMDDHHmmss`
+- `${build_date}` - pre-processing timestamp, format `YYYYMMDD`
+- `${build_time}` - pre-processing timestamp, format `HHmmss`
+```
+
+```bs-alert info flex
+<i class="fas fa-circle-info me-3 fa-xl"></i>
+Tags can be embedded to the document using syntax `[[do-tag`. Refer to [Supported Markdown syntax](../markdown/) for details.
+```
 
 Example of a full site metadata file:
 ```yaml
