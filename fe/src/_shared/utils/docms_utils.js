@@ -169,8 +169,12 @@ class MyRenderer extends marked.Renderer {
 
     _renderDoTags(text, tags) {
         text = text.replace(/\[\[do-tag\s(.+?)\]\]/g, (_match, _exp) => {
-            const exp = _exp.trim()
-            return tags[exp] !== undefined ? tags[exp] : '<code title="Error: Tag not foun!">' + _exp + '</code>'
+            const tokens = _exp.trim().split('.')
+            let value = tags
+            for (let i = 0; i < tokens.length; i++) {
+                value = typeof value == 'object' ? value[tokens[i]] : undefined
+            }
+            return value !== undefined ? value : '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
         })
         return text
     }
