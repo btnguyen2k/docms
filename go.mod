@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/blevesearch/bleve/v2 v2.3.7
-	github.com/btnguyen2k/docms/be-api v0.0.0-20230421060917-55f4ca24985b
+	github.com/btnguyen2k/docms/be-api v0.0.0-20230421090411-f103b3d7cccf
 	github.com/urfave/cli/v2 v2.25.1
 	gopkg.in/yaml.v3 v3.0.1
 )
