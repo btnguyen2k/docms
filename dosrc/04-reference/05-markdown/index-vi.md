@@ -35,6 +35,41 @@ Bộ biểu tượng miễn phí của [FontAwesome](https://fontawesome.com/sea
     ]]
 ```
 
+## Thẻ (tag) trong tập tin metadata trang web
+
+Ví dụ [tập tin metadata trang web](../sitemetadata/) có phần định nghĩa các thẻ như sau:
+```yaml
+tags:
+  build: ${build_datetime}
+  demo:
+    tag1:
+      key1: value 1
+      key2: value 2
+    tag2: [1, "2", true]
+```
+
+Các thẻ định nghĩa trong tập tin có thể được nhúng vào trong tài liệu thông qua cú pháp `[[do-tag tag-key]]`:
+```bs-tabs
+    [[bs-tab Markdown
+        Tài liệu được cập nhật lúc [[do-tag build]].
+
+        Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
+        Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
+
+        Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+        Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
+    ]]
+    [[bs-tab Hiển thị
+    Tài liệu được cập nhật lúc [[do-tag build]].
+
+    Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
+    Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
+
+    Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+    Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
+    ]]
+```
+
 ## GitHub Gist
 
 [GitHub Gist](https://gist.github.com) có thể được nhúng vào văn bản với cú pháp sau:

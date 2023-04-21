@@ -6,7 +6,7 @@ FROM golang:1.19-alpine AS builder_docs
 RUN mkdir /build
 COPY . /build
 RUN cd /build \
-    && go install github.com/btnguyen2k/docms/docli@cli-v0.1.1 \
+    && go install github.com/btnguyen2k/docms/docli@cli-v0.3.0 \
     && mkdir -p dodata && docli build --purge --src dosrc --out dodata
 
 FROM btnguyen2k/docmsruntime:latest as docmsruntime

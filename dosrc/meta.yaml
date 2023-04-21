@@ -26,3 +26,8 @@ tags:
   # - build_time    : HHmmss
   # - build_datetime: YYYYMMDDHHmmss
   build: ${build_datetime}
+  demo:
+    tag1:
+      key1: value 1
+      key2: value 2
+    tag2: [1, "2", true]

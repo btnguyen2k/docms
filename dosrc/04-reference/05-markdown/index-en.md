@@ -35,9 +35,44 @@ Free version of [FontAwesome icons](https://fontawesome.com/search?m=free) (curr
     ]]
 ```
 
+## Tags from site metadata file
+
+Assuming the [site metadata file](../sitemetadata/) contains the following tags section:
+```yaml
+tags:
+  build: ${build_datetime}
+  demo:
+    tags1:
+      key1: value 1
+      key2: value 2
+    tags2: [1, "2", true]
+```
+
+Tags defined in the file can be embedded to the document using the syntax `[[do-tag tag-key]]`:
+```bs-tabs
+    [[bs-tab Markdown
+        This document was updated on [[do-tag build]].
+
+        Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
+        And also from an array (0-based): **[[do-tag demo.tag2.2]]**
+
+        If tag does not exist: [[do-tag demo.tag3]]<br/>
+        Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
+    ]]
+    [[bs-tab Rendered result
+    This document was updated on [[do-tag build]].
+
+    Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
+    And also from an array (0-based): **[[do-tag demo.tag2.2]]**
+
+    If tag does not exist: [[do-tag demo.tag3]]<br/>
+    Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
+    ]]
+```
+
 ## GitHub Gist
 
-[GitHub Gist](https://gist.github.com) can be embedded using the following syntax:
+[GitHub Gist](https://gist.github.com) can be embedded to the document using the following syntax:
 
 ```
     ```gh-gist github-username/github-gist-id
