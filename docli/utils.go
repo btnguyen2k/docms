@@ -4,6 +4,8 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"strings"
+	"time"
 
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"gopkg.in/yaml.v3"
@@ -98,4 +100,35 @@ func copyDir(srcPath, destPath string, ignoreList ...string) error {
 func extractId(dir os.DirEntry) string {
 	matches := docms.RexpContentDir.FindStringSubmatch(dir.Name())
 	return matches[2]
+}
+
+var (
+	now         = time.Now()
+	strDate     = now.Format("20060102")
+	strTime     = now.Format("150405")
+	strDatetime = now.Format("20060102T150405")
+)
+
+func deepPopulatePlaceholders(val interface{}) interface{} {
+	switch val.(type) {
+	case string:
+		return strings.ReplaceAll(
+			strings.ReplaceAll(
+				strings.ReplaceAll(val.(string), "${build_date}", strDate), "${build_time}", strTime,
+			), "${build_datetime}", strDatetime,
+		)
+	case map[string]interface{}:
+		result := make(map[string]interface{})
+		for k, v := range val.(map[string]interface{}) {
+			result[k] = deepPopulatePlaceholders(v)
+		}
+		return result
+	case []interface{}:
+		result := make([]interface{}, len(val.([]interface{})))
+		for i, v := range val.([]interface{}) {
+			result[i] = deepPopulatePlaceholders(v)
+		}
+		return result
+	}
+	return val
 }
