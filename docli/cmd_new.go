@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -115,7 +116,7 @@ func actionNewSite(c *cli.Context) error {
 				"twitter":  "https://follow/me/on/twitter/(optional)",
 				"discord":  "https://join/my/discord/(optional)",
 			},
-			Tags: map[string]string{
+			Tags: map[string]interface{}{
 				"build": "${build_datetime}",
 			},
 			Languages:   map[string]string{},
@@ -348,10 +349,11 @@ func actionNewDocument(c *cli.Context) error {
 		}
 	}
 
-	// document's title, summary and content files
+	// document's title, summary, tags and content files
 	docTitleMap := docMeta.GetTitleMap()
 	docSummaryMap := docMeta.GetSummaryMap()
 	docContentFileMap := docMeta.GetContentFileMap()
+	docTags := docMeta.GetTagsMap()
 	for lang, _ := range siteMeta.Languages {
 		if lang == "default" {
 			continue
@@ -361,6 +363,10 @@ func actionNewDocument(c *cli.Context) error {
 		}
 		if summary, ok := docSummaryMap[lang]; summary == "" || !ok {
 			docSummaryMap[lang] = fmt.Sprintf("Summary about document content (in %s)", lang)
+		}
+		if tags, ok := docTags[lang]; len(tags) == 0 || !ok {
+			re := regexp.MustCompile(`[\s\W]+`)
+			docTags[lang] = strings.Split(strings.TrimSpace(re.ReplaceAllString(strings.ToLower(docTitleMap[lang]), " ")), " ")
 		}
 		if file, ok := docContentFileMap[lang]; file == "" || !ok {
 			docContentFileMap[lang] = fmt.Sprintf("index-%s.md", lang)
@@ -374,6 +380,7 @@ func actionNewDocument(c *cli.Context) error {
 	docMeta.Title = docTitleMap
 	docMeta.Summary = docSummaryMap
 	docMeta.ContentFile = docContentFileMap
+	docMeta.Tags = docTags
 
 	if err := writeFileYaml(metaFile, docMeta); err != nil {
 		return err
