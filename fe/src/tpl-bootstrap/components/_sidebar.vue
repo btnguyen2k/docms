@@ -9,6 +9,17 @@
       </form>
 
       <div class="card mb-4">
+        <div class="card-header">{{ $t('tag_cloud') }}</div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">
+              <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card mb-4">
         <div class="card-header">{{ $t('topics') }}</div>
         <div class="card-body">
           <div class="row">
@@ -32,10 +43,6 @@
           </div>
         </div>
       </div>
-      <!--<div class="card mb-4">-->
-      <!--  <div class="card-header">Side Widget</div>-->
-      <!--  <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>-->
-      <!--</div>-->
     </div>
   </div>
 </template>
@@ -49,7 +56,24 @@
 <script>
 export default {
   name: 'lego-page-header',
-  inject: ['$global', '$siteTopics'],
+  inject: ['$global', '$siteTopics', '$tagCloud'],
   props: ['topic-id', 'document-list', 'document-id', 'no-search'],
+  methods: {
+    calcTagCloudCSS(tag) {
+      const cssList = [
+        'badge bg-primary text-decoration-none link-light',
+        'badge bg-secondary text-decoration-none link-light',
+        'badge bg-success text-decoration-none link-light',
+        'badge bg-danger text-decoration-none link-light',
+        'badge bg-warning text-dark text-decoration-none link-dark',
+        'badge bg-info text-decoration-none link-light',
+      ]
+      return this.$pickupFromHash(tag, cssList)
+    },
+    calcTagCloudSize(tag) {
+      const size = this.$calcTagSize(tag, 0.75, 1.50, 5)
+      return 'font-size: ' + size + 'rem !important;'
+    }
+  }
 }
 </script>

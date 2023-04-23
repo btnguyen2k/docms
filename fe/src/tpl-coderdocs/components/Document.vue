@@ -15,6 +15,13 @@
             <header class="docs-header">
               <h1 class="docs-heading mb-2"><i v-if="document.icon!=''" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
             </header>
+            <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+              <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                           :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                           :class="$calcTagCloudCSS(tag)+' me-1'" style="font-size: 0.65rem !important;">
+                {{ tag }}
+              </router-link>
+            </p>
             <section class="docs-section img-fit img-center" v-html="documentContentRendered"></section>
           </article>
 
@@ -39,7 +46,7 @@ const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteMeta', '$siteTopics', '$coderDocsResponsiveSidebar'],
+  inject: ['$global', '$siteMeta', '$siteTopics', '$coderDocsResponsiveSidebar', '$calcTagCloudCSS'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   unmounted() {
     unregisterPopstate(this.handleBackFoward)

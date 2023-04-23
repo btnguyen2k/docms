@@ -6,6 +6,7 @@
         <button type="submit" class="btn search-btn" :value="$t('search')"><i class="fas fa-search"></i></button>
       </form>
     </div>
+
     <nav id="docs-nav" class="docs-nav navbar">
       <ul class="section-items list-unstyled nav flex-column pb-3">
         <template v-for="topic in $siteTopics" v-bind:key="topic.id">
@@ -24,16 +25,30 @@
         </template>
       </ul>
     </nav>
+
+    <div class="m-2">
+      <ul class="list-unstyled">
+        <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">
+          <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="$calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'lego-page-footer',
-  inject: ['$global', '$siteTopics'],
+  inject: ['$global', '$siteTopics', '$tagCloud', '$calcTagCloudCSS'],
   props: ['topic-id', 'document-list', 'document-id'],
   mounted() {
     this.$global.sidebar = this.$refs['docs-sidebar']
+  },
+  methods: {
+    calcTagCloudSize(tag) {
+      const size = this.$calcTagSize(tag, 0.75, 1.50, 5)
+      return 'font-size: ' + size + 'rem !important;'
+    }
   }
 }
 </script>

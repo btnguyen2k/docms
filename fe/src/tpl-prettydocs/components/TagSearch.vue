@@ -1,31 +1,25 @@
 <template>
   <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
   <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">{{ $t('error_topic_not_found', {topic: $route.params.tid}) }}</div>
-  <div v-else :class="_styleClassForTopic(topic)">
+  <div v-else class="body-orange">
     <div class="page-wrapper">
-      <lego-page-header :topic="topic"/>
+      <lego-page-header search />
 
       <div class="doc-wrapper">
         <div class="container">
           <div id="doc-header" class="doc-header text-center">
-            <h1 class="doc-title"><i v-if="topic.icon" :class="topic.icon"></i> {{ $localedText(topic.title) }}</h1>
-            <!--<div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
+            <h1 class="doc-title">{{$t('search_result')}}</h1>
           </div>
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
                 <section class="doc-section">
-                  <div class="section-block">
-                    <p>{{ $localedText(topic.description) }}</p>
-                  </div>
-
-                  <div v-if="documentList.length==0" class="alert alert-warning" role="alert">{{ $t('empty_topic') }}</div>
-                  <div v-else v-for="document in documentList" v-bind:key="document.id" class="section-block">
-                    <router-link :to="{name: 'Document', params: {tid: topic.id, did: document.id}}" class="nav-link">
+                  <div v-if="searchHits.length==0" class="alert alert-secondary" role="alert">{{ $t('search_no_result') }}</div>
+                  <div v-else v-for="document in searchHits" v-bind:key="document.id" class="section-block">
+                    <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}, query: {q: searchTerm}}" class="nav-link">
                       <h3 class="block-title"><i v-if="document.icon!=''" :class="document.icon" class="pe-1"/>{{ $localedText(document.title) }}</h3>
                     </router-link>
-                    <router-link :to="{name: 'Document', params: {tid: topic.id, did: document.id}}" class="text-decoration-none text-muted">
+                    <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}}" class="text-decoration-none text-muted">
                       {{ $localedText(document.summary) }}
                     </router-link>
                     <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
@@ -36,56 +30,69 @@
                       </router-link>
                     </p>
                   </div>
+                  <div class="section-block">
+                    <small>{{searchTotalResults}} results in {{searchDuration}} seconds</small>
+                  </div>
                 </section>
               </div>
             </div>
 
-            <lego-sidebar :topic-id="topic.id" :document-list="documentList" />
+            <lego-sidebar />
           </div>
         </div>
       </div>
     </div>
 
-    <lego-page-footer />
+    <legoPageFooter />
   </div>
 </template>
 
 <script>
-import {useRoute} from 'vue-router'
+import {swichLanguage} from "@/_shared/i18n"
 import {watch} from 'vue'
+import {useRoute} from "vue-router"
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
 
 export default {
-  name: 'Topic',
-  inject: ['$siteTopics'],
+  name: 'Search',
+  inject: ['$global', '$siteMeta'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
     const route = useRoute()
     watch(
-        () => route.params.tid,
-        async newTid => {
-          if (newTid) {
-            vue._fetchTopics(vue, newTid)
-          }
+        () => route.query.q,
+        async () => {
+          vue.$global.searchQuery = this.searchTerm
+          vue._search(vue)
         }
     )
+    watch(
+        () => route.query.l,
+        async () => vue._search(vue),
+    )
+    swichLanguage(this.searchLocale)
+    this.$global.searchQuery = this.searchTerm
     this._fetchSiteMeta(this)
   },
-  methods: {
-    _styleClassForTopic(topic) {
-      const styleList = ["body-blue", "body-green", "body-red", "body-pink", "body-purple", "body-orange"]
-      return this.$styleByHash(topic.id, styleList)
+  computed: {
+    searchTerm() {
+      return this.$route.query.q ? this.$route.query.q.trim() : ""
     },
+    searchLocale() {
+      return this.$route.query.l ? this.$route.query.l.trim() : ""
+    },
+  },
+  methods: {
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue._fetchTopics(vue, vue.$route.params.tid)
+              vue._fetchTopics(vue)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
@@ -95,18 +102,13 @@ export default {
           },
       )
     },
-    _fetchTopics(vue, topicId) {
+    _fetchTopics(vue) {
       vue.$fetchSiteTopics(
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue.$siteTopics.forEach(t => {
-                if (t.id == topicId) {
-                  vue.topic = t
-                  vue._fetchDocuments(vue)
-                }
-              })
+              vue._search(this)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
@@ -116,29 +118,33 @@ export default {
           },
       )
     },
-    _fetchDocuments(vue) {
-      vue.$fetchDocumentsForTopic(vue.topic.id,
+    _search(vue) {
+      vue.$tagSearch(vue.searchTerm,
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue.documentList = apiResp.data
+              vue.searchHits = apiResp.data.docs
+              vue.searchDuration = apiResp.data.duration
+              vue.searchTotalResults = apiResp.data.total
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
           },
           err => {
             vue.errorMsg = err
-          },
+          }
       )
     },
   },
   data() {
     return {
-      topic: {},
-      documentList: [],
+      searchHits: [],
       status: -1,
       errorMsg: '',
+      searchQuery: '',
+      searchDuration: 0,
+      searchTotalResults: 0,
     }
   },
 }

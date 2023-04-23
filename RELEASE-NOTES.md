@@ -5,7 +5,7 @@
 Runtime `v0.3.0`:
 - Support tags at site metadata level
 - Support tags at document metadata level
-- Render tag value with syntax <code>[[do-tag</code>
+- Render site's tags with syntax <code>[[do-tag</code>
 
 CLI `v0.3.0`:
 - Pre-process tags, to be in-sync with the runtime.

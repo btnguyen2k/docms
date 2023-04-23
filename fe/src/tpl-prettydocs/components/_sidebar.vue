@@ -20,13 +20,27 @@
         </template>
       </nav>
     </div>
+
+<!--    <div class="container">-->
+<!--      <ul class="list-unstyled">-->
+<!--        <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">-->
+<!--          <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="$calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
   </div>
 </template>
 
 <script>
 export default {
   name: 'lego-sidebar',
-  inject: ['$siteTopics'],
+  inject: ['$siteTopics', '$tagCloud', '$calcTagCloudCSS'],
   props: ['topic-id', 'document-list', 'document-id'],
+  methods: {
+    calcTagCloudSize(tag) {
+      const size = this.$calcTagSize(tag, 0.75, 1.50, 5)
+      return 'font-size: ' + size + 'rem !important;'
+    }
+  }
 }
 </script>

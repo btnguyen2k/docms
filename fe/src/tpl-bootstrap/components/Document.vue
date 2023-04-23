@@ -20,8 +20,13 @@
             <header class="mb-4">
               <h1 class="fw-bolder mb-1"><i v-if="document.icon" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
               <!--<div class="text-muted fst-italic mb-2">Posted on January 1, 2023 by Start Bootstrap</div>-->
-              <!--<a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>-->
-              <!--<a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>-->
+              <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+                <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                             :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                             class="badge bg-secondary text-decoration-none link-light me-1" style="font-size: 0.65rem !important;">
+                  {{ tag }}
+                </router-link>
+              </p>
             </header>
             <section class="mb-5">
               <div class="img-fit img-center" v-html="documentContentRendered"></div>
