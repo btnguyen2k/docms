@@ -34,6 +34,7 @@ export default {
     return {
       $coderDocsResponsiveSidebar: this.coderDocsResponsiveSidebar,
       $coderDocsSidebarToggler: this.coderDocsSidebarToggler,
+      $calcTagCloudCSS: this.calcTagCloudCSS,
     }
   },
   unmounted() {
@@ -44,6 +45,17 @@ export default {
     registerResize(this.$coderDocsResponsiveSidebar) // CoderDocs: onresize
   },
   methods: {
+    calcTagCloudCSS(tag) {
+      const cssList = [
+        'badge bg-primary text-decoration-none link-light',
+        'badge bg-secondary text-decoration-none link-light',
+        'badge bg-success text-decoration-none link-light',
+        'badge bg-danger text-decoration-none link-light',
+        'badge bg-warning text-dark text-decoration-none link-dark',
+        'badge bg-info text-decoration-none link-light',
+      ]
+      return this.$pickupFromHash(tag, cssList)
+    },
     coderDocsResponsiveSidebar() {
       const sidebar = this.$global.sidebar
       if (sidebar) {

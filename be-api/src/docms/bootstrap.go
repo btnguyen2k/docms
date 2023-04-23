@@ -264,7 +264,9 @@ func initCMSData() {
 	})
 
 	// load fti if exists
-	gFti, err = bleve.Open(gDataDir + "/fti.bleve")
+	gFti, err = bleve.OpenUsing(gDataDir+"/fti.bleve", map[string]interface{}{
+		"read_only": true,
+	})
 	if err != nil {
 		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
 		gFti = nil
@@ -281,4 +283,6 @@ func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
 	router.SetHandler("getDocument", apiGetDocument)
 	router.SetHandler("search", apiSearch)
+	router.SetHandler("tagSearch", apiTagSearch)
+	router.SetHandler("getTagCloud", apiGetTagCloud)
 }

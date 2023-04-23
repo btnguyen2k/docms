@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/consu/reddo"
@@ -78,6 +79,7 @@ func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params
 			"icon":    docMeta.Icon,
 			"title":   docMeta.GetTitleMap(),
 			"summary": docMeta.GetSummaryMap(),
+			"tags":    docMeta.GetTagsMap(),
 		}
 	}
 	return itineris.NewApiResult(itineris.StatusOk).SetData(documents)
@@ -100,6 +102,7 @@ func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 		"icon":    docMeta.Icon,
 		"title":   docMeta.GetTitleMap(),
 		"summary": docMeta.GetSummaryMap(),
+		"tags":    docMeta.GetTagsMap(),
 		"content": gDocumentContent[topicId.(string)+":"+docId.(string)],
 	}
 	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
@@ -116,7 +119,7 @@ func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.A
 		return apiResultFtiNotAvailable
 	}
 	query, err := params.GetParamAsType("query", reddo.TypeString)
-	if query == nil || err != nil || strings.TrimSpace(query.(string)) == "" {
+	if query == nil || err != nil || strings.TrimSpace(query.(string)) == "" || len(strings.TrimSpace(query.(string))) > 100 {
 		// return apiResultInvalidSearchQuery
 		return apiResultNoSearchResult
 	}
@@ -142,14 +145,16 @@ func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.A
 	}
 	docs := make([]map[string]interface{}, 0)
 	for _, hit := range searchResults.Hits {
-		docId := hit.ID[:strings.LastIndex(hit.ID, ":")]
-		if gDocumentMeta[docId] != nil {
+		// hit.ID is concatation of "topic-Id:doc-id:lang-code"
+		topicDocId := hit.ID[:strings.LastIndex(hit.ID, ":")]
+		if gDocumentMeta[topicDocId] != nil {
 			topicId := hit.ID[:strings.Index(hit.ID, ":")]
 			docs = append(docs, map[string]interface{}{
-				"id":      gDocumentMeta[docId].id,
-				"icon":    gDocumentMeta[docId].Icon,
-				"title":   gDocumentMeta[docId].GetTitleMap(),
-				"summary": gDocumentMeta[docId].GetSummaryMap(),
+				"id":      gDocumentMeta[topicDocId].id,
+				"icon":    gDocumentMeta[topicDocId].Icon,
+				"title":   gDocumentMeta[topicDocId].GetTitleMap(),
+				"summary": gDocumentMeta[topicDocId].GetSummaryMap(),
+				"tags":    gDocumentMeta[topicDocId].GetTagsMap(),
 				"topic": map[string]interface{}{
 					"id":          topicId,
 					"icon":        gTopicMeta[topicId].Icon,
@@ -164,4 +169,56 @@ func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.A
 	}
 	result["docs"] = docs
 	return itineris.NewApiResult(itineris.StatusOk).SetData(result)
+}
+
+// API handler "tagSearch"
+func apiTagSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
+	query, err := params.GetParamAsType("query", reddo.TypeString)
+	if query == nil || err != nil || strings.TrimSpace(query.(string)) == "" || len(strings.TrimSpace(query.(string))) > 100 {
+		// return apiResultInvalidSearchQuery
+		return apiResultNoSearchResult
+	}
+
+	start := time.Now()
+	clientLocale := ctx.GetClientLocale()
+	if !reLocale.MatchString(clientLocale) {
+		clientLocale = gSiteMeta.DefaultLanguage
+	}
+	docIdList := gDocumentTags[clientLocale][strings.TrimSpace(query.(string))]
+	if docIdList == nil || len(docIdList) == 0 {
+		return apiResultNoSearchResult
+	}
+	result := map[string]interface{}{
+		"total":    len(docIdList),
+		"duration": time.Now().Sub(start).Seconds(),
+	}
+	docs := make([]map[string]interface{}, 0)
+	for _, topicDocId := range docIdList {
+		if gDocumentMeta[topicDocId] != nil {
+			topicId := topicDocId[:strings.Index(topicDocId, ":")]
+			docs = append(docs, map[string]interface{}{
+				"id":      gDocumentMeta[topicDocId].id,
+				"icon":    gDocumentMeta[topicDocId].Icon,
+				"title":   gDocumentMeta[topicDocId].GetTitleMap(),
+				"summary": gDocumentMeta[topicDocId].GetSummaryMap(),
+				"tags":    gDocumentMeta[topicDocId].GetTagsMap(),
+				"topic": map[string]interface{}{
+					"id":          topicId,
+					"icon":        gTopicMeta[topicId].Icon,
+					"title":       gTopicMeta[topicId].GetTitleMap(),
+					"description": gTopicMeta[topicId].GetDescriptionMap(),
+				},
+			})
+			if len(docs) >= 10 {
+				break
+			}
+		}
+	}
+	result["docs"] = docs
+	return itineris.NewApiResult(itineris.StatusOk).SetData(result)
+}
+
+// API handler "getTagCloud"
+func apiGetTagCloud(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	return itineris.NewApiResult(itineris.StatusOk).SetData(gDocumentTags)
 }

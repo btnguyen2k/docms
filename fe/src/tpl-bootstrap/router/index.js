@@ -30,6 +30,10 @@ function configRoutes() {
             component: () => import('@/tpl-bootstrap/components/Search.vue'),
         },
         {
+            path: '/_tagsearch', name: 'TagSearch', meta: {label: i18n.global.t('search')},
+            component: () => import('@/tpl-bootstrap/components/TagSearch.vue'),
+        },
+        {
             path: '/:tid/:did/:img', name: 'CaptureImgLinks',
             redirect: to => {
                 if (to.params.img.endsWith('.jpg') || to.params.img.endsWith('.jpeg') || to.params.img.endsWith('.gif')

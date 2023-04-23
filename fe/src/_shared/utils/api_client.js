@@ -25,6 +25,8 @@ const apiTopics = "/api/topics"
 const apiDocuments = "/api/documents/:topic-id"
 const apiDocument = "/api/document/:topic-id/:document-id"
 const apiSearch = "/api/search"
+const apiTagSearch = "/api/tag_search"
+const apiTags = "/api/tags"
 
 function _apiOnSuccess(method, resp, apiUri, callbackSuccessful) {
     // if (method == 'GET' && Object.prototype.hasOwnProperty.call(resp, "data") && resp.data.status == 403) {
@@ -101,7 +103,7 @@ export {
     apiTopics,
     apiDocuments,
     apiDocument,
-    apiSearch,
+    apiSearch, apiTagSearch, apiTags,
 
     apiDoGet,
     apiDoPost,
