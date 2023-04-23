@@ -5,16 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/btnguyen2k/consu/reddo"
 	"gopkg.in/yaml.v3"
 )
 
 const (
-	// metaFileYaml    = "meta.yaml"
-	// metaFileJson    = "meta.json"
 	logLevelInfo    = "INFO"
 	logLevelWarning = "WARN"
 	logLevelError   = "ERROR"
@@ -23,13 +25,15 @@ const (
 var (
 	gDataDir         string
 	gSiteMeta        *SiteMeta
-	gTopicList       = make([]*TopicMeta, 0)                // list of topics, sorted by index
-	gTopicMeta       = make(map[string]*TopicMeta)          // map[topic-id]topic-metadata
-	gDocumentList    = make(map[string][]*DocumentMeta)     // list of documents, per topic, sorted by index
-	gDocumentMeta    = make(map[string]*DocumentMeta)       // map["topic-id:document-id"]document-metadata
-	gDocumentContent = make(map[string]map[string]string)   // map["topic-id:document-id"]map[language-code]document-content
-	gFti             bleve.Index                            // Full-text index
-	gDocumentTags    = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
+	gTopicList       = make([]*TopicMeta, 0)              // list of topics, sorted by index
+	gTopicMeta       = make(map[string]*TopicMeta)        // map[topic-id]topic-metadata
+	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
+	gDocumentMeta    = make(map[string]*DocumentMeta)     // map["topic-id:document-id"]document-metadata
+	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
+	gFti             bleve.Index                          // Full-text index
+
+	gTagAlias     = make(map[string]map[string]string)   // map[language-code]map[alias]tag
+	gDocumentTags = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
 )
 
 // SiteMeta capture metadata of the website.
@@ -41,6 +45,7 @@ type SiteMeta struct {
 	Icon            string                 `json:"icon" yaml:"icon"`               // website's icon
 	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`       // site's contact info
 	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
+	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
 }
 
 func (sm *SiteMeta) init() error {
@@ -70,6 +75,50 @@ func (sm *SiteMeta) GetDescriptionMap() map[string]string {
 	return result
 }
 
+func _checkNextLevelType(input map[string]interface{}) string {
+	for _, v := range input {
+		switch v.(type) {
+		case []string:
+			return "[]string"
+		case []interface{}:
+			return "[]interface{}"
+		case map[string]interface{}:
+			return "map[string]interface{}"
+		}
+	}
+	return ""
+}
+
+var (
+	_typMap = reflect.TypeOf(map[string]interface{}{})
+)
+
+// GetTagAliasMap return the tags as a map[lang-code]map[tag][]alias
+//
+// Available since v0.3.0
+func (sm *SiteMeta) GetTagAliasMap() map[string]map[string][]string {
+	outer, err := reddo.Convert(sm.TagsAlias, _typMap)
+	if err != nil {
+		// the top level must be a map
+		return make(map[string]map[string][]string)
+	}
+	nextLevelType := _checkNextLevelType(outer.(map[string]interface{}))
+	if strings.HasPrefix(nextLevelType, "[]") {
+		// then the next level must be either []string
+		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string][]string))); err == nil {
+			return map[string]map[string][]string{
+				gSiteMeta.DefaultLanguage: result.(map[string][]string),
+			}
+		}
+	} else if strings.HasPrefix(nextLevelType, "map[") {
+		// or a map[string][]string
+		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string]map[string][]string))); err == nil {
+			return result.(map[string]map[string][]string)
+		}
+	}
+	return make(map[string]map[string][]string)
+}
+
 func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
 	yamlFiles := []string{dir + "/meta.yaml", dir + "/meta.yml"}
 	for _, yamlFilePath := range yamlFiles {
@@ -97,20 +146,6 @@ func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
 
 	return nil, fmt.Errorf("no meta file found")
 }
-
-// func LoadSiteMeta(yamlFilePath, jsonFilePath string) (*SiteMeta, error) {
-// 	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadSiteMetaFromYaml(yamlFilePath)
-// 	}
-// 	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadSiteMetaFromJson(jsonFilePath)
-// 	}
-// 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
-// }
 
 func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 	buf, err := os.ReadFile(filePath)
@@ -223,20 +258,6 @@ func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
 	return nil, fmt.Errorf("no meta file found")
 }
 
-// func LoadTopicMeta(yamlFilePath, jsonFilePath string) (*TopicMeta, error) {
-// 	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadTopicMetaFromYaml(yamlFilePath)
-// 	}
-// 	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadTopicMetaFromJson(jsonFilePath)
-// 	}
-// 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
-// }
-
 func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
@@ -340,24 +361,18 @@ func (dm *DocumentMeta) GetTagsMap() map[string][]string {
 	case []string:
 		result[gSiteMeta.DefaultLanguage] = dm.Tags.([]string)
 	case []interface{}:
-		tags := make([]string, 0)
-		for _, t := range dm.Tags.([]interface{}) {
-			tags = append(tags, fmt.Sprintf("%s", t))
+		temp, err := reddo.Convert(dm.Tags, reflect.TypeOf([]string{}))
+		if err == nil && temp != nil {
+			result[gSiteMeta.DefaultLanguage] = temp.([]string)
 		}
-		result[gSiteMeta.DefaultLanguage] = tags
-	case map[string]interface{}:
-		for k, v := range dm.Tags.(map[string]interface{}) {
-			switch v.(type) {
-			case []string:
-				result[k] = v.([]string)
-			case []interface{}:
-				tags := make([]string, 0)
-				for _, t := range v.([]interface{}) {
-					tags = append(tags, fmt.Sprintf("%s", t))
-				}
-				result[k] = tags
-			}
+	case map[string]interface{}, map[string][]interface{}, map[string][]string:
+		temp, err := reddo.Convert(dm.Tags, reflect.TypeOf(map[string][]string{}))
+		if err == nil && temp != nil {
+			result = temp.(map[string][]string)
 		}
+	}
+	for k := range result {
+		sort.Strings(result[k])
 	}
 	return result
 }
@@ -389,20 +404,6 @@ func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
 
 	return nil, fmt.Errorf("no meta file found")
 }
-
-// func LoadDocumentMeta(yamlFilePath, jsonFilePath string) (*DocumentMeta, error) {
-// 	if _, err := os.Stat(yamlFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadDocumentMetaFromYaml(yamlFilePath)
-// 	}
-// 	if _, err := os.Stat(jsonFilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-// 		return nil, err
-// 	} else if err == nil {
-// 		return LoadDocumentMetaFromJson(jsonFilePath)
-// 	}
-// 	return nil, fmt.Errorf("neither <%s> nor <%s> exist", yamlFilePath, jsonFilePath)
-// }
 
 func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 	buf, err := os.ReadFile(filePath)
@@ -445,4 +446,19 @@ func GetDirContent(path string, filter func(entry os.DirEntry) bool) ([]os.DirEn
 		}
 	}
 	return result, nil
+}
+
+func removeDuplicateStrings(s []string) []string {
+	if len(s) < 1 {
+		return s
+	}
+	sort.Strings(s)
+	prev := 1
+	for curr := 1; curr < len(s); curr++ {
+		if s[curr-1] != s[curr] {
+			s[prev] = s[curr]
+			prev++
+		}
+	}
+	return s[:prev]
 }

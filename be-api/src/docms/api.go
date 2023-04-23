@@ -184,7 +184,12 @@ func apiTagSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	if !reLocale.MatchString(clientLocale) {
 		clientLocale = gSiteMeta.DefaultLanguage
 	}
-	docIdList := gDocumentTags[clientLocale][strings.TrimSpace(query.(string))]
+	alias := strings.ToLower(strings.TrimSpace(query.(string)))
+	tag := ""
+	if tagList := gTagAlias[clientLocale]; tagList != nil {
+		tag = gTagAlias[clientLocale][alias]
+	}
+	docIdList := gDocumentTags[clientLocale][tag]
 	if docIdList == nil || len(docIdList) == 0 {
 		return apiResultNoSearchResult
 	}

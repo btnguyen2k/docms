@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -177,6 +178,7 @@ func initCMSData() {
 	gDocumentList = make(map[string][]*DocumentMeta)      // list of documents, per topic, sorted by index
 	gDocumentMeta = make(map[string]*DocumentMeta)        // map["topic-id:document-id"]document-metadata
 	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
+	gTagAlias = make(map[string]map[string]string)        // map[language-code]map[alias]tag
 	gDocumentTags = make(map[string]map[string][]string)  // map[language-code]map[tag][]"topic-id:document-id"
 	if gFti != nil {
 		gFti.Close()
@@ -188,6 +190,17 @@ func initCMSData() {
 	gSiteMeta, err = LoadSiteMetaAuto(gDataDir)
 	if err != nil {
 		panic(err)
+	}
+	// normalize tag-alias
+	for lang, inner := range gSiteMeta.GetTagAliasMap() {
+		gTagAlias[lang] = make(map[string]string)
+		for tag, aliasList := range inner {
+			tag = strings.ToLower(strings.TrimSpace(tag))
+			gTagAlias[lang][tag] = tag
+			for _, alias := range aliasList {
+				gTagAlias[lang][strings.ToLower(strings.TrimSpace(alias))] = tag
+			}
+		}
 	}
 
 	// fetch all topics
@@ -231,16 +244,33 @@ func initCMSData() {
 			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
 			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
 			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
-			for lang, tags := range docMeta.GetTagsMap() {
+
+			// normalize document's tags
+			docTagsMap := make(map[string][]string)
+			for lang, docTags := range docMeta.GetTagsMap() {
 				tagDocMap := gDocumentTags[lang]
 				if tagDocMap == nil {
 					tagDocMap = make(map[string][]string)
 					gDocumentTags[lang] = tagDocMap
 				}
-				for _, tag := range tags {
+
+				docTagsMap[lang] = make([]string, 0)
+				for _, alias := range docTags {
+					alias = strings.ToLower(strings.TrimSpace(alias))
+					tag, ok := gTagAlias[lang][alias]
+					if !ok {
+						tag = alias
+						gTagAlias[lang][alias] = tag
+					}
+					docTagsMap[lang] = append(docTagsMap[lang], tag)
 					tagDocMap[tag] = append(tagDocMap[tag], topicMeta.id+":"+docMeta.id)
 				}
+				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
 			}
+			for lang := range docTagsMap {
+				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+			}
+			docMeta.Tags = docTagsMap
 
 			// load document content
 			docFileContentMap := docMeta.GetContentFileMap()
@@ -258,6 +288,12 @@ func initCMSData() {
 		sort.Slice(gDocumentList[topicMeta.id], func(i, j int) bool {
 			return gDocumentList[topicMeta.id][i].index < gDocumentList[topicMeta.id][j].index
 		})
+	}
+	for lang, tagDocMap := range gDocumentTags {
+		for tag := range tagDocMap {
+			tagDocMap[tag] = removeDuplicateStrings(tagDocMap[tag])
+		}
+		gDocumentTags[lang] = tagDocMap
 	}
 	sort.Slice(gTopicList, func(i, j int) bool {
 		return gTopicList[i].index < gTopicList[j].index
