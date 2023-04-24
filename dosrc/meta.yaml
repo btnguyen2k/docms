@@ -20,8 +20,9 @@ contacts:
   twitter: ""
   discord: ""
 tags:
+  # (map[string]any)
   # allowed placeholders are ${build_date}, ${build_time} and ${build_datetime}
-  # placeholder will be filled by DOCLI
+  # placeholder will be populated by DOCLI
   # - build_date    : YYYYMMDD
   # - build_time    : HHmmss
   # - build_datetime: YYYYMMDDHHmmss
@@ -31,3 +32,33 @@ tags:
       key1: value 1
       key2: value 2
     tag2: [1, "2", true]
+tagalias:
+  # (map[language-code]map[string]Array(string))
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+    pre-processing: [process, processing]
+    fulltext: [fti, fulltext index, full text index, index, search, fulltext search, full text search]
+    do cms runtime: [runtime]
+    metadata: [meta]
+    maths: [math, mathematical, mathematics]
+    chem: [chemical, chemistry]
+    formulas: [formula]
+    icons: [icon]
+    website: [site]
+    code highlighting: [code, highlight, code highlight, highlighting]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+    tiền xử lý: [xử lý]
+    toàn văn: [fti, fulltext index, full text index, index, tìm kiếm, tìm kiếm toàn văn, toàn văn, chỉ mục, chỉ mục toàn văn, toàn văn chỉ mục]
+    do cms runtime: [runtime]
+    metadata: [meta]
+    toán học: [toán]
+    hoá học: [hoá]
+    trang web: [trang, web]
+    code highlighting: [code, highlight, code highlight, highlighting]

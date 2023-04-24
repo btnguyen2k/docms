@@ -11,3 +11,7 @@ file:
   # (map[language-code]filename)
   en: index-en.md
   vi: index-vi.md
+tags:
+  # (map[language-code]Array(string))
+  en: [metadata, chủ đề]
+  vi: [metadata, chủ đề]
