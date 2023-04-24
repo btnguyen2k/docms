@@ -39,6 +39,9 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {markdownRender} from '@/_shared/utils/docms_utils'
 import {useRoute} from 'vue-router'
 import {watch} from 'vue'
@@ -66,6 +69,7 @@ export default {
     this._fetchSiteMeta(this)
   },
   computed: {
+    this._updateLightbox()
     documentContentRendered() {
       return markdownRender(this.$localedText(this.document.content), {
         sanitize: true,
@@ -74,6 +78,11 @@ export default {
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     _styleClassForTopic(topic) {
       const styleList = ["body-blue", "body-green", "body-red", "body-pink", "body-purple", "body-orange"]
       return this.$styleByHash(topic.id, styleList)

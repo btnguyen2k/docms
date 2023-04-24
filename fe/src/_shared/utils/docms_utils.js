@@ -174,6 +174,7 @@ class MyRenderer extends marked.Renderer {
         }
 
         const cardsEqual = params['equals'] ? true : (params['equal'] ? true : false)
+        const lightbox = params['lightbox'] ? params['lightbox'] : false
         let cardsContent = ''
         for (let i = 0; i < bsCardArr.length; i++) {
             const cardData = bsCardArr[i]
@@ -183,7 +184,7 @@ class MyRenderer extends marked.Renderer {
             const cssClassBg = cardData.params['bg'] ? ' bg-' + cardData.params['bg'] : (cardData.params['background'] ? ' bg-' + cardData.params['background'] : '')
             const card = '<div class="col"><div class="card ${cardCssClass}">\n${cardImg}\n${cardHeader}\n<div class="card-body">\n${cardTitle}\n${cardSubTitle}\n${cardText}\n</div>\n${cardFooter}\n</div></div>'
                 .replaceAll('${cardHeader}', cardData.header != '' ? '<div class="card-header">' + cardData.header + '</div>' : '')
-                .replaceAll('${cardImg}', cardData.img != '' ? '<img src="' + cardData.img + '" class="card-img-top docms-reset">' : '')
+                .replaceAll('${cardImg}', cardData.img != '' ? (lightbox ? '<a data-type="image" data-gallery="' + ('lightbox-gallery-' + lightbox) + '" data-toggle="lightbox" href="' + cardData.img + '">' : '') + '<img src="' + cardData.img + '" class="card-img-top docms-reset">' + (lightbox ? '</a>' : '') : '')
                 .replaceAll('${cardTitle}', cardData.title != '' ? '<h5 className="card-title">' + cardData.title + '</h5>' : '')
                 .replaceAll('${cardSubTitle}', cardData.subtitle != '' ? '<h6 class="card-subtitle mb-2' + (noMute ? '' : ' text-muted') + '">' + cardData.subtitle + '</h6>' : '')
                 .replaceAll('${cardText}', '<div class="card-text">' + markdownRender(cardData.text, this.options) + '</div>')
