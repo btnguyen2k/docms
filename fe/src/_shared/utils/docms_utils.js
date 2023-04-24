@@ -186,15 +186,15 @@ class MyRenderer extends marked.Renderer {
                 .replaceAll('${cardImg}', cardData.img != '' ? '<img src="' + cardData.img + '" class="card-img-top docms-reset">' : '')
                 .replaceAll('${cardTitle}', cardData.title != '' ? '<h5 className="card-title">' + cardData.title + '</h5>' : '')
                 .replaceAll('${cardSubTitle}', cardData.subtitle != '' ? '<h6 class="card-subtitle mb-2' + (noMute ? '' : ' text-muted') + '">' + cardData.subtitle + '</h6>' : '')
-                .replaceAll('${cardText}', '<div class="card-text">' + cardData.text + '</div>')
+                .replaceAll('${cardText}', '<div class="card-text">' + markdownRender(cardData.text, this.options) + '</div>')
                 .replaceAll('${cardFooter}', cardData.footer != '' ? ('<div class="card-footer' + (noMute ? '' : ' text-muted') + '">' + cardData.footer + '</div>') : '')
                 .replaceAll('${cardCssClass}', (cardsEqual ? ' h-100' : '') + cssClassBorder + cssClassText + cssClassBg)
             cardsContent += card
         }
-        const colsCssClass = params['cols'] ? ' row-cols-' + params['cols'] : ''
-        const colsSmCssClass = params['cols-sm'] ? ' row-cols-sm-' + params['cols-sm'] : ''
-        const colsMdCssClass = params['cols-md'] ? ' row-cols-md-' + params['cols-md'] : ''
-        const colsLgCssClass = params['cols-lg'] ? ' row-cols-lg-' + params['cols-lg'] : ''
+        const colsCssClass = params['cols'] ? ' row-cols-' + params['cols'] : (params['col'] ? ' row-cols-' + params['col'] : '')
+        const colsSmCssClass = params['cols-sm'] ? ' row-cols-sm-' + params['cols-sm'] : (params['col-sm'] ? ' row-cols-sm-' + params['col-sm'] : '')
+        const colsMdCssClass = params['cols-md'] ? ' row-cols-md-' + params['cols-md'] : (params['col-md'] ? ' row-cols-md-' + params['col-md'] : '')
+        const colsLgCssClass = params['cols-lg'] ? ' row-cols-lg-' + params['cols-lg'] : (params['col-lg'] ? ' row-cols-lg-' + params['col-lg'] : '')
         let result = '<div class="row mb-3 g-3' + (colsCssClass + colsSmCssClass + colsMdCssClass + colsLgCssClass) + '">' + cardsContent + '</div>'
         return result
     }

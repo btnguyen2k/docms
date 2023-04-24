@@ -6,6 +6,8 @@ Runtime `v0.3.0`:
 - Support tags at site metadata level
 - Support tags at document metadata level
 - Render site's tags with syntax <code>[[do-tag</code>
+- Support [Bootstrap components](https://getbootstrap.com/docs/5.0/components/):
+  - `Cards` with syntax <code>```bs-cards</code>
 
 CLI `v0.3.0.1`:
 - Pre-process tags, to be in-sync with the runtime.
