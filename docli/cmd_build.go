@@ -52,56 +52,51 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 		if strings.TrimSpace(siteMeta.Name) == "" {
 			log.Printf("[ERROR] {name} must not be empty\n")
 			checkPass = false
+		} else {
+			newMetadata.Name = strings.TrimSpace(siteMeta.Name)
 		}
-		newMetadata.Name = strings.TrimSpace(siteMeta.Name)
 	}
 
 	// "languages" if any, must me a map[string]string
-	if len(siteMeta.Languages) == 0 {
+	if len(siteMeta.Languages) == 0 || (len(siteMeta.Languages) == 1 && siteMeta.Languages["default"] != "") {
 		log.Printf("[WARN] cannot parse {languages} config or it does not exist, falling back to English...\n")
-		newMetadata.Languages = map[string]string{"en": "English"}
+		newMetadata.Languages = map[string]string{"en": "English", "default": "en"}
 	} else {
 		newMetadata.Languages = siteMeta.Languages
 	}
+	if siteMeta.Languages["default"] == "" {
+		defaultLang := ""
+		for k := range siteMeta.Languages {
+			defaultLang = k
+			break
+		}
+		siteMeta.Languages["default"] = defaultLang
+		log.Printf("[WARN] no default language defined, make <%s> as default language...\n", defaultLang)
+	}
 
-	// "description" must be a string, or a map[string]string
+	// check & normalize "description"
 	{
-		desc := siteMeta.Description
-		switch desc.(type) {
-		case string:
-			if strings.TrimSpace(desc.(string)) == "" {
-				log.Printf("[ERROR] {description} must not be empty\n")
-				checkPass = false
-			} else {
-				desc = strings.TrimSpace(desc.(string))
-			}
-		case map[string]interface{}:
-			if len(desc.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR] {description} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range desc.(map[string]interface{}) {
+		desc := siteMeta.GetDescriptionMap()
+		if len(desc) == 0 {
+			log.Printf("[ERROR] cannot parse {description} config or it is empty\n")
+			checkPass = false
+		} else {
+			for k := range desc {
 				if _, ok := newMetadata.Languages[k]; !ok {
 					log.Printf("[WARN] language <%s> defined in {description} does not exist\n", k)
 				}
-				temp[k] = fmt.Sprintf("%s", v)
 			}
-			desc = temp
-		default:
-			log.Printf("[ERROR] cannot parse {description} config or it does not exist\n")
-			checkPass = false
 		}
 		newMetadata.Description = desc
 	}
 
-	// icon
+	// "icon"
 	newMetadata.Icon = siteMeta.Icon
 
-	// contacts
+	// "contacts"
 	newMetadata.Contacts = siteMeta.Contacts
 
-	// tags
+	// populate values for "tags"
 	{
 		newMetadata.Tags = make(map[string]interface{})
 		for k, v := range siteMeta.Tags {
@@ -109,18 +104,22 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 		}
 	}
 
+	// normalize "tag alias"
+	newMetadata.TagsAlias = siteMeta.GetTagAliasMap()
+
 	return newMetadata, checkPass
 }
 
-func _loadTopicMetadata(opts *Options, dir os.DirEntry) (*docms.TopicMeta, error) {
-	for _, metaFileYaml := range []string{opts.SrcDir + "/" + dir.Name() + "/meta.yaml", opts.SrcDir + "/" + dir.Name() + "/meta.yml"} {
+func _loadTopicMetadata(opts *Options, topicDir os.DirEntry) (*docms.TopicMeta, error) {
+	dir := opts.SrcDir + "/" + topicDir.Name()
+	for _, metaFileYaml := range []string{dir + "/meta.yaml", dir + "/meta.yml"} {
 		log.Printf("[INFO]\t looking for file <%s>...\n", metaFileYaml)
 		if isFile(metaFileYaml) {
 			return docms.LoadTopicMetaFromYaml(metaFileYaml)
 		}
 	}
 
-	for _, metaFileJson := range []string{opts.SrcDir + "/" + dir.Name() + "/meta.json"} {
+	for _, metaFileJson := range []string{dir + "/meta.json"} {
 		log.Printf("[INFO]\t looking for file <%s>...\n", metaFileJson)
 		if isFile(metaFileJson) {
 			return docms.LoadTopicMetaFromJson(metaFileJson)
@@ -135,69 +134,39 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 	newMetadata := &docms.TopicMeta{}
 	log.Printf("[INFO]\t veryfing metadata file...\n")
 
-	// "title" must be a string, or a map[string]string
+	// check & normalize "title"
 	{
-		title := topicMeta.Title
-		switch title.(type) {
-		case string:
-			if strings.TrimSpace(title.(string)) == "" {
-				log.Printf("[ERROR]\t {title} must not be empty\n")
-				checkPass = false
-			} else {
-				title = strings.TrimSpace(title.(string))
-			}
-		case map[string]interface{}:
-			if len(title.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR]\t {title} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range title.(map[string]interface{}) {
-				if _, ok := siteMeta.Languages[k]; !ok {
-					log.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
-				}
-				temp[k] = fmt.Sprintf("%s", v)
-			}
-			title = temp
-		default:
-			log.Printf("[ERROR]\t cannot parse {title} config or it does not exist\n")
+		title := topicMeta.GetTitleMap()
+		if len(title) == 0 {
+			log.Printf("[ERROR] cannot parse {title} config or it is empty\n")
 			checkPass = false
+		} else {
+			for k := range title {
+				if _, ok := siteMeta.Languages[k]; !ok {
+					log.Printf("[WARN] language <%s> defined in {title} does not exist\n", k)
+				}
+			}
 		}
 		newMetadata.Title = title
 	}
 
-	// "description" must be a string, or a map[string]string
+	// check & normalize "description"
 	{
-		desc := topicMeta.Description
-		switch desc.(type) {
-		case string:
-			if strings.TrimSpace(desc.(string)) == "" {
-				log.Printf("[ERROR]\t {description} must not be empty\n")
-				checkPass = false
-			} else {
-				desc = strings.TrimSpace(desc.(string))
-			}
-		case map[string]interface{}:
-			if len(desc.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR]\t {description} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range desc.(map[string]interface{}) {
-				if _, ok := siteMeta.Languages[k]; !ok {
-					log.Printf("[WARN]\t language <%s> defined in {description} does not exist\n", k)
-				}
-				temp[k] = fmt.Sprintf("%s", v)
-			}
-			desc = temp
-		default:
-			log.Printf("[ERROR]\t cannot parse {description} config or it does not exist\n")
+		desc := topicMeta.GetDescriptionMap()
+		if len(desc) == 0 {
+			log.Printf("[ERROR] cannot parse {description} config or it is empty\n")
 			checkPass = false
+		} else {
+			for k := range desc {
+				if _, ok := siteMeta.Languages[k]; !ok {
+					log.Printf("[WARN] language <%s> defined in {description} does not exist\n", k)
+				}
+			}
 		}
 		newMetadata.Description = desc
 	}
 
-	// icon
+	// "icon"
 	newMetadata.Icon = topicMeta.Icon
 
 	return newMetadata, checkPass
@@ -243,14 +212,15 @@ func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntr
 }
 
 func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) (*docms.DocumentMeta, error) {
-	for _, metaFileYaml := range []string{opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yaml", opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.yml"} {
+	dir := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name()
+	for _, metaFileYaml := range []string{dir + "/meta.yaml", dir + "/meta.yml"} {
 		log.Printf("[INFO]\t\t looking for file <%s>...\n", metaFileYaml)
 		if isFile(metaFileYaml) {
 			return docms.LoadDocumentMetaFromYaml(metaFileYaml)
 		}
 	}
 
-	for _, metaFileJson := range []string{opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/meta.json"} {
+	for _, metaFileJson := range []string{dir + "/meta.json"} {
 		log.Printf("[INFO]\t\t looking for file <%s>...\n", metaFileJson)
 		if isFile(metaFileJson) {
 			return docms.LoadDocumentMetaFromJson(metaFileJson)
@@ -265,101 +235,56 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 	newMetadata := &docms.DocumentMeta{}
 	log.Printf("[INFO]\t\t veryfing metadata file...\n")
 
-	// "title" must be a string, or a map[string]string
+	// check & normalize "title"
 	{
-		title := docMeta.Title
-		switch title.(type) {
-		case string:
-			if strings.TrimSpace(title.(string)) == "" {
-				log.Printf("[ERROR]\t\t {title} must not be empty\n")
-				checkPass = false
-			} else {
-				title = strings.TrimSpace(title.(string))
-			}
-		case map[string]interface{}:
-			if len(title.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR]\t\t {title} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range title.(map[string]interface{}) {
-				if _, ok := siteMeta.Languages[k]; !ok {
-					log.Printf("[WARN]\t\t language <%s> defined in {description} does not exist\n", k)
-				}
-				temp[k] = fmt.Sprintf("%s", v)
-			}
-			title = temp
-		default:
-			log.Printf("[ERROR]\t\t cannot parse {title} config or it does not exist\n")
+		title := docMeta.GetTitleMap()
+		if len(title) == 0 {
+			log.Printf("[ERROR] cannot parse {title} config or it is empty\n")
 			checkPass = false
+		} else {
+			for k := range title {
+				if _, ok := siteMeta.Languages[k]; !ok {
+					log.Printf("[WARN] language <%s> defined in {title} does not exist\n", k)
+				}
+			}
 		}
 		newMetadata.Title = title
 	}
 
-	// "summary" must be a string, or a map[string]string
+	// check & normalize "summary"
 	{
-		summary := docMeta.Summary
-		switch summary.(type) {
-		case string:
-			if strings.TrimSpace(summary.(string)) == "" {
-				log.Printf("[ERROR]\t\t {summary} must not be empty\n")
-				checkPass = false
-			} else {
-				summary = strings.TrimSpace(summary.(string))
-			}
-		case map[string]interface{}:
-			if len(summary.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR]\t\t {summary} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range summary.(map[string]interface{}) {
-				if _, ok := siteMeta.Languages[k]; !ok {
-					log.Printf("[WARN]\t\t language <%s> defined in {summary} does not exist\n", k)
-				}
-				temp[k] = fmt.Sprintf("%s", v)
-			}
-			summary = temp
-		default:
-			log.Printf("[ERROR]\t\t cannot parse {summary} config or it does not exist\n")
+		summary := docMeta.GetSummaryMap()
+		if len(summary) == 0 {
+			log.Printf("[ERROR] cannot parse {summary} config or it is empty\n")
 			checkPass = false
+		} else {
+			for k := range summary {
+				if _, ok := siteMeta.Languages[k]; !ok {
+					log.Printf("[WARN] language <%s> defined in {summary} does not exist\n", k)
+				}
+			}
 		}
 		newMetadata.Summary = summary
 	}
 
-	// icon
+	// "icon"
 	newMetadata.Icon = docMeta.Icon
 
-	// tags
+	// normalize "tags"
 	newMetadata.Tags = docMeta.GetTagsMap()
 
-	// "content file" must be a string, or a map[string]string
+	// check & normalize "content file"
 	{
-		contentFile := docMeta.ContentFile
-		switch contentFile.(type) {
-		case string:
-			if strings.TrimSpace(contentFile.(string)) == "" {
-				log.Printf("[ERROR]\t\t {file} must not be empty\n")
-				checkPass = false
-			} else {
-				contentFile = strings.TrimSpace(contentFile.(string))
-			}
-		case map[string]interface{}:
-			if len(contentFile.(map[string]interface{})) == 0 {
-				log.Printf("[ERROR]\t\t {file} must not be empty\n")
-				checkPass = false
-			}
-			temp := make(map[string]string)
-			for k, v := range contentFile.(map[string]interface{}) {
-				if _, ok := siteMeta.Languages[k]; !ok {
-					log.Printf("[WARN]\t\t language <%s> defined in {file} does not exist\n", k)
-				}
-				temp[k] = fmt.Sprintf("%s", v)
-			}
-			contentFile = temp
-		default:
-			log.Printf("[ERROR]\t\t cannot parse {file} config or it does not exist\n")
+		contentFile := docMeta.GetContentFileMap()
+		if len(contentFile) == 0 {
+			log.Printf("[ERROR] cannot parse {file} config or it is empty\n")
 			checkPass = false
+		} else {
+			for k := range contentFile {
+				if _, ok := siteMeta.Languages[k]; !ok {
+					log.Printf("[WARN] language <%s> defined in {file} does not exist\n", k)
+				}
+			}
 		}
 		newMetadata.ContentFile = contentFile
 	}
