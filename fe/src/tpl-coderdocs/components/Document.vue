@@ -71,8 +71,8 @@ export default {
     this._fetchSiteMeta(this)
   },
   computed: {
-    this._updateLightbox()
     documentContentRendered() {
+      this._updateLightbox()
       return markdownRender(this.$localedText(this.document.content), {
         sanitize: true,
         tags: this.$siteMeta.tags,
