@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/consu/reddo"
@@ -17,6 +16,7 @@ import (
 )
 
 const (
+	logLevelDebug   = "DEBUG"
 	logLevelInfo    = "INFO"
 	logLevelWarning = "WARN"
 	logLevelError   = "ERROR"
@@ -48,75 +48,79 @@ type SiteMeta struct {
 	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
 }
 
+var (
+	_typMapAny    = reflect.TypeOf(map[string]interface{}{})
+	_typMapString = reflect.TypeOf(map[string]string{})
+)
+
 func (sm *SiteMeta) init() error {
+	// init field "default language"
 	sm.DefaultLanguage = sm.Languages["default"]
+
+	// normalize field "contacts"
 	for k, v := range sm.Contacts {
 		if v == "" {
 			delete(sm.Contacts, k)
 		}
 	}
+
+	// normalize field "tags"
+	if sm.Tags == nil {
+		sm.Tags = make(map[string]interface{})
+	}
+
 	return nil
 }
 
 func (sm *SiteMeta) GetDescriptionMap() map[string]string {
-	result := make(map[string]string)
-	switch sm.Description.(type) {
-	case string:
-		result[sm.DefaultLanguage] = sm.Description.(string)
-	case map[string]string:
-		for k, v := range sm.Description.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range sm.Description.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
-		}
-	}
-	return result
-}
-
-func _checkNextLevelType(input map[string]interface{}) string {
-	for _, v := range input {
-		switch v.(type) {
-		case []string:
-			return "[]string"
-		case []interface{}:
-			return "[]interface{}"
-		case map[string]interface{}:
-			return "map[string]interface{}"
+	desc := make(map[string]string)
+	if sm.Description != nil {
+		switch reflect.TypeOf(sm.Description).Kind() {
+		case reflect.String:
+			desc[sm.DefaultLanguage] = fmt.Sprintf("%s", sm.Description)
+		case reflect.Map:
+			temp, err := reddo.Convert(sm.Description, _typMapString)
+			if err == nil && temp != nil {
+				desc = temp.(map[string]string)
+			}
 		}
 	}
-	return ""
+	return desc
 }
-
-var (
-	_typMap = reflect.TypeOf(map[string]interface{}{})
-)
 
 // GetTagAliasMap return the tags as a map[lang-code]map[tag][]alias
 //
 // Available since v0.3.0
 func (sm *SiteMeta) GetTagAliasMap() map[string]map[string][]string {
-	outer, err := reddo.Convert(sm.TagsAlias, _typMap)
-	if err != nil {
+	empty := make(map[string]map[string][]string)
+	outer, err := reddo.Convert(sm.TagsAlias, _typMapAny)
+	if err != nil || outer == nil {
 		// the top level must be a map
-		return make(map[string]map[string][]string)
+		return empty
 	}
-	nextLevelType := _checkNextLevelType(outer.(map[string]interface{}))
-	if strings.HasPrefix(nextLevelType, "[]") {
-		// then the next level must be either []string
-		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string][]string))); err == nil {
+
+	var nextLevelKind reflect.Kind
+	for _, v := range outer.(map[string]interface{}) {
+		if v != nil {
+			nextLevelKind = reflect.TypeOf(v).Kind()
+		}
+		break
+	}
+	if nextLevelKind == reflect.Array || nextLevelKind == reflect.Slice {
+		// then the next level must be either array/slice
+		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string][]string))); err == nil && result != nil {
 			return map[string]map[string][]string{
 				gSiteMeta.DefaultLanguage: result.(map[string][]string),
 			}
 		}
-	} else if strings.HasPrefix(nextLevelType, "map[") {
-		// or a map[string][]string
-		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string]map[string][]string))); err == nil {
+	} else if nextLevelKind == reflect.Map {
+		// or a map
+		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(empty)); err == nil && result != nil {
 			return result.(map[string]map[string][]string)
 		}
 	}
-	return make(map[string]map[string][]string)
+
+	return empty
 }
 
 func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
@@ -197,37 +201,35 @@ func (tm *TopicMeta) setDirectory(dir string) bool {
 }
 
 func (tm *TopicMeta) GetDescriptionMap() map[string]string {
-	result := make(map[string]string)
-	switch tm.Description.(type) {
-	case string:
-		result[gSiteMeta.DefaultLanguage] = tm.Description.(string)
-	case map[string]string:
-		for k, v := range tm.Description.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range tm.Description.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
+	desc := make(map[string]string)
+	if tm.Description != nil {
+		switch reflect.TypeOf(tm.Description).Kind() {
+		case reflect.String:
+			desc[gSiteMeta.DefaultLanguage] = fmt.Sprintf("%s", tm.Description)
+		case reflect.Map:
+			temp, err := reddo.Convert(tm.Description, _typMapString)
+			if err == nil && temp != nil {
+				desc = temp.(map[string]string)
+			}
 		}
 	}
-	return result
+	return desc
 }
 
 func (tm *TopicMeta) GetTitleMap() map[string]string {
-	result := make(map[string]string)
-	switch tm.Title.(type) {
-	case string:
-		result[gSiteMeta.DefaultLanguage] = tm.Title.(string)
-	case map[string]string:
-		for k, v := range tm.Title.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range tm.Title.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
+	title := make(map[string]string)
+	if tm.Title != nil {
+		switch reflect.TypeOf(tm.Title).Kind() {
+		case reflect.String:
+			title[gSiteMeta.DefaultLanguage] = fmt.Sprintf("%s", tm.Title)
+		case reflect.Map:
+			temp, err := reddo.Convert(tm.Title, _typMapString)
+			if err == nil && temp != nil {
+				title = temp.(map[string]string)
+			}
 		}
 	}
-	return result
+	return title
 }
 
 func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
@@ -302,79 +304,76 @@ func (dm *DocumentMeta) setDirectory(dir string) bool {
 }
 
 func (dm *DocumentMeta) GetSummaryMap() map[string]string {
-	result := make(map[string]string)
-	switch dm.Summary.(type) {
-	case string:
-		result[gSiteMeta.DefaultLanguage] = dm.Summary.(string)
-	case map[string]string:
-		for k, v := range dm.Summary.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range dm.Summary.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
+	summary := make(map[string]string)
+	if dm.Summary != nil {
+		switch reflect.TypeOf(dm.Summary).Kind() {
+		case reflect.String:
+			summary[gSiteMeta.DefaultLanguage] = fmt.Sprintf("%s", dm.Summary)
+		case reflect.Map:
+			temp, err := reddo.Convert(dm.Summary, _typMapString)
+			if err == nil && temp != nil {
+				summary = temp.(map[string]string)
+			}
 		}
 	}
-	return result
+	return summary
 }
 
 func (dm *DocumentMeta) GetTitleMap() map[string]string {
-	result := make(map[string]string)
-	switch dm.Title.(type) {
-	case string:
-		result[gSiteMeta.DefaultLanguage] = dm.Title.(string)
-	case map[string]string:
-		for k, v := range dm.Title.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range dm.Title.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
+	title := make(map[string]string)
+	if dm.Title != nil {
+		switch reflect.TypeOf(dm.Title).Kind() {
+		case reflect.String:
+			title[gSiteMeta.DefaultLanguage] = fmt.Sprintf("%s", dm.Title)
+		case reflect.Map:
+			temp, err := reddo.Convert(dm.Title, _typMapString)
+			if err == nil && temp != nil {
+				title = temp.(map[string]string)
+			}
 		}
 	}
-	return result
+	return title
 }
 
 func (dm *DocumentMeta) GetContentFileMap() map[string]string {
-	result := make(map[string]string)
-	switch dm.ContentFile.(type) {
-	case string:
-		result[gSiteMeta.DefaultLanguage] = dm.ContentFile.(string)
-	case map[string]string:
-		for k, v := range dm.ContentFile.(map[string]string) {
-			result[k] = v
-		}
-	case map[string]interface{}:
-		for k, v := range dm.ContentFile.(map[string]interface{}) {
-			result[k] = fmt.Sprintf("%s", v)
+	files := make(map[string]string)
+	if dm.ContentFile != nil {
+		switch reflect.TypeOf(dm.ContentFile).Kind() {
+		case reflect.String:
+			files[gSiteMeta.DefaultLanguage] = fmt.Sprintf("%s", dm.ContentFile)
+		case reflect.Map:
+			temp, err := reddo.Convert(dm.ContentFile, _typMapString)
+			if err == nil && temp != nil {
+				files = temp.(map[string]string)
+			}
 		}
 	}
-	return result
+	return files
 }
 
 // GetTagsMap return the tags as a map[lang-code][]tags
 //
 // Available since v0.3.0
 func (dm *DocumentMeta) GetTagsMap() map[string][]string {
-	result := make(map[string][]string)
-	switch dm.Tags.(type) {
-	case []string:
-		result[gSiteMeta.DefaultLanguage] = dm.Tags.([]string)
-	case []interface{}:
-		temp, err := reddo.Convert(dm.Tags, reflect.TypeOf([]string{}))
-		if err == nil && temp != nil {
-			result[gSiteMeta.DefaultLanguage] = temp.([]string)
-		}
-	case map[string]interface{}, map[string][]interface{}, map[string][]string:
-		temp, err := reddo.Convert(dm.Tags, reflect.TypeOf(map[string][]string{}))
-		if err == nil && temp != nil {
-			result = temp.(map[string][]string)
+	tagsMap := make(map[string][]string)
+	if dm.Tags != nil {
+		switch reflect.TypeOf(dm.Tags).Kind() {
+		case reflect.Array, reflect.Slice:
+			temp, err := reddo.Convert(dm.Tags, reflect.TypeOf([]string{}))
+			if err == nil && temp != nil {
+				tagsMap[gSiteMeta.DefaultLanguage] = temp.([]string)
+			}
+		case reflect.Map:
+			temp, err := reddo.Convert(dm.Tags, reflect.TypeOf(map[string][]string{}))
+			if err == nil && temp != nil {
+				tagsMap = temp.(map[string][]string)
+			}
 		}
 	}
-	for k := range result {
-		sort.Strings(result[k])
+	for k := range tagsMap {
+		sort.Strings(tagsMap[k])
 	}
-	return result
+	return tagsMap
 }
 
 func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
