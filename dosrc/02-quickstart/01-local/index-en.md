@@ -46,7 +46,10 @@ dodata/
   - `meta.yaml` of `topic directory` contains *metadata* of the topic (such as title or description).
   - `meta.yaml` of `document directory` contains *metadata* of the document (such as title or summary).
 
-> Metadata can also be stored in `meta.json` file. If both files `meta.yaml` and `meta.json` exist, the YAML file has priority.
+```bs-alert primary
+
+Metadata can also be stored in `meta.json` file. If both files `meta.yaml` and `meta.json` exist, the YAML file has priority.
+```
 
 ## Render website content with DO CMS runtime
 

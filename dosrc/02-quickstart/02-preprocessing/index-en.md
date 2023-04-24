@@ -19,7 +19,10 @@ docli build --src ./dosrc --out ./dodata
 
 After pre-processing, rendering website content from `dodata` directory unlocks all DO CMS features.
 
-> `DOCLI` is installed to directory `$GOPATH/bin`. You may need to add the directory to system's PATH.
+```bs-alert warning
+
+`DOCLI` is installed to directory `$GOPATH/bin`. You may need to add the directory to system's PATH.
+```
 
 See more:
 - [DOCLI tool](../../components/cli/)

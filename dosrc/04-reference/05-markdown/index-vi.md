@@ -1,5 +1,5 @@
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"> </i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"> </i>
 Các cú pháp Markdown mô tả trong tài liệu này áp dụng cho các giao diện đồ hoạ đi kèm với phiên bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
@@ -32,6 +32,41 @@ Bộ biểu tượng miễn phí của [FontAwesome](https://fontawesome.com/sea
     [[bs-tab Hiển thị
     Đây là ví dụ icon của Bootstrap <i class="bi bi-globe"></i>
     và đây là icon của FontAwesome <i class="fas bi-book"></i>
+    ]]
+```
+
+## Thẻ (tag) trong tập tin metadata trang web
+
+Ví dụ [tập tin metadata trang web](../sitemetadata/) có phần định nghĩa các thẻ như sau:
+```yaml
+tags:
+  build: ${build_datetime}
+  demo:
+    tag1:
+      key1: value 1
+      key2: value 2
+    tag2: [1, "2", true]
+```
+
+Các thẻ định nghĩa trong tập tin có thể được nhúng vào trong tài liệu thông qua cú pháp `[[do-tag tag-key]]`:
+```bs-tabs
+    [[bs-tab Markdown
+        Tài liệu được cập nhật lúc [[do-tag build]].
+
+        Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
+        Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
+
+        Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+        Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
+    ]]
+    [[bs-tab Hiển thị
+    Tài liệu được cập nhật lúc [[do-tag build]].
+
+    Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
+    Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
+
+    Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+    Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
 ```
 

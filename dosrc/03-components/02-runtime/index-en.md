@@ -11,6 +11,14 @@ docker run --name docms \
     btnguyen2k/docmsruntime
 ```
 
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-3"></i>
+The Docker image offer the following tags:
+
+`:stable` or `:version` (i.e. `:1.2.3`): stable releases<br/>
+`:latest` or `:yyyymmdd` or `:yyyymmdd-hash`: usable releases, may have some glitches but always include latest features up to the build time.
+```
+
 ## Environment Variables
 
 **HTTP_LISTEN_ADDR** and **HTTP_LISTEN_PORT** - specify listen address & port number. Default value for HTTP_LISTEN_ADDR is `0.0.0.0` and HTTP_LISTEN_PORT is `8000`. The following command makes `DO CMS runtime` to listen on `127.0.0.1:3000`:

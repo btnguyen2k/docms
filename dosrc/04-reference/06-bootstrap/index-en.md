@@ -1,5 +1,5 @@
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"> </i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"> </i>
 Markdown syntaxes detailed in this document apply to the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
