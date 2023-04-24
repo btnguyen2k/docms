@@ -16,7 +16,7 @@ import (
 
 var commandNew = &cli.Command{
 	Name:    "new",
-	Aliases: []string{"n"},
+	Aliases: []string{"n", "create", "c"},
 	Usage:   "Helper to create assets with default metadata",
 	Flags: []cli.Flag{
 		flagDir,
@@ -142,6 +142,15 @@ func actionNewSite(c *cli.Context) error {
 			siteMeta.Languages[strings.TrimSpace(tokens[0])] = strings.TrimSpace(tokens[1])
 		}
 	}
+	// default language
+	if len(siteMeta.Languages) == 0 {
+		siteMeta.Languages = map[string]string{"default": "en"}
+	} else if siteMeta.Languages["default"] == "" {
+		for k := range siteMeta.Languages {
+			siteMeta.Languages["default"] = k
+			break
+		}
+	}
 
 	// site's description
 	siteDescMap := siteMeta.GetDescriptionMap()
@@ -154,6 +163,20 @@ func actionNewSite(c *cli.Context) error {
 		}
 	}
 	siteMeta.Description = siteDescMap
+
+	// site's tag alias
+	siteTagAliasMap := siteMeta.GetTagAliasMap()
+	for lang, _ := range siteMeta.Languages {
+		if lang == "default" {
+			continue
+		}
+		if tagAlias := siteTagAliasMap[lang]; tagAlias == nil {
+			siteTagAliasMap[lang] = map[string][]string{
+				"mytag": {"variances", "of", "mytag"},
+			}
+		}
+	}
+	siteMeta.TagsAlias = siteTagAliasMap
 
 	if err := writeFileYaml(metaFile, siteMeta); err != nil {
 		return err
