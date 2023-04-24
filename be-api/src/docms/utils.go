@@ -55,7 +55,14 @@ var (
 
 func (sm *SiteMeta) init() error {
 	// init field "default language"
-	sm.DefaultLanguage = sm.Languages["default"]
+	defLang := sm.Languages["default"]
+	if defLang == "" {
+		for lang := range sm.Languages {
+			defLang = lang
+			break
+		}
+	}
+	sm.DefaultLanguage = defLang
 
 	// normalize field "contacts"
 	for k, v := range sm.Contacts {

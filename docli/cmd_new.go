@@ -119,8 +119,6 @@ func actionNewSite(c *cli.Context) error {
 			Tags: map[string]interface{}{
 				"build": "${build_datetime}",
 			},
-			Languages:   map[string]string{},
-			Description: map[string]string{},
 		}
 	}
 
@@ -242,9 +240,7 @@ func actionNewTopic(c *cli.Context) error {
 		}
 	} else {
 		topicMeta = &docms.TopicMeta{
-			Title:       map[string]string{},
-			Description: map[string]string{},
-			Icon:        opts.TopicIcon,
+			Icon: opts.TopicIcon,
 		}
 	}
 
@@ -365,10 +361,7 @@ func actionNewDocument(c *cli.Context) error {
 		}
 	} else {
 		docMeta = &docms.DocumentMeta{
-			Title:       map[string]string{},
-			Summary:     map[string]string{},
-			Icon:        opts.DocIcon,
-			ContentFile: map[string]string{},
+			Icon: opts.DocIcon,
 		}
 	}
 
