@@ -202,6 +202,10 @@ func initCMSData() {
 			}
 		}
 	}
+	if os.Getenv("DEBUG") == "true" {
+		log.Printf("[%s] site's tags: %#v", logLevelDebug, gSiteMeta.Tags)
+		log.Printf("[%s] site's tag-alias: %#v", logLevelDebug, gTagAlias)
+	}
 
 	// fetch all topics
 	topicDirList, err := GetDirContent(gDataDir, func(entry os.DirEntry) bool {
@@ -244,6 +248,11 @@ func initCMSData() {
 			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
 			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
 			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
+
+			if os.Getenv("DEBUG") == "true" {
+				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
+				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
+			}
 
 			// normalize document's tags
 			docTagsMap := make(map[string][]string)
