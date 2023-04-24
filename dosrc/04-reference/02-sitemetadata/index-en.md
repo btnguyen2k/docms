@@ -68,6 +68,21 @@ contacts:
   discord: ""
 ```
 
+**tagalias** - `map[language-code:map[string:Array(string)]]`, map similar tags to one, example:
+```yaml
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+```
+
 **tags** - `map[string:object]`, extra key-object data attached to site metadata, example:
 ```yaml
 tags:
@@ -113,6 +128,17 @@ contacts:
   discord: ""
 tags:
   build: ${build_datetime}
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
 ```
 
 See also:

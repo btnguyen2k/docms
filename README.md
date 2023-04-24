@@ -17,7 +17,7 @@ DO CMS is a Content Management System targeting developers as its users. Instead
 
 - **Multi-languages** - multi-language website content is support, switching languages is on-the-fly.
 
-See DO CMS in action and its documents at https://docms.btnguyen2k.me.
+See DO CMS in action and its document at https://docms.btnguyen2k.me.
 
 ## Contributing
 
