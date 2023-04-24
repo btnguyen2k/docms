@@ -30,8 +30,26 @@ window.addEventListener('resize', () => triggerResize())
 export default {
   name: 'App',
   inject: ['$global'],
+  provide() {
+    return {
+      $calcTagCloudCSS: this.calcTagCloudCSS,
+    }
+  },
   mounted() {
     this.$global.router = this.$router
   },
+  methods: {
+    calcTagCloudCSS(tag) {
+      const cssList = [
+        'badge bg-primary text-decoration-none link-light',
+        'badge bg-secondary text-decoration-none link-light',
+        'badge bg-success text-decoration-none link-light',
+        'badge bg-danger text-decoration-none link-light',
+        'badge bg-warning text-dark text-decoration-none link-dark',
+        'badge bg-info text-decoration-none link-light',
+      ]
+      return this.$pickupFromHash(tag, cssList)
+    }
+  }
 }
 </script>

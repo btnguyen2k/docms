@@ -1,6 +1,15 @@
 //#DO CMS frontend
 import i18n from "./i18n"
-import {apiDocument, apiDocuments, apiDoGet, apiDoPost, apiSearch, apiSite, apiTopics} from "./utils/api_client"
+import {
+    apiDocument,
+    apiDocuments,
+    apiDoGet,
+    apiDoPost,
+    apiSearch,
+    apiSite, apiTags,
+    apiTagSearch,
+    apiTopics
+} from "./utils/api_client"
 import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_utils"
 
 class Global {
@@ -50,6 +59,14 @@ class Global {
     set searchQuery(value) {
         this._searchQuery = value
     }
+
+    get tagCloud() {
+        return this._tagCloud ? this._tagCloud : {}
+    }
+
+    set tagCloud(value) {
+        this._tagCloud = value
+    }
 }
 
 import {computed} from 'vue'
@@ -59,7 +76,20 @@ import {fab} from '@fortawesome/free-brands-svg-icons'
 import {far} from '@fortawesome/free-regular-svg-icons'
 import {fas} from '@fortawesome/free-solid-svg-icons'
 
-import {Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover, ScrollSpy, Tab, Toast, Tooltip} from 'bootstrap'
+import {
+    Alert,
+    Button,
+    Carousel,
+    Collapse,
+    Dropdown,
+    Modal,
+    Offcanvas,
+    Popover,
+    ScrollSpy,
+    Tab,
+    Toast,
+    Tooltip
+} from 'bootstrap'
 
 export default {
     install: (app) => {
@@ -93,6 +123,18 @@ export default {
         app.provide('$siteFirstName', computed(() => global.siteFirstName))
         app.provide('$siteLastName', computed(() => global.siteLastName))
         app.provide('$siteTopics', computed(() => global.siteTopics))
+        app.provide('$tagCloud', computed(() => global.tagCloud))
+
+        // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
+        app.config.globalProperties.$pickupFromHash = (input, list) => {
+            let hash = 0
+            for (let i = 0; i < input.length; i++) {
+                hash = ((hash << 5) - hash) + input.charCodeAt(i)
+                hash = hash & hash
+            }
+            const mod = ((hash % list.length) + list.length) % list.length
+            return list[mod]
+        }
 
         // use $localedText(inputMap) to pick up the correct i18n message
         app.config.globalProperties.$localedText = (inputMap) => {
@@ -102,6 +144,10 @@ export default {
         // use $doSearch to navigate to search view
         app.config.globalProperties.$doSearch = () => {
             return global.router.push({name: 'Search', query: {q: global.searchQuery, l: i18n.global.locale}})
+        }
+        // use $doTagSearch to navigate to tag-search view
+        app.config.globalProperties.$doTagSearch = () => {
+            return global.router.push({name: 'TagSearch', query: {q: global.searchQuery, l: i18n.global.locale}})
         }
 
         // use $search(query) to perform search
@@ -114,7 +160,62 @@ export default {
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )
         }
+        // use $tagSearch(query) to perform search
+        app.config.globalProperties.$tagSearch = (query, callbackPrefetch, callbackSuccess, callbackError) => {
+            if (callbackPrefetch) {
+                callbackPrefetch()
+            }
+            apiDoPost(apiTagSearch, {query: query},
+                apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
+                err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
+            )
+        }
 
+        // use $fetchTagCloud to fetch site's tag-cloud from server
+        app.config.globalProperties.$fetchTagCloud = (callbackPrefetch, callbackSuccess, callbackError) => {
+            if (callbackPrefetch) {
+                callbackPrefetch()
+            }
+            apiDoGet(apiTags,
+                apiResp => {
+                    if (apiResp.status == 200) {
+                        global.tagCloud = apiResp.data
+                        let tagSize = []
+                        for (let t in global.tagCloud[i18n.global.locale]) {
+                            tagSize.push(global.tagCloud[i18n.global.locale][t].length)
+                        }
+                        global.minTagSize = Math.min(...tagSize)
+                        global.maxTagSize = Math.max(...tagSize)
+                    }
+                    callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined')
+                },
+                err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
+            )
+        }
+        app.config.globalProperties.$calcTagSize = (tag, minSize, maxSize, steps) => {
+            let sizeList = []
+            for (let i = 0; i < steps + 1; i++) {
+                const val = minSize + (maxSize - minSize) * i / steps
+                sizeList.push(val)
+            }
+            const size = global.tagCloud[i18n.global.locale][tag] ? global.tagCloud[i18n.global.locale][tag].length : 0
+            if (size < global.minTagSize) {
+                return 0
+            }
+            if (global.maxTagSize - global.minTagSize < sizeList.length) {
+                return sizeList[size - global.minTagSize]
+            }
+            for (let i = 0; i < steps + 1; i++) {
+                const val = global.minTagSize + (global.maxTagSize - global.minTagSize) * i / steps
+                if (val >= size) {
+                    return sizeList[i]
+                }
+            }
+            return sizeList[0]
+        }
+
+        const emptyFunc = () => {
+        }
         // use $fetchSiteMeta to fetch site's metadata from server
         app.config.globalProperties.$fetchSiteMeta = (callbackPrefetch, callbackSuccess, callbackError) => {
             if (callbackPrefetch) {
@@ -124,6 +225,7 @@ export default {
                 apiResp => {
                     if (apiResp.status == 200) {
                         global.siteMeta = apiResp.data
+                        app.config.globalProperties.$fetchTagCloud(null, emptyFunc, emptyFunc)
                     }
                     callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined')
                 },

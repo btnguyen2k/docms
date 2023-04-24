@@ -24,6 +24,13 @@
                 <h2 class="section-heading"><i v-if="document.icon!=''" :class="document.icon"></i> {{ $localedText(document.title) }}</h2>
               </router-link>
               <p>{{ $localedText(document.summary) }}</p>
+              <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+                <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                             :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                             :class="$calcTagCloudCSS(tag)+' me-1'" style="font-size: 0.65rem !important;">
+                  {{ tag }}
+                </router-link>
+              </p>
             </section>
           </article>
 
@@ -49,7 +56,7 @@ const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Search',
-  inject: ['$global', '$coderDocsResponsiveSidebar'],
+  inject: ['$global', '$coderDocsResponsiveSidebar', '$calcTagCloudCSS'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   unmounted() {
     unregisterPopstate(this.handleBackFoward)
@@ -61,7 +68,10 @@ export default {
     const route = useRoute()
     watch(
         () => route.query.q,
-        async () => vue._search(vue),
+        async () => {
+          vue.$global.searchQuery = this.searchTerm
+          vue._search(vue)
+        }
     )
     watch(
         () => route.query.l,
