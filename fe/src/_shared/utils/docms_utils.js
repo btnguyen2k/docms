@@ -32,18 +32,23 @@ const reUrlWithProtocol = /^([a-z]+:)/i
 
 function _parseParams(params, ignoreFirstN) {
     let result = {}
-    const tokens = params.trim().split(/\s+/)
+    const paramsTokens = params.trim().split(/\s+/)
     if (ignoreFirstN > 0) {
-        for (let i = 0; i < ignoreFirstN && i < tokens.length; i++) {
+        for (let i = 0; i < ignoreFirstN && i < paramsTokens.length; i++) {
             const k = '$' + i
-            result[k] = tokens[i].trim()
+            result[k] = paramsTokens[i].trim()
         }
     } else {
         ignoreFirstN = 0
     }
-    for (let i = ignoreFirstN; i < tokens.length; i++) {
-        const k = tokens[i].trim()
-        result[k] = true
+    for (let i = ignoreFirstN; i < paramsTokens.length; i++) {
+        const paramAndValue = paramsTokens[i].trim()
+        const paramAndValueTokens = paramAndValue.split(/=/, 2)
+        if (paramAndValueTokens.length == 1) {
+            result[paramAndValue] = true
+        } else {
+            result[paramAndValueTokens[0]] = paramAndValueTokens[1]
+        }
     }
     return result
 }
@@ -108,9 +113,96 @@ class MyRenderer extends marked.Renderer {
         return result
     }
 
+    _renderBootstrapCards(paramsStr, text) {
+        const params = _parseParams(paramsStr)
+        const bsCardArr = []
+        const errorResult = '<pre title="Cannot parse cards content">' + text + '</pre>'
+
+        const lines = text.replaceAll(/^ {4}/gms, '').split(/\n/)
+        let incard = false
+        let cardHeader = ''
+        let cardImg = ''
+        let cardTitle = ''
+        let cardSubtitle = ''
+        let cardText = ''
+        let cardFooter = ''
+        let cardParams = {}
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i] == '[[bs-card' || lines[i].startsWith('[[bs-card ')) {
+                if (incard) {
+                    //error
+                    return errorResult
+                }
+                incard = true
+                cardParams = _parseParams(lines[i].slice('[[bs-card'.length).trim())
+            } else if (lines[i] == ']]') {
+                if (!incard) {
+                    //error
+                    return errorResult
+                }
+                incard = false
+                bsCardArr.push({
+                    header: cardHeader,
+                    img: cardImg,
+                    title: cardTitle,
+                    subtitle: cardSubtitle,
+                    text: cardText,
+                    footer: cardFooter,
+                    params: cardParams,
+                })
+                cardHeader = cardImg = cardTitle = cardSubtitle = cardText = cardFooter = ''
+            } else {
+                if (incard) {
+                    if (lines[i].toLowerCase().startsWith("-header:")) {
+                        cardHeader = lines[i].slice('-header:'.length).trim()
+                    } else if (lines[i].toLowerCase().startsWith("-img:")) {
+                        cardImg = lines[i].slice('-img:'.length).trim()
+                    } else if (lines[i].toLowerCase().startsWith("-title:")) {
+                        cardTitle = lines[i].slice('-title:'.length).trim()
+                    } else if (lines[i].toLowerCase().startsWith("-subtitle:")) {
+                        cardSubtitle = lines[i].slice('-subtitle:'.length).trim()
+                    } else if (lines[i].toLowerCase().startsWith("-footer:")) {
+                        cardFooter = lines[i].slice('-footer:'.length).trim()
+                    } else {
+                        cardText += lines[i] + '\n'
+                    }
+                } else if (lines[i].trim() != '') {
+                    //error
+                    return errorResult
+                }
+            }
+        }
+
+        const cardsEqual = params['equals'] ? true : (params['equal'] ? true : false)
+        let cardsContent = ''
+        for (let i = 0; i < bsCardArr.length; i++) {
+            const cardData = bsCardArr[i]
+            const noMute = cardData.params['no-muted'] ? true : (cardData.params['no-mute'] ? true : false)
+            const cssClassText = cardData.params['text'] ? ' text-' + cardData.params['text'] : ''
+            const cssClassBorder = cardData.params['border'] ? ' border-' + cardData.params['border'] : ''
+            const cssClassBg = cardData.params['bg'] ? ' bg-' + cardData.params['bg'] : (cardData.params['background'] ? ' bg-' + cardData.params['background'] : '')
+            const card = '<div class="col"><div class="card ${cardCssClass}">\n${cardImg}\n${cardHeader}\n<div class="card-body">\n${cardTitle}\n${cardSubTitle}\n${cardText}\n</div>\n${cardFooter}\n</div></div>'
+                .replaceAll('${cardHeader}', cardData.header != '' ? '<div class="card-header">' + cardData.header + '</div>' : '')
+                .replaceAll('${cardImg}', cardData.img != '' ? '<img src="' + cardData.img + '" class="card-img-top docms-reset">' : '')
+                .replaceAll('${cardTitle}', cardData.title != '' ? '<h5 className="card-title">' + cardData.title + '</h5>' : '')
+                .replaceAll('${cardSubTitle}', cardData.subtitle != '' ? '<h6 class="card-subtitle mb-2' + (noMute ? '' : ' text-muted') + '">' + cardData.subtitle + '</h6>' : '')
+                .replaceAll('${cardText}', '<div class="card-text">' + cardData.text + '</div>')
+                .replaceAll('${cardFooter}', cardData.footer != '' ? ('<div class="card-footer' + (noMute ? '' : ' text-muted') + '">' + cardData.footer + '</div>') : '')
+                .replaceAll('${cardCssClass}', (cardsEqual ? ' h-100' : '') + cssClassBorder + cssClassText + cssClassBg)
+            cardsContent += card
+        }
+        const colsCssClass = params['cols'] ? ' row-cols-' + params['cols'] : ''
+        const colsSmCssClass = params['cols-sm'] ? ' row-cols-sm-' + params['cols-sm'] : ''
+        const colsMdCssClass = params['cols-md'] ? ' row-cols-md-' + params['cols-md'] : ''
+        const colsLgCssClass = params['cols-lg'] ? ' row-cols-lg-' + params['cols-lg'] : ''
+        let result = '<div class="row mb-3 g-3' + (colsCssClass + colsSmCssClass + colsMdCssClass + colsLgCssClass) + '">' + cardsContent + '</div>'
+        return result
+    }
+
     _renderBootstrapTabs(paramsStr, text) {
         const params = _parseParams(paramsStr)
         const savedIndex = bsTabsGroupId
+        const errorResult = '<pre title="Cannot parse tabs content">' + text + '</pre>'
         bsTabsGroupArr.push([])
 
         const lines = text.replaceAll(/^ {4}/gms, '').split(/\n/)
@@ -121,14 +213,14 @@ class MyRenderer extends marked.Renderer {
             if (lines[i] == '[[bs-tab' || lines[i].startsWith('[[bs-tab ')) {
                 if (intab) {
                     //error
-                    return '<pre>' + text + '</pre>'
+                    return errorResult
                 }
                 intab = true
                 tabTitle = lines[i].slice('[[bs-tab'.length).trim()
             } else if (lines[i] == ']]') {
                 if (!intab) {
                     //error
-                    return '<pre>' + text + '</pre>'
+                    return errorResult
                 }
                 intab = false
                 bsTabsGroupArr[bsTabsGroupId].push({title: tabTitle, body: tabBody})
@@ -138,7 +230,7 @@ class MyRenderer extends marked.Renderer {
                     tabBody += lines[i] + '\n'
                 } else if (lines[i].trim() != '') {
                     //error
-                    return '<pre>' + text + '</pre>'
+                    return errorResult
                 }
             }
         }
@@ -192,6 +284,9 @@ class MyRenderer extends marked.Renderer {
         }
         if (infoString == 'bs-tabs' || infoString.startsWith('bs-tabs ')) {
             return this._renderBootstrapTabs(infoString.slice('bs-tabs'.length), code)
+        }
+        if (infoString == 'bs-cards' || infoString.startsWith('bs-cards ')) {
+            return this._renderBootstrapCards(infoString.slice('bs-cards'.length), code)
         }
         return super.code(code, infoString, escaped)
     }
