@@ -68,6 +68,21 @@ contacts:
   discord: ""
 ```
 
+**tagalias** - `map[language-code:map[string:Array(string)]]`, gom nhóm các thẻ tương tự nhau vào làm một, ví dụ:
+```yaml
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+```
+
 **tags** - `map[string:object]`, các thông tin khác ở dạng key-object, ví dụ:
 ```yaml
 tags:
@@ -110,6 +125,17 @@ contacts:
   discord: ""
 tags:
   build: ${build_datetime}
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
 ```
 
 Xem thêm:
