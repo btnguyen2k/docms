@@ -48,88 +48,55 @@ docker run --name docms \
 ```
 
 Giao diện **Bootstrap**:
+```bs-cards cols-3 cols-sm-1 equals lightbox=Bootstrap
+    [[bs-card
+    -img:bootstrap1.png
+    -title:Trang nhà
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang nhà</h5>
-            <div class="card-body">
-                <a href="bootstrap1.png" target="_blank"><img src="bootstrap1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang chủ đề</h5>
-            <div class="card-body">
-                <a href="bootstrap2.png" target="_blank"><img src="bootstrap2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang bài viết</h5>
-            <div class="card-body">
-                <a href="bootstrap3.png" target="_blank"><img src="bootstrap3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:bootstrap2.png
+    -title:Trang chủ đề
+    ]]
+
+    [[bs-card
+    -img:bootstrap3.png
+    -title:Trang bài viết
+    ]]
+```
 
 Giao diện **CoderDocs**:
+```bs-cards cols-3 cols-sm-1 equals lightbox=CoderDocs
+    [[bs-card
+    -img:coderdocs1.png
+    -title:Trang nhà
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang nhà</h5>
-            <div class="card-body">
-                <a href="coderdocs1.png" target="_blank"><img src="coderdocs1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang chủ đề</h5>
-            <div class="card-body">
-                <a href="coderdocs2.png" target="_blank"><img src="coderdocs2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang bài viết</h5>
-            <div class="card-body">
-                <a href="coderdocs3.png" target="_blank"><img src="coderdocs3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:coderdocs2.png
+    -title:Trang chủ đề
+    ]]
+
+    [[bs-card
+    -img:coderdocs3.png
+    -title:Trang bài viết
+    ]]
+```
 
 Giao diện **PrettyDocs**:
+```bs-cards cols-3 cols-sm-1 equals lightbox=PrettyDocs
+    [[bs-card
+    -img:prettydocs1.png
+    -title:Trang nhà
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang nhà</h5>
-            <div class="card-body">
-                <a href="prettydocs1.png" target="_blank"><img src="prettydocs1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang chủ đề</h5>
-            <div class="card-body">
-                <a href="prettydocs2.png" target="_blank"><img src="prettydocs2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Trang bài viết</h5>
-            <div class="card-body">
-                <a href="prettydocs3.png" target="_blank"><img src="prettydocs3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:prettydocs2.png
+    -title:Trang chủ đề
+    ]]
+
+    [[bs-card
+    -img:prettydocs3.png
+    -title:Trang bài viết
+    ]]
+```
