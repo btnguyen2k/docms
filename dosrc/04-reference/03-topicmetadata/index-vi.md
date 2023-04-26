@@ -6,16 +6,16 @@ icon: fas fa-book
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 `DO CMS runtime` hỗ trợ bộ biểu tượng [FontAwesome](https://fontawesome.com/search?m=free) và [Bootstrap](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"></i>
 Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
-**title** - `string` or `map[language-code:text]`, tiêu đề ngắn gọn, ví dụ:
+**title** - `string` hoặc `map[language-code:text]`, tiêu đề ngắn gọn, ví dụ:
 ```yaml
 title: "Giới thiệu"
 ```
@@ -38,7 +38,7 @@ title:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
-**description** - `string` or `map[language-code:text]`, mô tả ngắn dọn về chủ đề, ví dụ:
+**description** - `string` hoặc `map[language-code:text]`, mô tả ngắn dọn về chủ đề, ví dụ:
 ```yaml
 description: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```

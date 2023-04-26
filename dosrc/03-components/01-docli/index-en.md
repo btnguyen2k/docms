@@ -14,9 +14,12 @@ You can also install a specific version (*):
 go install github.com/btnguyen2k/docms/docli@cli-v0.1.1
 ```
 
-> `DOCLI` is installed to directory `$GOPATH/bin`. You may need to add the directory to system's PATH.
->
-> (*) List of available versions can be found [here](https://github.com/btnguyen2k/docms/tags).
+```bs-alert warning
+
+`DOCLI` is installed to directory `$GOPATH/bin`. You may need to add the directory to system's PATH.
+
+(*) List of available versions can be found [here](https://github.com/btnguyen2k/docms/tags).
+```
 
 ## Usage
 
@@ -101,7 +104,10 @@ The `new` command has the following global options, applying to all sub-commands
 |`--dir value`|false|`doscr`|directory where metadata files will be written to|
 |`--override`|false||override if destination exists|
 
-> Global options must be placed _before_ the subcommand (e.g. right after `new`).
+```bs-alert warning
+
+Global options must be placed _before_ the subcommand (e.g. right after `new`).
+```
 
 **Command `new site`**
 
@@ -119,7 +125,10 @@ Command's options:
 |`--icon value`|false|`fas fa-globe`|icon of the website (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
 |`--languages value`|false|`en:english,default:en`|content's supported languages, in format `<code1:label1>[,<code2:label2>...],<default:code>`|
 
-> Language codes are recommended to follow [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+```bs-alert warning
+
+Language codes are recommended to follow [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+```
 
 **Command `new topic`**
 
@@ -136,9 +145,12 @@ Command's options:
 |`--id value`|true||topic's unique id|
 |`--icon value`|false|`fas fa-book`|icon of the topic (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
 
-> Topic's id must be unique, recommended to contain only lower-cased letters (`a-z`) and digits (`0-9`).
->
-> Name of the directory that stores topic data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering.
+```bs-alert warning
+
+Topic's id must be unique, recommended to contain only lower-cased letters (`a-z`) and digits (`0-9`).
+
+Name of the directory that stores topic data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering.
+```
 
 **Command `new document`**
 
@@ -157,6 +169,9 @@ Command's options:
 |`--icon value`|false|`fas fa-file`|icon of the document (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
 |`--use-timestamp`|false||use current timestamp to prefix document directory name (format `yyyyMMddHHmm`), see below (*)|
 
-> Document's id must be unique (within the topic), recommended to contain only lower-cased letters and digits.
->
-> (*) Name of the directory that stores document data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering. If option `--use-timestamp` is supplied, the current timestamp (format `yyyyMMddHHmm`) will be used as the prefix number.
+```bs-alert warning
+
+Document's id must be unique (within the topic), recommended to contain only lower-cased letters and digits.
+
+(*) Name of the directory that stores document data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering. If option `--use-timestamp` is supplied, the current timestamp (format `yyyyMMddHHmm`) will be used as the prefix number.
+```

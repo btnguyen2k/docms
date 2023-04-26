@@ -11,12 +11,12 @@ icon: fas fa-globe
 ```
 
 ```bs-alert info flex
-<i class="fas fa-circle-info fa-2xl me-2"></i>
+<i class="fas fa-circle-info fa-2xl me-3"></i>
 `DO CMS runtime` hỗ trợ bộ biểu tượng [FontAwesome](https://fontawesome.com/search?m=free) và [Bootstrap](https://icons.getbootstrap.com/).
 ```
 
 ```bs-alert warning flex
-<i class="fas fa-triangle-exclamation fa-2xl me-2"></i>
+<i class="fas fa-triangle-exclamation fa-2xl me-3"></i>
 Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
@@ -32,7 +32,7 @@ languages:
 >
 > Dòng `default: vi` chỉ thị rằng `vi` là ngôn ngữ mặc định của trang web.
 
-**description** - `string` or `map[language-code:text]`, mô tả ngắn dọn về trang web, ví dụ:
+**description** - `string` hoặc `map[language-code:text]`, mô tả ngắn dọn về trang web, ví dụ:
 ```yaml
 description: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
 ```
@@ -68,17 +68,40 @@ contacts:
   discord: ""
 ```
 
-**tags** - `map[string:string]`, các thông tin khác ở dạng key-value, ví dụ:
+**tagalias** - `map[language-code:map[string:Array(string)]]`, gom nhóm các thẻ tương tự nhau vào làm một, ví dụ:
+```yaml
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+```
+
+**tags** - `map[string:object]`, các thông tin khác ở dạng key-object, ví dụ:
 ```yaml
 tags:
   build: ${build_datetime}
-  mytag: My value
+  tags1:
+    key1: value 1
+    key2: value 2
+  tags2: [1, 2, 3]
 ```
 
 > Các chuỗi đặc biệt sẽ được thay bằng giá trị thực trong quá trình tiền xử lý với công cụ `DO CLI`:
 > - `${build_datetime}` - thay thế bằng thời gian chạy tiền xửu lý ở định dạng`YYYYMMDDHHmmss`
 > - `${build_date}` - pre-processing timestamp, format `YYYYMMDD`
 > - `${build_time}` - pre-processing timestamp, format `HHmmss`
+
+```bs-alert info flex
+<i class="fas fa-circle-info me-3 fa-xl"></i>
+Các tag có thể được nhúng vào trong tài liệu sử dụng cú pháp `[[do-tag`. Tham khảo chi tiết ở tài liệu [Cú pháp Markdown được hỗ trợ](../markdown/).
+```
 
 Một ví dụ đầy đủ của tập tin metadata trang web:
 ```yaml
@@ -102,6 +125,17 @@ contacts:
   discord: ""
 tags:
   build: ${build_datetime}
+tagalias:
+  en:
+    cms: [content management, content management system, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
+  vi:
+    cms: [quản trị nội dung, hệ thống quản trị nội dung, quản lý nội dung, hệ thống quản lý nội dung, docms, do cms]
+    ci/cd: [cicd, ci cd, ci-cd]
+    localhost: [local]
+    docli: [cli]
 ```
 
 Xem thêm:

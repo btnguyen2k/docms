@@ -15,13 +15,20 @@
               <div class="content-inner">
                 <section class="doc-section">
                   <div v-if="searchHits.length==0" class="alert alert-secondary" role="alert">{{ $t('search_no_result') }}</div>
-                  <div v-else v-for="doc in searchHits" v-bind:key="doc.id" class="section-block">
-                    <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}, query: {q: searchTerm}}" class="nav-link">
-                      <h3 class="block-title"><i v-if="doc.icon!=''" :class="doc.icon" class="pe-1"/>{{ $localedText(doc.title) }}</h3>
+                  <div v-else v-for="document in searchHits" v-bind:key="document.id" class="section-block">
+                    <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}, query: {q: searchTerm}}" class="nav-link">
+                      <h3 class="block-title"><i v-if="document.icon!=''" :class="document.icon" class="pe-1"/>{{ $localedText(document.title) }}</h3>
                     </router-link>
-                    <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="text-decoration-none text-muted">
-                      {{ $localedText(doc.summary) }}
+                    <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}}" class="text-decoration-none text-muted">
+                      {{ $localedText(document.summary) }}
                     </router-link>
+                    <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+                      <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                                   :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                                   class="badge bg-secondary text-decoration-none link-light me-1" style="font-size: 0.65rem !important;">
+                        {{ tag }}
+                      </router-link>
+                    </p>
                   </div>
                   <div class="section-block">
                     <small>{{searchTotalResults}} results in {{searchDuration}} seconds</small>
@@ -30,7 +37,7 @@
               </div>
             </div>
 
-            <!--<lego-sidebar />-->
+            <lego-sidebar />
           </div>
         </div>
       </div>
@@ -51,14 +58,16 @@ import legoSidebar from './_sidebar.vue'
 export default {
   name: 'Search',
   inject: ['$global', '$siteMeta'],
-  // eslint-disable-next-line vue/no-unused-components
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
     const route = useRoute()
     watch(
         () => route.query.q,
-        async () => vue._search(vue),
+        async () => {
+          vue.$global.searchQuery = this.searchTerm
+          vue._search(vue)
+        }
     )
     watch(
         () => route.query.l,
@@ -83,7 +92,23 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue._search(vue)
+              vue._fetchTopics(vue)
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          err => {
+            vue.errorMsg = err
+          },
+      )
+    },
+    _fetchTopics(vue) {
+      vue.$fetchSiteTopics(
+          () => vue.status = 0,
+          apiResp => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue._search(this)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }

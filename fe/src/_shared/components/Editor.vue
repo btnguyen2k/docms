@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="container">
-      <nav class="pb-2">
+      <nav class="pb-2 g-0">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle"
                   type="button" role="tab" aria-controls="nav-hstyle" aria-selected="true"><strong>Horizontal
@@ -53,9 +53,12 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {localStorageGet, localStorageSet} from "@/_shared/utils/app_utils"
 import {markdownRender} from "@/_shared/utils/docms_utils"
-import '@/_shared/assets/markdown-gfm.css'
+import "@/_shared/assets/markdown-gfm.css"
 
 export default {
   name: 'Editor',
@@ -127,10 +130,26 @@ export default {
   },
   computed: {
     markdownRendered() {
-      return markdownRender(this.markdownContent, true)
+      this._updateLightbox()
+      return markdownRender(this.markdownContent, {sanitize: true, tags: {
+          build: new Date(),
+          demo: {
+            tag1: {
+              key1: 'value 1',
+              key2: 'value 2'
+            },
+            tag2: [1, "2", true]
+          }
+        }
+      })
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     startTimer() {
       this.timerInterval = setInterval(() => (localStorageSet("_editor", this.markdownContent)), 5000);
     },

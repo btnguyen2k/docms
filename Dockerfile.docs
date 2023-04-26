@@ -3,10 +3,11 @@
 # docker build --rm -t docms:docs -f Dockerfile.docs .
 
 FROM golang:1.19-alpine AS builder_docs
+RUN apk add git build-base jq sed
 RUN mkdir /build
 COPY . /build
 RUN cd /build \
-    && go install github.com/btnguyen2k/docms/docli@cli-v0.1.1 \
+    && go install github.com/btnguyen2k/docms/docli@cli-v0.3.0.1 \
     && mkdir -p dodata && docli build --purge --src dosrc --out dodata
 
 FROM btnguyen2k/docmsruntime:latest as docmsruntime

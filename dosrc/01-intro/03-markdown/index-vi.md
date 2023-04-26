@@ -49,8 +49,8 @@ DO CMS sử dụng thư viện [KaTeX](https://katex.org/docs/support_table.html
 
 Các công thức Toán học nhúng được đặt giữa 2 dấu đô-la-đơn (`$`): $x^2 + y^2 = z^2$
 
-Các khối công thức Toán học được đặg giữa 2 dấu đô-la-đôi (`$$`):
-$$
+Các khối công thức Toán học đơn giản là các khối `code` với ngôn ngữ là `katex`:
+```katex
 \begin{equation}
 \begin{split}
 (a - b)^2 &= (a - b)(a - b) \\
@@ -59,16 +59,13 @@ $$
 &= a^2 + 2ab + b^2          \nonumber
 \end{split}
 \end{equation}
-$$
+```
 
 Tương tự cho các công thức Hoá học nhúng: $\ce{CO2 + C -> 2 CO}$
 
 và khối công thức Hoá học:
-$$
+```katex
 C_p[\ce{H2O(l)}] = \pu{75.3 J // mol K}
-$$
-
-> Lưu ý: Dấu đô-la-đôi (`$$`) phải đặt riêng trên 1 dòng.
-> Nếu để cùng dòng với công thức (Toán hoặc Hoá) sẽ không hoạt động: `$$a+b=c$$`
+```
 
 Xem danh sách các cú pháp Markdown được hỗ trợ [ở đây](../../reference/markdown/).

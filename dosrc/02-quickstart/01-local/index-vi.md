@@ -46,7 +46,10 @@ dodata/
   - `meta.yaml` trong `thư mục chủ đề` lưu *metadata* của chủ đề (ví dụ như tiêu đề hoặc mô tả).
   - `meta.yaml` trong `thư mục tài liệu` lưu *metadata* của tài liệu (ví dụ như tiêu đề hoặc tóm tắt).
 
-> Metadata cũng có thể được lưu trong tập tin `meta.json`. Nếu cả 2 tập tin `meta.yaml` và `meta.json` cùng tồn tại, tập tin định dạng YAML sẽ được ưu tiên.
+```bs-alert primary
+
+Metadata cũng có thể được lưu trong tập tin `meta.json`. Nếu cả 2 tập tin `meta.yaml` và `meta.json` cùng tồn tại, tập tin định dạng YAML sẽ được ưu tiên.
+```
 
 ## Thể hiện nội dung trang web với DO CMS runtime
 

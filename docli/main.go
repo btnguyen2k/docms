@@ -9,7 +9,7 @@ import (
 
 const (
 	// Version of DO CMS CLI
-	Version = "0.1.1"
+	Version = "0.3.0.1"
 )
 
 func main() {

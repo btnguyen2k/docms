@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -153,7 +154,7 @@ func initCMSData() {
 	if os.Getenv("DEBUG") == "true" {
 		w := watcher.New()
 		w.SetMaxEvents(1)
-		// w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
+		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
 		go func() {
 			for {
 				select {
@@ -175,8 +176,10 @@ func initCMSData() {
 	gTopicList = make([]*TopicMeta, 0)                    // list of topics, sorted by index
 	gTopicMeta = make(map[string]*TopicMeta)              // map[topic-id]topic-metadata
 	gDocumentList = make(map[string][]*DocumentMeta)      // list of documents, per topic, sorted by index
-	gDocumentMeta = make(map[string]*DocumentMeta)        // map[topic-id:document-id]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map[topic-id:document-id]map[language-code]document-content
+	gDocumentMeta = make(map[string]*DocumentMeta)        // map["topic-id:document-id"]document-metadata
+	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
+	gTagAlias = make(map[string]map[string]string)        // map[language-code]map[alias]tag
+	gDocumentTags = make(map[string]map[string][]string)  // map[language-code]map[tag][]"topic-id:document-id"
 	if gFti != nil {
 		gFti.Close()
 		gFti = nil
@@ -184,9 +187,24 @@ func initCMSData() {
 
 	var err error
 	// load site's metadata
-	gSiteMeta, err = LoadSiteMeta(gDataDir+"/"+metaFileYaml, gDataDir+"/"+metaFileJson)
+	gSiteMeta, err = LoadSiteMetaAuto(gDataDir)
 	if err != nil {
 		panic(err)
+	}
+	// normalize tag-alias
+	for lang, inner := range gSiteMeta.GetTagAliasMap() {
+		gTagAlias[lang] = make(map[string]string)
+		for tag, aliasList := range inner {
+			tag = strings.ToLower(strings.TrimSpace(tag))
+			gTagAlias[lang][tag] = tag
+			for _, alias := range aliasList {
+				gTagAlias[lang][strings.ToLower(strings.TrimSpace(alias))] = tag
+			}
+		}
+	}
+	if os.Getenv("DEBUG") == "true" {
+		log.Printf("[%s] site's tags: %#v", logLevelDebug, gSiteMeta.Tags)
+		log.Printf("[%s] site's tag-alias: %#v", logLevelDebug, gTagAlias)
 	}
 
 	// fetch all topics
@@ -201,7 +219,7 @@ func initCMSData() {
 		log.Printf("[%s] Loading Topic data from <%s>...", logLevelInfo, topicDirPath)
 
 		// load topic metadata
-		topicMeta, err := LoadTopicMeta(topicDirPath+"/"+metaFileYaml, topicDirPath+"/"+metaFileJson)
+		topicMeta, err := LoadTopicMetaAuto(topicDirPath)
 		if err != nil {
 			panic(err)
 		}
@@ -222,7 +240,7 @@ func initCMSData() {
 			log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
 
 			// load document metadata
-			docMeta, err := LoadDocumentMeta(docDirPath+"/"+metaFileYaml, docDirPath+"/"+metaFileYaml)
+			docMeta, err := LoadDocumentMetaAuto(docDirPath)
 			if err != nil {
 				panic(err)
 			}
@@ -230,6 +248,38 @@ func initCMSData() {
 			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
 			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
 			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
+
+			if os.Getenv("DEBUG") == "true" {
+				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
+				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
+			}
+
+			// normalize document's tags
+			docTagsMap := make(map[string][]string)
+			for lang, docTags := range docMeta.GetTagsMap() {
+				tagDocMap := gDocumentTags[lang]
+				if tagDocMap == nil {
+					tagDocMap = make(map[string][]string)
+					gDocumentTags[lang] = tagDocMap
+				}
+
+				docTagsMap[lang] = make([]string, 0)
+				for _, alias := range docTags {
+					alias = strings.ToLower(strings.TrimSpace(alias))
+					tag, ok := gTagAlias[lang][alias]
+					if !ok {
+						tag = alias
+						gTagAlias[lang][alias] = tag
+					}
+					docTagsMap[lang] = append(docTagsMap[lang], tag)
+					tagDocMap[tag] = append(tagDocMap[tag], topicMeta.id+":"+docMeta.id)
+				}
+				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+			}
+			for lang := range docTagsMap {
+				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+			}
+			docMeta.Tags = docTagsMap
 
 			// load document content
 			docFileContentMap := docMeta.GetContentFileMap()
@@ -248,12 +298,20 @@ func initCMSData() {
 			return gDocumentList[topicMeta.id][i].index < gDocumentList[topicMeta.id][j].index
 		})
 	}
+	for lang, tagDocMap := range gDocumentTags {
+		for tag := range tagDocMap {
+			tagDocMap[tag] = removeDuplicateStrings(tagDocMap[tag])
+		}
+		gDocumentTags[lang] = tagDocMap
+	}
 	sort.Slice(gTopicList, func(i, j int) bool {
 		return gTopicList[i].index < gTopicList[j].index
 	})
 
 	// load fti if exists
-	gFti, err = bleve.Open(gDataDir + "/fti.bleve")
+	gFti, err = bleve.OpenUsing(gDataDir+"/fti.bleve", map[string]interface{}{
+		"read_only": true,
+	})
 	if err != nil {
 		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
 		gFti = nil
@@ -270,4 +328,6 @@ func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
 	router.SetHandler("getDocument", apiGetDocument)
 	router.SetHandler("search", apiSearch)
+	router.SetHandler("tagSearch", apiTagSearch)
+	router.SetHandler("getTagCloud", apiGetTagCloud)
 }

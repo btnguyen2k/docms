@@ -20,8 +20,13 @@
             <header class="mb-4">
               <h1 class="fw-bolder mb-1"><i v-if="document.icon" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
               <!--<div class="text-muted fst-italic mb-2">Posted on January 1, 2023 by Start Bootstrap</div>-->
-              <!--<a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>-->
-              <!--<a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>-->
+              <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+                <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                             :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                             class="badge bg-secondary text-decoration-none link-light me-1" style="font-size: 0.65rem !important;">
+                  {{ tag }}
+                </router-link>
+              </p>
             </header>
             <section class="mb-5">
               <div class="img-fit img-center" v-html="documentContentRendered"></div>
@@ -38,6 +43,9 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {markdownRender} from "@/_shared/utils/docms_utils"
 import {useRoute} from 'vue-router'
 import {watch} from 'vue'
@@ -48,7 +56,7 @@ import legoSidebar from './_sidebar.vue'
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteTopics'],
+  inject: ['$global', '$siteMeta', '$siteTopics'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
@@ -66,10 +74,19 @@ export default {
   },
   computed: {
     documentContentRendered() {
-      return markdownRender(this.$localedText(this.document.content), true)
+      this._updateLightbox()
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,

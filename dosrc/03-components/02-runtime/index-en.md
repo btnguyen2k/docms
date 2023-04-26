@@ -11,6 +11,14 @@ docker run --name docms \
     btnguyen2k/docmsruntime
 ```
 
+```bs-alert info flex
+<i class="fas fa-circle-info fa-2xl me-3"></i>
+The Docker image offer the following tags:
+
+`:stable` or `:version` (i.e. `:1.2.3`): stable releases<br/>
+`:latest` or `:yyyymmdd` or `:yyyymmdd-hash`: usable releases, may have some glitches but always include latest features up to the build time.
+```
+
 ## Environment Variables
 
 **HTTP_LISTEN_ADDR** and **HTTP_LISTEN_PORT** - specify listen address & port number. Default value for HTTP_LISTEN_ADDR is `0.0.0.0` and HTTP_LISTEN_PORT is `8000`. The following command makes `DO CMS runtime` to listen on `127.0.0.1:3000`:
@@ -40,88 +48,55 @@ docker run --name docms \
 ```
 
 **Bootstrap** template:
+```bs-cards cols-3 cols-sm-1 equals lightbox=Bootstrap
+    [[bs-card
+    -img:bootstrap1.png
+    -title:Home page
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Home page</h5>
-            <div class="card-body">
-                <a href="bootstrap1.png" target="_blank"><img src="bootstrap1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Topic page</h5>
-            <div class="card-body">
-                <a href="bootstrap2.png" target="_blank"><img src="bootstrap2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Document page</h5>
-            <div class="card-body">
-                <a href="bootstrap3.png" target="_blank"><img src="bootstrap3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:bootstrap2.png
+    -title:Topic page
+    ]]
+
+    [[bs-card
+    -img:bootstrap3.png
+    -title:Document page
+    ]]
+```
 
 **CoderDocs** template:
+```bs-cards cols-3 cols-sm-1 equals lightbox=CoderDocs
+    [[bs-card
+    -img:coderdocs1.png
+    -title:Home page
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Home page</h5>
-            <div class="card-body">
-                <a href="coderdocs1.png" target="_blank"><img src="coderdocs1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Topic page</h5>
-            <div class="card-body">
-                <a href="coderdocs2.png" target="_blank"><img src="coderdocs2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Document page</h5>
-            <div class="card-body">
-                <a href="coderdocs3.png" target="_blank"><img src="coderdocs3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:coderdocs2.png
+    -title:Topic page
+    ]]
+
+    [[bs-card
+    -img:coderdocs3.png
+    -title:Document page
+    ]]
+```
 
 **PrettyDocs** template:
+```bs-cards cols-3 cols-sm-1 equals lightbox=PrettyDocs
+    [[bs-card
+    -img:prettydocs1.png
+    -title:Home page
+    ]]
 
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Home page</h5>
-            <div class="card-body">
-                <a href="prettydocs1.png" target="_blank"><img src="prettydocs1.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Topic page</h5>
-            <div class="card-body">
-                <a href="prettydocs2.png" target="_blank"><img src="prettydocs2.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-    <div class="col pb-2">
-        <div class="card">
-            <h5 class="card-header">Document page</h5>
-            <div class="card-body">
-                <a href="prettydocs3.png" target="_blank"><img src="prettydocs3.png" /></a>
-            </div>
-        </div>
-    </div><!-- col -->
-</div>
+    [[bs-card
+    -img:prettydocs2.png
+    -title:Topic page
+    ]]
+
+    [[bs-card
+    -img:prettydocs3.png
+    -title:Document page
+    ]]
+```

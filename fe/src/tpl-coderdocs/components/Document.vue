@@ -15,6 +15,13 @@
             <header class="docs-header">
               <h1 class="docs-heading mb-2"><i v-if="document.icon!=''" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
             </header>
+            <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+              <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                           :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                           :class="$calcTagCloudCSS(tag)+' me-1'" style="font-size: 0.65rem !important;">
+                {{ tag }}
+              </router-link>
+            </p>
             <section class="docs-section img-fit img-center" v-html="documentContentRendered"></section>
           </article>
 
@@ -26,6 +33,9 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {markdownRender} from "@/_shared/utils/docms_utils"
 import {useRoute } from 'vue-router'
 import {watch } from 'vue'
@@ -39,7 +49,7 @@ const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteTopics', '$coderDocsResponsiveSidebar'],
+  inject: ['$global', '$siteMeta', '$siteTopics', '$coderDocsResponsiveSidebar', '$calcTagCloudCSS'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   unmounted() {
     unregisterPopstate(this.handleBackFoward)
@@ -62,10 +72,19 @@ export default {
   },
   computed: {
     documentContentRendered() {
-      return markdownRender(this.$localedText(this.document.content), true)
+      this._updateLightbox()
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     handleBackFoward() {
       const pathBase = this.$router.options.meta.base.replace(regTrailingSlash, '')
       const vuePath = window.location.pathname.slice(pathBase.length) // remove the 'base' prefix

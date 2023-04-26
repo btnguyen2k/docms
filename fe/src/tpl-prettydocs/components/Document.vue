@@ -11,6 +11,13 @@
           <div id="doc-header" class="doc-header text-center">
             <h1 class="doc-title"><i v-if="document.icon" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>
             <!--<div class="meta"><i class="far fa-clock"></i> Last updated: June 13th, 2022</div>-->
+            <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
+              <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
+                           :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
+                           class="badge bg-secondary text-decoration-none link-light me-1" style="font-size: 0.65rem !important;">
+                {{ tag }}
+              </router-link>
+            </p>
           </div>
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
@@ -32,6 +39,9 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {markdownRender} from '@/_shared/utils/docms_utils'
 import {useRoute} from 'vue-router'
 import {watch} from 'vue'
@@ -42,7 +52,7 @@ import legoSidebar from './_sidebar.vue'
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteTopics'],
+  inject: ['$global', '$siteMeta', '$siteTopics'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
@@ -60,10 +70,19 @@ export default {
   },
   computed: {
     documentContentRendered() {
-      return markdownRender(this.$localedText(this.document.content), true)
+      this._updateLightbox()
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     _styleClassForTopic(topic) {
       const styleList = ["body-blue", "body-green", "body-red", "body-pink", "body-purple", "body-orange"]
       return this.$styleByHash(topic.id, styleList)

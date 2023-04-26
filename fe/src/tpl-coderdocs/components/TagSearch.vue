@@ -1,86 +1,69 @@
 <template>
   <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
   <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else>
-    <legoPageHeader active="Home" />
+  <div v-else class="docs-page">
+    <lego-page-header />
 
-    <header class="bg-light border-bottom mb-4">
-      <div class="container px-5">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><router-link :to="{ name: 'Home' }">{{ $t('home') }}</router-link></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $t('search') }}</li>
-          </ol>
-        </nav>
+    <div class="docs-wrapper">
+      <lego-sidebar />
 
-        <div class="text-center my-4">
-          <h1 class="fw-bolder">{{ $t('search') }}</h1>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-lg-6">
-            <form class="form-inline" @submit.prevent="$doSearch" method="get">
-              <div class="input-group pb-4">
-                <input type="text" :placeholder="$t('search_prompt')" name="q" class="form-control" v-model="$global.searchQuery">
-                <button type="submit" class="btn btn-primary" :value="$t('search')"><i class="bi bi-search" /></button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <div class="container px-5">
-      <div class="row">
-        <div class="col-lg-8">
-          <div v-if="searchHits.length==0" class="alert alert-warning" role="alert">{{ $t('search_no_result') }}</div>
-          <div v-else class="card mb-4" v-for="document in searchHits" v-bind:key="document.id">
-            <div class="card-body">
-              <!--<div class="small text-muted">January 1, 2023</div>-->
-              <h2 class="card-title">
-                <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}, query: {q: searchTerm}}" class="text-decoration-none">
-                  <i v-if="document.icon" :class="document.icon"></i> {{ $localedText(document.title) }}
-                </router-link>
-              </h2>
-              <p class="card-text">{{ $localedText(document.summary) }}</p>
+      <div class="docs-content">
+        <div class="container">
+          <div v-if="searchHits.length==0" class="alert alert-warning mt-4" role="alert">{{ $t('search_no_result') }}</div>
+          <article v-for="document in searchHits" v-bind:key="document.id" class="docs-article pt-1 pb-2">
+<!--            <header class="docs-header">-->
+<!--              <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}}" class="text-decoration-none">-->
+<!--                <h1 class="docs-heading mb-2"><i v-if="document.icon!=''" :class="document.icon"></i> {{ $localedText(document.title) }}</h1>-->
+<!--              </router-link>-->
+<!--              <section class="docs-intro">-->
+<!--                <p>{{ $localedText(document.summary) }}</p>-->
+<!--              </section>-->
+<!--            </header>-->
+            <section class="docs-section">
+              <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}, query: {q: searchTerm}}" class="text-decoration-none">
+                <h2 class="section-heading"><i v-if="document.icon!=''" :class="document.icon"></i> {{ $localedText(document.title) }}</h2>
+              </router-link>
+              <p>{{ $localedText(document.summary) }}</p>
               <p v-if="document.tags && $localedText(document.tags).length>0" style="font-size: small">
                 <router-link v-for="tag in $localedText(document.tags)" v-bind:key="tag"
                              :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}"
-                             class="badge bg-secondary text-decoration-none link-light me-1" style="font-size: 0.65rem !important;">
+                             :class="$calcTagCloudCSS(tag)+' me-1'" style="font-size: 0.65rem !important;">
                   {{ tag }}
                 </router-link>
               </p>
-              <router-link :to="{name: 'Document', params: {tid: document.topic.id, did: document.id}, query: {q: searchTerm}}" class="text-decoration-none">
-                {{ $t('read') }} <i class="bi bi-arrow-right-circle"></i>
-              </router-link>
-            </div>
-          </div>
-          <div class="mb-4">
-            <small>{{searchTotalResults}} results in {{searchDuration}} seconds</small>
-          </div>
-        </div>
+            </section>
+          </article>
 
-        <lego-sidebar no-search />
+          <small>{{searchTotalResults}} results in {{searchDuration}} seconds</small>
+
+          <lego-page-footer />
+        </div>
       </div>
     </div>
-
-    <lego-page-footer />
   </div>
 </template>
 
 <script>
+import {registerPopstate, unregisterPopstate} from "@/_shared/utils/docms_utils"
 import {swichLanguage} from "@/_shared/i18n"
 import {watch} from 'vue'
 import {useRoute} from "vue-router"
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
-import legoSidebar from './_sidebar.vue'
+import legoSidebar from "./_sidebar.vue"
+
+const regTrailingSlash = /\/+$/
 
 export default {
   name: 'Search',
-  inject: ['$global'],
+  inject: ['$global', '$coderDocsResponsiveSidebar', '$calcTagCloudCSS'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
+  unmounted() {
+    unregisterPopstate(this.handleBackFoward)
+  },
   mounted() {
+    registerPopstate(this.handleBackFoward)
+
     const vue = this
     const route = useRoute()
     watch(
@@ -107,6 +90,14 @@ export default {
     },
   },
   methods: {
+    handleBackFoward() {
+      const pathBase = this.$router.options.meta.base.replace(regTrailingSlash, '')
+      const vuePath = window.location.pathname.slice(pathBase.length) // remove the 'base' prefix
+      const result = this.$router.resolve(vuePath)
+      if (result && result.resolved && result.resolved.name=='Search') {
+        this._search(this)
+      }
+    },
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,
@@ -129,7 +120,7 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
-              vue._search(vue)
+              vue._search(this)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
@@ -140,7 +131,7 @@ export default {
       )
     },
     _search(vue) {
-      vue.$search(vue.searchTerm,
+      vue.$tagSearch(vue.searchTerm,
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
@@ -151,6 +142,10 @@ export default {
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
+            vue.$nextTick(()=>{
+              // CoderDocs: onload
+              vue.$coderDocsResponsiveSidebar()
+            })
           },
           err => {
             vue.errorMsg = err
@@ -163,6 +158,7 @@ export default {
       searchHits: [],
       status: -1,
       errorMsg: '',
+      searchQuery: '',
       searchDuration: 0,
       searchTotalResults: 0,
     }

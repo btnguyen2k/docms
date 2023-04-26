@@ -19,7 +19,10 @@ docli build --src ./dosrc --out ./dodata
 
 Sau khi tiền xử lý, thể hiện nội dung trang web từ thư mục `dodata` sẽ mở khóa tất cả các tính năng của DO CMS.
 
-> `DOCLI` được cài đặt vào thư mục `$GOPATH/bin`. Lưu ý đưa thư mục này vào đường dẫn hệ thống.
+```bs-alert warning
+
+`DOCLI` được cài đặt vào thư mục `$GOPATH/bin`. Lưu ý đưa thư mục này vào đường dẫn hệ thống.
+```
 
 Xem thêm:
 - [Công cụ DOCLI](../../components/cli/)
