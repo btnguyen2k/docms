@@ -7,7 +7,7 @@ DO CMS is a Content Management System targeting developers as its users. Instead
 
 ## What's new?
 
-- EMbed [Bootstrap components](https://getbootstrap.com/docs/5.0/components/) to documents:
+- Embed [Bootstrap components](https://getbootstrap.com/docs/5.0/components/) to documents:
   - `Alerts`: https://getbootstrap.com/docs/5.0/components/alerts/
   - `Cards`:  https://getbootstrap.com/docs/5.0/components/card/#grid-cards
   - `Tabs`: https://getbootstrap.com/docs/5.0/components/navs-tabs/#tabs
