@@ -4,7 +4,7 @@
 
 Copyright (C) by **com.github.btnguyen2k**.
 
-Latest release version: `0.1.0`. See [RELEASE-NOTES.md](../RELEASE-NOTES.md).
+Latest release version: [RELEASE-NOTES.md](../RELEASE-NOTES.md).
 
 ## Getting Started
 
