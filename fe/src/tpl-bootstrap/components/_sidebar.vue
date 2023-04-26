@@ -11,7 +11,7 @@
       <div class="card mb-4">
         <div class="card-header">{{ $t('tag_cloud') }}</div>
         <div class="card-body">
-          <ul class="list-unstyled">
+          <ul class="list-unstyled mb-0">
             <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">
               <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>
             </li>
@@ -71,7 +71,7 @@ export default {
       return this.$pickupFromHash(tag, cssList)
     },
     calcTagCloudSize(tag) {
-      const size = this.$calcTagSize(tag, 0.75, 1.50, 5)
+      const size = this.$calcTagSize(tag, 0.55, 1.15, 5)
       return 'font-size: ' + size + 'rem !important;'
     }
   }

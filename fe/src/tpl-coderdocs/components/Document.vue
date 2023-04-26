@@ -33,6 +33,9 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {markdownRender} from "@/_shared/utils/docms_utils"
 import {useRoute } from 'vue-router'
 import {watch } from 'vue'
@@ -69,6 +72,7 @@ export default {
   },
   computed: {
     documentContentRendered() {
+      this._updateLightbox()
       return markdownRender(this.$localedText(this.document.content), {
         sanitize: true,
         tags: this.$siteMeta.tags,
@@ -76,6 +80,11 @@ export default {
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     handleBackFoward() {
       const pathBase = this.$router.options.meta.base.replace(regTrailingSlash, '')
       const vuePath = window.location.pathname.slice(pathBase.length) // remove the 'base' prefix

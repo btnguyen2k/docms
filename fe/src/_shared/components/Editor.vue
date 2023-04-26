@@ -53,9 +53,12 @@
 </template>
 
 <script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
 import {localStorageGet, localStorageSet} from "@/_shared/utils/app_utils"
 import {markdownRender} from "@/_shared/utils/docms_utils"
-import '@/_shared/assets/markdown-gfm.css'
+import "@/_shared/assets/markdown-gfm.css"
 
 export default {
   name: 'Editor',
@@ -127,6 +130,7 @@ export default {
   },
   computed: {
     markdownRendered() {
+      this._updateLightbox()
       return markdownRender(this.markdownContent, {sanitize: true, tags: {
           build: new Date(),
           demo: {
@@ -141,6 +145,11 @@ export default {
     },
   },
   methods: {
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
     startTimer() {
       this.timerInterval = setInterval(() => (localStorageSet("_editor", this.markdownContent)), 5000);
     },
