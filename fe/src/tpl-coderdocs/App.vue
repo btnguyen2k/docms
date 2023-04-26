@@ -41,7 +41,6 @@ export default {
     unregisterResize(this.$coderDocsResponsiveSidebar) // CoderDocs
   },
   mounted() {
-    this.$global.router = this.$router
     registerResize(this.$coderDocsResponsiveSidebar) // CoderDocs: onresize
   },
   methods: {

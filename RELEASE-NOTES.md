@@ -3,7 +3,7 @@
 ## 2023-04-xx
 
 Runtime `v0.3.1`:
-- Add Google Analytics support
+- Add Google Analytics support.
 
 ## 2023-04-25
 

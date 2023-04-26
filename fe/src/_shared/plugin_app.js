@@ -119,7 +119,7 @@ function initGtag(app, global) {
 }
 
 export default {
-    install: (app) => {
+    install: (app, params) => {
         app.config.unwrapInjectedRef = true
 
         // use FontAwesome icons
@@ -142,6 +142,7 @@ export default {
         /*-- read/write global variable */
         let global = new Global()
         app.provide('$global', global)
+        global.router = params.router ? params.router : undefined
 
         initGtag(app, global)
 

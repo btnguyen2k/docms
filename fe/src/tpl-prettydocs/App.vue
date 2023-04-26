@@ -35,9 +35,6 @@ export default {
       $calcTagCloudCSS: this.calcTagCloudCSS,
     }
   },
-  mounted() {
-    this.$global.router = this.$router
-  },
   methods: {
     calcTagCloudCSS(tag) {
       const cssList = [
