@@ -30,6 +30,19 @@ docker run --name docms \
     btnguyen2k/docmsruntime
 ```
 
+**GOOGLE_TAG** - specify Google Tag ID for Google Analytics, example:
+```shell
+docker run --name docms \
+    -p 8000:8000 \
+    -e GOOGLE_TAG=G-ABC123D4E5 \
+    btnguyen2k/docmsruntime
+```
+
+```bs-alert info
+
+`GOOGLE_TAG` is supported since runtime `v0.3.1` or Docker image `:20230426`.
+```
+
 **DOCMS_DATA_DIR** - specify the root directory where website content is located. Default value is `./dodata`. The following command makes `DO CMS runtime` to load website content from directory `/mydata`:
 ```shell
 docker run --name docms \
