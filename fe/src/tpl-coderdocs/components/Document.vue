@@ -44,7 +44,7 @@ import {registerPopstate, unregisterPopstate} from '@/_shared/utils/docms_utils'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
-import {APP_CONFIG} from '@/_shared/utils/app_config"
+import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 const regTrailingSlash = /\/+$/
 
