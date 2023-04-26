@@ -73,6 +73,7 @@ import {watch} from 'vue'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
+import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 export default {
   name: 'Topic',
@@ -117,6 +118,8 @@ export default {
               vue.$siteTopics.forEach(t => {
                 if (t.id == topicId) {
                   vue.topic = t
+                  const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
+                  document.title = vue.$localedText(vue.topic.title) + ' | ' + appNameAndVersion
                   vue._fetchDocuments(vue, topicId)
                 }
               })

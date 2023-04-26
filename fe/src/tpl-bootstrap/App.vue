@@ -21,8 +21,5 @@ window.addEventListener('resize', () => triggerResize())
 export default {
   name: 'App',
   inject: ['$global'],
-  mounted() {
-    this.$global.router = this.$router
-  }
 }
 </script>

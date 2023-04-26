@@ -19,7 +19,7 @@ const headerAccessToken = APP_CONFIG.api_client.header_access_token
 const headerLanguage = APP_CONFIG.api_client.header_language
 const appId = APP_ID
 
-// const apiInfo = "/info"
+const apiInfo = "/info"
 const apiSite = "/api/site"
 const apiTopics = "/api/topics"
 const apiDocuments = "/api/documents/:topic-id"
@@ -99,6 +99,7 @@ function apiDoPost(apiUri, data, callbackSuccessful, callbackError) {
 export {
     setCacheExpiry,
 
+    apiInfo,
     apiSite,
     apiTopics,
     apiDocuments,

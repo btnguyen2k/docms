@@ -1,6 +1,7 @@
 //#DO CMS frontend
 import i18n from "./i18n"
 import {
+    apiInfo,
     apiDocument,
     apiDocuments,
     apiDoGet,
@@ -91,8 +92,34 @@ import {
     Tooltip
 } from 'bootstrap'
 
+import VueGtag from "vue-gtag"
+
+function initGtag(app, global) {
+    if (!global.router) {
+        setTimeout(() => {
+            initGtag(app, global)
+        }, 100)
+        return
+    }
+
+    apiDoGet(apiInfo,
+        apiResp => {
+            if (apiResp.status == 200 && apiResp.data.tracking.gtag) {
+                const data = apiResp.data
+                app.use(VueGtag, {
+                    config: { id: data.tracking.gtag },
+                    appName: data.app.name,
+                    pageTrackerScreenviewEnabled: true
+                }, global.router)
+            }
+        },
+        () => {
+        },
+    )
+}
+
 export default {
-    install: (app) => {
+    install: (app, params) => {
         app.config.unwrapInjectedRef = true
 
         // use FontAwesome icons
@@ -115,6 +142,9 @@ export default {
         /*-- read/write global variable */
         let global = new Global()
         app.provide('$global', global)
+        global.router = params.router ? params.router : undefined
+
+        initGtag(app, global)
 
         /*-- read-only global variable */
         app.provide('$searchQuery', computed(() => global.searchQuery))

@@ -44,6 +44,7 @@ import {registerPopstate, unregisterPopstate} from '@/_shared/utils/docms_utils'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
+import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 const regTrailingSlash = /\/+$/
 
@@ -158,6 +159,8 @@ export default {
             vue.status = apiResp.status
             if (vue.status == 200) {
               vue.document = apiResp.data
+              const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
+              document.title = vue.$localedText(vue.document.title) + ' | ' + appNameAndVersion
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }

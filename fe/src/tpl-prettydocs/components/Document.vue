@@ -49,6 +49,7 @@ import '@/_shared/assets/markdown-gfm.css'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
+import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 export default {
   name: 'Document',
@@ -152,6 +153,8 @@ export default {
             vue.status = apiResp.status
             if (vue.status == 200) {
               vue.document = apiResp.data
+              const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
+              document.title = vue.$localedText(vue.document.title) + ' | ' + appNameAndVersion
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }
