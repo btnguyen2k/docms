@@ -38,9 +38,14 @@ func (m MyBootstrapper) Bootstrap() error {
 		}
 		return nil
 	})
+	initPublicData()
 	initCMSData()
 	initApiHandlers(goapi.ApiRouter)
 	return nil
+}
+
+func initPublicData() {
+
 }
 
 func postInitEchoSetup(e *echo.Echo) error {
@@ -330,4 +335,38 @@ func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("search", apiSearch)
 	router.SetHandler("tagSearch", apiTagSearch)
 	router.SetHandler("getTagCloud", apiGetTagCloud)
+
+	router.SetHandler("health", apiHealthCheck)
+	router.SetHandler("info", apiInfo)
+}
+
+var (
+	apiResultOk = itineris.NewApiResult(itineris.StatusOk).SetMessage("ok")
+)
+
+func apiHealthCheck(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	return apiResultOk
+}
+
+func apiInfo(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	appData := make(map[string]interface{})
+	appCfg := goapi.AppConfig.GetValue("app")
+	if appCfg != nil {
+		if appObj := appCfg.GetObject(); appObj != nil {
+			keys := appObj.GetKeys()
+			for _, k := range keys {
+				appData[k] = appObj.GetKey(k).GetString()
+			}
+		}
+	}
+
+	tracking := map[string]interface{}{
+		"gtag": goapi.AppConfig.GetString("docms.tracking.gtag"),
+	}
+
+	data := map[string]interface{}{
+		"app":      appData,
+		"tracking": tracking,
+	}
+	return itineris.NewApiResult(itineris.StatusOk).SetData(data)
 }
