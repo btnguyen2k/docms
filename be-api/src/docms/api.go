@@ -68,7 +68,7 @@ func _extractParam(params *itineris.ApiParams, paramName string, typ reflect.Typ
 // API handler "getDocumentsForTopic"
 func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
-	docMetaList := gDocumentList[topicId.(string)]
+	docMetaList := gDocumentListPerTopic[topicId.(string)]
 	if docMetaList == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
 	}
@@ -89,7 +89,7 @@ func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params
 func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
 	docId := _extractParam(params, "did", reddo.TypeString, "", nil)
-	docList := gDocumentList[topicId.(string)]
+	docList := gDocumentListPerTopic[topicId.(string)]
 	if docList == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
 	}

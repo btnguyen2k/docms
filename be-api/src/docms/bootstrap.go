@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -145,26 +146,16 @@ func serveImage(c echo.Context) error {
 	return c.Blob(http.StatusOK, mimeType, buff)
 }
 
-var dataLock sync.Mutex
-
 func initCMSData() {
-	if !dataLock.TryLock() {
-		log.Printf("[%s] There is data lock, ignore loading...", logLevelWarning)
-		return
-	}
-	defer dataLock.Unlock()
-	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
-	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
-
 	if os.Getenv("DEBUG") == "true" {
 		w := watcher.New()
-		w.SetMaxEvents(1)
+		// w.SetMaxEvents(1)
 		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
 		go func() {
 			for {
 				select {
 				case <-w.Event:
-					initCMSData()
+					_reloadCMSData()
 				case err := <-w.Error:
 					log.Fatalln(err)
 				case <-w.Closed:
@@ -177,23 +168,14 @@ func initCMSData() {
 		}
 		go w.Start(10 * time.Second)
 	}
+	_reloadCMSData()
+}
 
-	gTopicList = make([]*TopicMeta, 0)                    // list of topics, sorted by index
-	gTopicMeta = make(map[string]*TopicMeta)              // map[topic-id]topic-metadata
-	gDocumentList = make(map[string][]*DocumentMeta)      // list of documents, per topic, sorted by index
-	gDocumentMeta = make(map[string]*DocumentMeta)        // map["topic-id:document-id"]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
-	gTagAlias = make(map[string]map[string]string)        // map[language-code]map[alias]tag
-	gDocumentTags = make(map[string]map[string][]string)  // map[language-code]map[tag][]"topic-id:document-id"
-	if gFti != nil {
-		gFti.Close()
-		gFti = nil
-	}
-
+func _loadSiteMeta() {
 	var err error
+
 	// load site's metadata
-	gSiteMeta, err = LoadSiteMetaAuto(gDataDir)
-	if err != nil {
+	if gSiteMeta, err = LoadSiteMetaAuto(gDataDir); err != nil {
 		panic(err)
 	}
 	// normalize tag-alias
@@ -211,7 +193,98 @@ func initCMSData() {
 		log.Printf("[%s] site's tags: %#v", logLevelDebug, gSiteMeta.Tags)
 		log.Printf("[%s] site's tag-alias: %#v", logLevelDebug, gTagAlias)
 	}
+}
 
+func _loadDocumentsForTopic(topicMeta *TopicMeta) {
+	// fetch all documents inside the topic directory
+	topicDirPath := gDataDir + "/" + topicMeta.dir
+	docDirList, err := GetDirContent(topicDirPath, func(entry os.DirEntry) bool {
+		return entry.IsDir() && RexpContentDir.MatchString(entry.Name())
+	})
+	if err != nil {
+		panic(err)
+	}
+	for _, docDir := range docDirList {
+		docDirPath := gDataDir + "/" + topicMeta.dir + "/" + docDir.Name()
+		log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
+
+		// load document metadata
+		docMeta, err := LoadDocumentMetaAuto(docDirPath)
+		if err != nil {
+			panic(err)
+		}
+		topicDocId := topicMeta.id + ":" + docMeta.id
+		docMeta.setDirectory(docDir.Name())
+		gDocumentListPerTopic[topicMeta.id] = append(gDocumentListPerTopic[topicMeta.id], docMeta)
+		gDocumentList = append(gDocumentList, docMeta)
+		gDocumentMeta[topicDocId] = docMeta
+		gDocumentContent[topicDocId] = make(map[string]string)
+		if docMeta.DocPage != "" {
+			specialPages := gSpecialPages[docMeta.DocPage]
+			if specialPages == nil {
+				specialPages = make([]string, 0)
+				gSpecialPages[docMeta.DocPage] = specialPages
+			}
+			specialPages = append(specialPages, topicDocId)
+		}
+
+		if os.Getenv("DEBUG") == "true" {
+			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
+			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
+		}
+
+		// normalize document's tags
+		docTagsMap := make(map[string][]string)
+		for lang, docTags := range docMeta.GetTagsMap() {
+			tagDocMap := gDocumentTags[lang]
+			if tagDocMap == nil {
+				tagDocMap = make(map[string][]string)
+				gDocumentTags[lang] = tagDocMap
+			}
+
+			docTagsMap[lang] = make([]string, 0)
+			for _, alias := range docTags {
+				alias = strings.ToLower(strings.TrimSpace(alias))
+				tag, ok := gTagAlias[lang][alias]
+				if !ok {
+					tag = alias
+					gTagAlias[lang][alias] = tag
+				}
+				docTagsMap[lang] = append(docTagsMap[lang], tag)
+				tagDocMap[tag] = append(tagDocMap[tag], topicDocId)
+			}
+			docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+		}
+		for lang := range docTagsMap {
+			docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+		}
+		docMeta.Tags = docTagsMap
+
+		// load document content
+		docFileContentMap := docMeta.GetContentFileMap()
+		if len(docFileContentMap) == 0 {
+			panic(fmt.Errorf("document <%s> has no content defined at metadata key <file>", docDirPath))
+		}
+		for k, v := range docFileContentMap {
+			buff, err := os.ReadFile(docDirPath + "/" + v)
+			if err != nil {
+				panic(err)
+			}
+			gDocumentContent[topicDocId][k] = string(buff)
+		}
+	}
+	if gSiteMeta.Mode == SiteModeBlog {
+		sort.Slice(gDocumentListPerTopic[topicMeta.id], func(i, j int) bool {
+			return gDocumentListPerTopic[topicMeta.id][i].index > gDocumentListPerTopic[topicMeta.id][j].index
+		})
+	} else {
+		sort.Slice(gDocumentListPerTopic[topicMeta.id], func(i, j int) bool {
+			return gDocumentListPerTopic[topicMeta.id][i].index < gDocumentListPerTopic[topicMeta.id][j].index
+		})
+	}
+}
+
+func _loadTopics() {
 	// fetch all topics
 	topicDirList, err := GetDirContent(gDataDir, func(entry os.DirEntry) bool {
 		return entry.IsDir() && RexpContentDir.MatchString(entry.Name())
@@ -231,97 +304,57 @@ func initCMSData() {
 		topicMeta.setDirectory(topicDir.Name())
 		gTopicList = append(gTopicList, topicMeta)
 		gTopicMeta[topicMeta.id] = topicMeta
-		gDocumentList[topicMeta.id] = make([]*DocumentMeta, 0)
+		gDocumentListPerTopic[topicMeta.id] = make([]*DocumentMeta, 0)
 
-		// fetch all documents inside the topic directory
-		docDirList, err := GetDirContent(topicDirPath, func(entry os.DirEntry) bool {
-			return entry.IsDir() && RexpContentDir.MatchString(entry.Name())
-		})
-		if err != nil {
-			panic(err)
-		}
-		for _, docDir := range docDirList {
-			docDirPath := gDataDir + "/" + topicDir.Name() + "/" + docDir.Name()
-			log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
-
-			// load document metadata
-			docMeta, err := LoadDocumentMetaAuto(docDirPath)
-			if err != nil {
-				panic(err)
-			}
-			docMeta.setDirectory(docDir.Name())
-			gDocumentList[topicMeta.id] = append(gDocumentList[topicMeta.id], docMeta)
-			gDocumentMeta[topicMeta.id+":"+docMeta.id] = docMeta
-			gDocumentContent[topicMeta.id+":"+docMeta.id] = make(map[string]string)
-
-			if os.Getenv("DEBUG") == "true" {
-				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
-				log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
-			}
-
-			// normalize document's tags
-			docTagsMap := make(map[string][]string)
-			for lang, docTags := range docMeta.GetTagsMap() {
-				tagDocMap := gDocumentTags[lang]
-				if tagDocMap == nil {
-					tagDocMap = make(map[string][]string)
-					gDocumentTags[lang] = tagDocMap
-				}
-
-				docTagsMap[lang] = make([]string, 0)
-				for _, alias := range docTags {
-					alias = strings.ToLower(strings.TrimSpace(alias))
-					tag, ok := gTagAlias[lang][alias]
-					if !ok {
-						tag = alias
-						gTagAlias[lang][alias] = tag
-					}
-					docTagsMap[lang] = append(docTagsMap[lang], tag)
-					tagDocMap[tag] = append(tagDocMap[tag], topicMeta.id+":"+docMeta.id)
-				}
-				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
-			}
-			for lang := range docTagsMap {
-				docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
-			}
-			docMeta.Tags = docTagsMap
-
-			// load document content
-			docFileContentMap := docMeta.GetContentFileMap()
-			if len(docFileContentMap) == 0 {
-				panic(fmt.Errorf("document <%s> has no content defined at metadata key <file>", docDirPath))
-			}
-			for k, v := range docFileContentMap {
-				buff, err := os.ReadFile(docDirPath + "/" + v)
-				if err != nil {
-					panic(err)
-				}
-				gDocumentContent[topicMeta.id+":"+docMeta.id][k] = string(buff)
-			}
-		}
-		sort.Slice(gDocumentList[topicMeta.id], func(i, j int) bool {
-			return gDocumentList[topicMeta.id][i].index < gDocumentList[topicMeta.id][j].index
+		_loadDocumentsForTopic(topicMeta)
+	}
+	sort.Slice(gTopicList, func(i, j int) bool {
+		return gTopicList[i].index < gTopicList[j].index
+	})
+	if gSiteMeta.Mode == SiteModeBlog {
+		sort.Slice(gDocumentList, func(i, j int) bool {
+			return gDocumentList[i].index > gDocumentList[j].index
 		})
 	}
+}
+
+func _normalizeTags() {
 	for lang, tagDocMap := range gDocumentTags {
 		for tag := range tagDocMap {
 			tagDocMap[tag] = removeDuplicateStrings(tagDocMap[tag])
 		}
 		gDocumentTags[lang] = tagDocMap
 	}
-	sort.Slice(gTopicList, func(i, j int) bool {
-		return gTopicList[i].index < gTopicList[j].index
-	})
+}
+
+func _loadFTI() {
+	var err error
 
 	// load fti if exists
-	gFti, err = bleve.OpenUsing(gDataDir+"/fti.bleve", map[string]interface{}{
+	if gFti, err = bleve.OpenUsing(gDataDir+"/fti.bleve", map[string]interface{}{
 		"read_only": true,
-	})
-	if err != nil {
+	}); err != nil {
 		log.Printf("[%s] error while opening fulltext index: %s", logLevelError, err)
 		gFti = nil
 	}
+}
 
+var dataLock sync.Mutex
+
+func _reloadCMSData() {
+	if !dataLock.TryLock() {
+		log.Printf("[%s] There is data lock, ignore loading...", logLevelWarning)
+		return
+	}
+	defer dataLock.Unlock()
+	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
+	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
+
+	_resetGlobalVars()
+	_loadSiteMeta()
+	_loadTopics()
+	_normalizeTags()
+	_loadFTI()
 }
 
 // Setup API handlers: application register its api-handlers by calling router.SetHandler(apiName, apiHandlerFunc)
@@ -359,14 +392,51 @@ func apiInfo(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams)
 			}
 		}
 	}
-
 	tracking := map[string]interface{}{
 		"gtag": goapi.AppConfig.GetString("docms.tracking.gtag"),
 	}
-
 	data := map[string]interface{}{
 		"app":      appData,
 		"tracking": tracking,
 	}
-	return itineris.NewApiResult(itineris.StatusOk).SetData(data)
+
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	extras := map[string]interface{}{
+		"memory": map[string]interface{}{
+			"heap_alloc":          m.HeapAlloc,
+			"heap_alloc_readable": bToReadable(m.HeapAlloc),
+			"heap_sys":            m.HeapSys,
+			"heap_sys_readable":   bToReadable(m.HeapSys),
+			"sys":                 m.Sys,
+			"sys_readable":        bToReadable(m.Sys),
+		},
+	}
+
+	return itineris.NewApiResult(itineris.StatusOk).SetData(data).SetExtras(extras)
+}
+
+func bToReadable(b uint64) string {
+	if b > 200_000_000 {
+		return fmt.Sprintf("%.2f Gb", bToGb(b))
+	}
+	if b > 400_000 {
+		return fmt.Sprintf("%.2f Mb", bToMb(b))
+	}
+	if b > 800 {
+		return fmt.Sprintf("%.2f Kb", bToKb(b))
+	}
+	return fmt.Sprintf("%d bytes", b)
+}
+
+func bToKb(b uint64) float64 {
+	return float64(b) / 1024
+}
+
+func bToMb(b uint64) float64 {
+	return float64(b) / 1024 / 1024
+}
+
+func bToGb(b uint64) float64 {
+	return float64(b) / 1024 / 1024
 }

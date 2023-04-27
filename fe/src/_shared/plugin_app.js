@@ -94,6 +94,7 @@ import {
 
 import VueGtag from "vue-gtag"
 
+
 function initGtag(app, global) {
     if (!global.router) {
         setTimeout(() => {
@@ -102,18 +103,34 @@ function initGtag(app, global) {
         return
     }
 
+    const data = global.serverInfo
+    app.use(VueGtag, {
+        config: {id: data.tracking.gtag},
+        appName: data.app.name,
+        pageTrackerScreenviewEnabled: true
+    }, global.router)
+}
+
+function initGlobal(app, global) {
     apiDoGet(apiInfo,
         apiResp => {
-            if (apiResp.status == 200 && apiResp.data.tracking.gtag) {
-                const data = apiResp.data
-                app.use(VueGtag, {
-                    config: { id: data.tracking.gtag },
-                    appName: data.app.name,
-                    pageTrackerScreenviewEnabled: true
-                }, global.router)
+            if (apiResp.status == 200) {
+                console.log(apiResp.data)
+                console.log(apiResp.extras)
+                global.serverInfo = apiResp.data
+                initGtag(app, global)
+            } else {
+                console.error("Error while fetching server info, retry shortly: ", apiResp)
+                setTimeout(() => {
+                    initGlobal(app, global)
+                }, 5000)
             }
         },
-        () => {
+        (err) => {
+            console.error("Error while fetching server info, retry shortly: ", err)
+            setTimeout(() => {
+                initGlobal(app, global)
+            }, 5000)
         },
     )
 }
@@ -144,7 +161,7 @@ export default {
         app.provide('$global', global)
         global.router = params.router ? params.router : undefined
 
-        initGtag(app, global)
+        initGlobal(app, global)
 
         /*-- read-only global variable */
         app.provide('$searchQuery', computed(() => global.searchQuery))
