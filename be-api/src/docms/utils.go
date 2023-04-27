@@ -23,17 +23,51 @@ const (
 )
 
 var (
-	gDataDir         string
-	gSiteMeta        *SiteMeta
-	gTopicList       = make([]*TopicMeta, 0)              // list of topics, sorted by index
-	gTopicMeta       = make(map[string]*TopicMeta)        // map[topic-id]topic-metadata
-	gDocumentList    = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
-	gDocumentMeta    = make(map[string]*DocumentMeta)     // map["topic-id:document-id"]document-metadata
-	gDocumentContent = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
-	gFti             bleve.Index                          // Full-text index
+	gDataDir              string
+	gSiteMeta             *SiteMeta
+	gTopicList            = make([]*TopicMeta, 0)              // list of topics, sorted by index
+	gTopicMeta            = make(map[string]*TopicMeta)        // map[topic-id]topic-metadata
+	gDocumentListPerTopic = make(map[string][]*DocumentMeta)   // list of documents, per topic, sorted by index
+	gDocumentMeta         = make(map[string]*DocumentMeta)     // map["topic-id:document-id"]document-metadata
+	gDocumentContent      = make(map[string]map[string]string) // map["topic-id:document-id"]map[language-code]document-content
+
+	gFti bleve.Index // Full-text index
 
 	gTagAlias     = make(map[string]map[string]string)   // map[language-code]map[alias]tag
 	gDocumentTags = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
+
+	gSpecialPages = make(map[string][]string) // map[special-page-name][]"topic-id:document-id"
+	gDocumentList = make([]*DocumentMeta, 0)  // list of all documents, sorted by index
+)
+
+func _resetGlobalVars() {
+	gTopicList = make([]*TopicMeta, 0)                       // list of topics, sorted by index
+	gTopicMeta = make(map[string]*TopicMeta)                 // map[topic-id]topic-metadata
+	gDocumentListPerTopic = make(map[string][]*DocumentMeta) // list of documents, per topic, sorted by index
+	gDocumentMeta = make(map[string]*DocumentMeta)           // map["topic-id:document-id"]document-metadata
+	gDocumentContent = make(map[string]map[string]string)    // map["topic-id:document-id"]map[language-code]document-content
+
+	if gFti != nil {
+		gFti.Close()
+		gFti = nil
+	}
+
+	gTagAlias = make(map[string]map[string]string)       // map[language-code]map[alias]tag
+	gDocumentTags = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
+
+	gSpecialPages = make(map[string][]string) // map[special-page-name][]"topic-id:document-id"
+	gDocumentList = make([]*DocumentMeta, 0)  // list of all documents, sorted by index
+}
+
+const (
+	DefaultSiteMode  = SiteModeDocument
+	SiteModeDoc      = "doc"
+	SiteModeDocument = "document"
+	SiteModeBlog     = "blog"
+)
+
+var (
+	AllSiteModes = []string{SiteModeDoc, SiteModeDocument, SiteModeBlog}
 )
 
 // SiteMeta capture metadata of the website.
@@ -46,6 +80,7 @@ type SiteMeta struct {
 	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`       // site's contact info
 	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
 	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
+	Mode            string                 `json:"mode" yaml:"mode"`               // site's mode, current support modes are: document/doc and blog
 }
 
 var (
@@ -63,6 +98,18 @@ func (sm *SiteMeta) init() error {
 		}
 	}
 	sm.DefaultLanguage = defLang
+
+	// verify "site-mode"
+	ok := false
+	for _, mode := range AllSiteModes {
+		if mode == sm.Mode {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		sm.Mode = DefaultSiteMode
+	}
 
 	// normalize field "contacts"
 	for k, v := range sm.Contacts {
@@ -194,6 +241,7 @@ type TopicMeta struct {
 	Title       interface{} `json:"title" yaml:"title"`             // topic's title, can be a single string, or a map[language-code:string]string
 	Description interface{} `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
 	Icon        string      `json:"icon" yaml:"icon"`               // topic's icon
+	EntryImage  string      `json:"img" yaml:"img"`                 // topic's entry image
 }
 
 func (tm *TopicMeta) setDirectory(dir string) bool {
@@ -297,6 +345,9 @@ type DocumentMeta struct {
 	Icon        string      `json:"icon" yaml:"icon"`       // document's icon
 	ContentFile interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
 	Tags        interface{} `json:"tags" yaml:"tags"`       // document's tags, can be []string or map[language-code][]string
+	EntryImage  string      `json:"img" yaml:"img"`         // document's entry image
+	DocPage     string      `json:"page" yaml:"page"`       // document plays as the special page on site (such as "contact" or "about")
+	DocStyle    string      `json:"style" yaml:"style"`     // document's special style
 }
 
 func (dm *DocumentMeta) setDirectory(dir string) bool {
