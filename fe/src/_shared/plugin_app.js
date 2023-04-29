@@ -4,6 +4,7 @@ import {
     apiInfo,
     apiDocument,
     apiDocuments,
+    apiDocumentsForTopic,
     apiDoGet,
     apiDoPost,
     apiSearch,
@@ -12,6 +13,33 @@ import {
     apiTopics
 } from "./utils/api_client"
 import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_utils"
+import {computed} from 'vue'
+import MD5 from "crypto-js/md5"
+String.prototype.md5 = function () {
+    return MD5(this)
+}
+
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {fab} from '@fortawesome/free-brands-svg-icons'
+import {far} from '@fortawesome/free-regular-svg-icons'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+
+import {
+    Alert,
+    Button,
+    Carousel,
+    Collapse,
+    Dropdown,
+    Modal,
+    Offcanvas,
+    Popover,
+    ScrollSpy,
+    Tab,
+    Toast,
+    Tooltip
+} from 'bootstrap'
+
+import VueGtag from "vue-gtag"
 
 class Global {
     get router() {
@@ -69,31 +97,6 @@ class Global {
         this._tagCloud = value
     }
 }
-
-import {computed} from 'vue'
-
-import {library} from '@fortawesome/fontawesome-svg-core'
-import {fab} from '@fortawesome/free-brands-svg-icons'
-import {far} from '@fortawesome/free-regular-svg-icons'
-import {fas} from '@fortawesome/free-solid-svg-icons'
-
-import {
-    Alert,
-    Button,
-    Carousel,
-    Collapse,
-    Dropdown,
-    Modal,
-    Offcanvas,
-    Popover,
-    ScrollSpy,
-    Tab,
-    Toast,
-    Tooltip
-} from 'bootstrap'
-
-import VueGtag from "vue-gtag"
-
 
 function initGtag(app, global) {
     if (!global.router) {
@@ -301,7 +304,7 @@ export default {
             if (callbackPrefetch) {
                 callbackPrefetch()
             }
-            apiDoGet(apiDocuments.replaceAll(':topic-id', topicId),
+            apiDoGet(apiDocumentsForTopic.replaceAll(':topic-id', topicId),
                 apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )
@@ -313,6 +316,18 @@ export default {
                 callbackPrefetch()
             }
             apiDoGet(apiDocument.replaceAll(':topic-id', topicId).replaceAll(':document-id', documentId),
+                apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
+                err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
+            )
+        }
+
+        // use $fetchLatestDocuments to fetch latest documents' metadata from server
+        app.config.globalProperties.$fetchLatestDocuments = (topicId, numDocs, callbackPrefetch, callbackSuccess, callbackError) => {
+            if (callbackPrefetch) {
+                callbackPrefetch()
+            }
+            const uri = apiDocuments + '?p=latest&n=' + numDocs + (topicId ? '&t=' + topicId : '')
+            apiDoGet(uri,
                 apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )

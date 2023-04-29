@@ -83,6 +83,33 @@ RUN cd /build \
     && sed -i s/#{appVersion}/"$APP_VERSION"/g src/_shared/config.json \
     && npm install && npm run build:prettydocs
 
+FROM node:18-alpine AS builder_fe_blogy
+RUN mkdir /build
+RUN apk add jq sed
+COPY . /build
+RUN cd /build \
+    && export APP_NAME=`jq -r '.name' appinfo.json` \
+    && export APP_SHORTNAME=`jq -r '.shortname' appinfo.json` \
+    && export APP_INITIAL=`jq -r '.initial' appinfo.json` \
+    && export APP_VERSION=`jq -r '.version' appinfo.json` \
+    && export APP_DESC=`jq -r '.description' appinfo.json` \
+    && echo "Building fe-blogy..." \
+    && cd /build/fe \
+    && rm -rf .env \
+    && rm -rf dist node_modules \
+    && sed -i s/#{pageTitle}/"$APP_NAME v$APP_VERSION"/g public/index.html \
+    && sed -i s/#{appName}/"$APP_NAME"/g public/index.html \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g public/index.html \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g public/index.html \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g public/index.html \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g public/index.html \
+    && sed -i s/#{appName}/"$APP_NAME"/g src/_shared/config.json \
+    && sed -i s/#{appInitial}/"$APP_INITIAL"/g src/_shared/config.json \
+    && sed -i s/#{appShortname}/"$APP_SHORTNAME"/g src/_shared/config.json \
+    && sed -i s/#{appDescription}/"$APP_DESC"/g src/_shared/config.json \
+    && sed -i s/#{appVersion}/"$APP_VERSION"/g src/_shared/config.json \
+    && npm install && npm run build:blogy
+
 FROM golang:1.19-alpine AS builder_be
 RUN apk add git build-base jq sed
 RUN mkdir /build
@@ -110,6 +137,7 @@ COPY --from=builder_be /build/be-api/config /app/config
 COPY --from=builder_fe_bootstrap /build/fe/dist/tpl-bootstrap /app/frontend/bootstrap
 COPY --from=builder_fe_coderdocs /build/fe/dist/tpl-coderdocs /app/frontend/coderdocs
 COPY --from=builder_fe_prettydocs /build/fe/dist/tpl-prettydocs /app/frontend/prettydocs
+COPY --from=builder_fe_blogy /build/fe/dist/tpl-blogy /app/frontend/blogy
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
     && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime \

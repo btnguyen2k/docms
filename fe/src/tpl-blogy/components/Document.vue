@@ -1,0 +1,377 @@
+<template>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
+  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">{{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}</div>
+  <div v-else>
+    <lego-page-header active="topic" :topic="topic" />
+
+    <div class="site-cover site-cover-sm same-height overlay single-page" style="background-image: url('//placehold.co/700x440/6c757d/6c757d');">
+      <div class="container">
+        <div class="row same-height justify-content-center">
+          <div class="col-md-6">
+            <div class="post-entry text-center">
+              <h1 class="mb-4">{{ $localedText(document.title) }}</h1>
+              <div class="post-meta align-items-center text-center">
+                <figure class="author-figure mb-0 me-3 d-inline-block"><img :src="'//www.gravatar.com/avatar/'+document.author_email.md5()" alt="Image" class="img-fluid"></figure>
+                <!--<figure class="author-figure mb-0 me-3 d-inline-block"><img src="images/person_1.jpg" alt="Image" class="img-fluid"></figure>-->
+                <span class="d-inline-block mt-1">{{ document.author_name }}</span>
+                <span>&nbsp;-&nbsp;{{ $unixTimestampToReadable(document.tu) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="container">
+        <div class="row blog-entries element-animate">
+          <div class="col-md-12 col-lg-8 main-content">
+            <div class="d-inline-block mb-2" v-if="document.tags && $localedText(document.tags).length>0">
+              <ul class="tags" style="font-size: small">
+                <li v-for="tag in $localedText(document.tags)" v-bind:key="tag"><router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}">{{ tag }}</router-link></li>
+              </ul>
+            </div>
+
+            <div class="post-content-body" v-html="documentContentRendered">
+            </div>
+
+<!--            <div class="pt-5" v-if="document.tags && $localedText(document.tags).length>0">-->
+<!--              <ul class="tags" style="font-size: small">-->
+<!--                <li v-for="tag in $localedText(document.tags)" v-bind:key="tag"><router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}">{{ tag }}</router-link></li>-->
+<!--              </ul>-->
+<!--            </div>-->
+
+<!--            <div class="pt-5 comment-wrap">-->
+<!--              <h3 class="mb-5 heading">6 Comments</h3>-->
+<!--              <ul class="comment-list">-->
+<!--                <li class="comment">-->
+<!--                  <div class="vcard">-->
+<!--                    <img src="images/person_1.jpg" alt="Image placeholder">-->
+<!--                  </div>-->
+<!--                  <div class="comment-body">-->
+<!--                    <h3>Jean Doe</h3>-->
+<!--                    <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                    <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                  </div>-->
+<!--                </li>-->
+
+<!--                <li class="comment">-->
+<!--                  <div class="vcard">-->
+<!--                    <img src="images/person_2.jpg" alt="Image placeholder">-->
+<!--                  </div>-->
+<!--                  <div class="comment-body">-->
+<!--                    <h3>Jean Doe</h3>-->
+<!--                    <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                    <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                  </div>-->
+
+<!--                  <ul class="children">-->
+<!--                    <li class="comment">-->
+<!--                      <div class="vcard">-->
+<!--                        <img src="images/person_3.jpg" alt="Image placeholder">-->
+<!--                      </div>-->
+<!--                      <div class="comment-body">-->
+<!--                        <h3>Jean Doe</h3>-->
+<!--                        <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                        <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                      </div>-->
+
+
+<!--                      <ul class="children">-->
+<!--                        <li class="comment">-->
+<!--                          <div class="vcard">-->
+<!--                            <img src="images/person_4.jpg" alt="Image placeholder">-->
+<!--                          </div>-->
+<!--                          <div class="comment-body">-->
+<!--                            <h3>Jean Doe</h3>-->
+<!--                            <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                            <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                          </div>-->
+
+<!--                          <ul class="children">-->
+<!--                            <li class="comment">-->
+<!--                              <div class="vcard">-->
+<!--                                <img src="images/person_5.jpg" alt="Image placeholder">-->
+<!--                              </div>-->
+<!--                              <div class="comment-body">-->
+<!--                                <h3>Jean Doe</h3>-->
+<!--                                <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                                <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                              </div>-->
+<!--                            </li>-->
+<!--                          </ul>-->
+<!--                        </li>-->
+<!--                      </ul>-->
+<!--                    </li>-->
+<!--                  </ul>-->
+<!--                </li>-->
+
+<!--                <li class="comment">-->
+<!--                  <div class="vcard">-->
+<!--                    <img src="images/person_1.jpg" alt="Image placeholder">-->
+<!--                  </div>-->
+<!--                  <div class="comment-body">-->
+<!--                    <h3>Jean Doe</h3>-->
+<!--                    <div class="meta">January 9, 2018 at 2:21pm</div>-->
+<!--                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>-->
+<!--                    <p><a href="#" class="reply rounded">Reply</a></p>-->
+<!--                  </div>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--              &lt;!&ndash; END comment-list &ndash;&gt;-->
+
+<!--              <div class="comment-form-wrap pt-5">-->
+<!--                <h3 class="mb-5">Leave a comment</h3>-->
+<!--                <form action="#" class="p-5 bg-light">-->
+<!--                  <div class="form-group">-->
+<!--                    <label for="name">Name *</label>-->
+<!--                    <input type="text" class="form-control" id="name">-->
+<!--                  </div>-->
+<!--                  <div class="form-group">-->
+<!--                    <label for="email">Email *</label>-->
+<!--                    <input type="email" class="form-control" id="email">-->
+<!--                  </div>-->
+<!--                  <div class="form-group">-->
+<!--                    <label for="website">Website</label>-->
+<!--                    <input type="url" class="form-control" id="website">-->
+<!--                  </div>-->
+
+<!--                  <div class="form-group">-->
+<!--                    <label for="message">Message</label>-->
+<!--                    <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>-->
+<!--                  </div>-->
+<!--                  <div class="form-group">-->
+<!--                    <input type="submit" value="Post Comment" class="btn btn-primary">-->
+<!--                  </div>-->
+
+<!--                </form>-->
+<!--              </div>-->
+<!--            </div>-->
+          </div>
+
+          <div class="col-md-12 col-lg-4 sidebar">
+            <div class="sidebar-box search-form-wrap">
+              <form class="sidebar-search-form" @submit.prevent="$doSearch" method="get">
+                <span class="bi-search"></span>
+                <input type="text" class="form-control" id="s" :placeholder="$t('search_prompt')" v-model="$global.searchQuery">
+              </form>
+            </div>
+
+<!--            <div class="sidebar-box">-->
+<!--              <div class="bio text-center">-->
+<!--                <img src="images/person_2.jpg" alt="Image Placeholder" class="img-fluid mb-3">-->
+<!--                <div class="bio-body">-->
+<!--                  <h2>Hannah Anderson</h2>-->
+<!--                  <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>-->
+<!--                  <p><a href="#" class="btn btn-primary btn-sm rounded px-2 py-2">Read my bio</a></p>-->
+<!--                  <p class="social">-->
+<!--                    <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>-->
+<!--                    <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>-->
+<!--                    <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>-->
+<!--                    <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>-->
+<!--                  </p>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+            <div class="sidebar-box">
+              <h3 class="heading">{{ $t('same_topic') }}</h3>
+              <div class="post-entry-sidebar">
+                <ul>
+                  <li v-for="doc in sameTopicDocuments" v-bind:key="doc.id">
+                    <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}">
+                      <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="me-4 rounded">
+                      <div class="text">
+                        <h4>{{ $localedText(doc.title) }}</h4>
+                        <div class="post-meta">
+                          <span class="mr-2">{{ $unixTimestampToReadable(doc.tu) }}</span>
+                        </div>
+                      </div>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sidebar-box">
+              <h3 class="heading">{{ $t('topics') }}</h3>
+              <ul class="categories">
+                <li v-for="topic in $siteTopics" v-bind:key="topic.id">
+                  <router-link :to="{name: 'Topic', params:{tid: topic.id}}">{{ $localedText(topic.title) }} <span>({{ topic.num_docs }})</span></router-link>
+                </li>
+              </ul>
+            </div>
+
+            <div class="sidebar-box">
+              <h3 class="heading">{{ $t('tag_cloud') }}</h3>
+              <ul class="tags" style="font-size: small">
+                <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag">
+                  <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)">{{ tag }}</router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <lego-page-footer :document-list="$latestDocuments" />
+  </div>
+</template>
+
+<script>
+/* Lightbox for Bootstrap 5 */
+import Lightbox from 'bs5-lightbox'
+
+import {markdownRender} from '@/_shared/utils/docms_utils'
+import {useRoute} from 'vue-router'
+import {watch} from 'vue'
+import '@/_shared/assets/markdown-gfm.css'
+import legoPageHeader from './_pageHeader.vue'
+import legoPageFooter from './_pageFooter.vue'
+import {APP_CONFIG} from '@/_shared/utils/app_config'
+
+export default {
+  name: 'Document',
+  inject: ['$global', '$siteMeta', '$siteTopics', '$latestDocuments', '$tagCloud'],
+  components: {legoPageHeader, legoPageFooter},
+  mounted() {
+    const vue = this
+    const route = useRoute()
+    watch(
+        () => route.params.did,
+        async newDid => {
+          if (newDid) {
+            vue._fetchDocument(vue, newDid)
+          }
+        }
+    )
+    this.$global.searchQuery = this.$route.query.q ? this.$route.query.q : ''
+    this._fetchSiteMeta(this)
+  },
+  computed: {
+    documentContentRendered() {
+      this._updateLightbox()
+      return markdownRender(this.$localedText(this.document.content), {
+        sanitize: true,
+        tags: this.$siteMeta.tags,
+      })
+    },
+    sameTopicDocuments() {
+      const result = []
+      for (let i = 0; i < this.documentList.length; i++) {
+        if (this.document.id != this.documentList[i].id) {
+          result.push(this.documentList[i])
+        }
+      }
+      return result
+    },
+  },
+  methods: {
+    calcTagCloudCSS(tag) {
+      const cssList = [
+        'bg-primary link-light',
+        'bg-secondary link-light',
+        'bg-success link-light',
+        'bg-danger link-light',
+        'bg-warning text-dark link-dark',
+        'bg-info link-light',
+        'bg-light text-dark link-dark',
+      ]
+      return this.$pickupFromHash(tag, cssList)
+    },
+    _updateLightbox() {
+      this.$nextTick(() => {
+        document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
+      })
+    },
+    _fetchSiteMeta(vue) {
+      vue.$fetchSiteMeta(
+          () => vue.status = 0,
+          apiResp => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue._fetchTopics(vue, vue.$route.params.tid)
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          err => {
+            vue.errorMsg = err
+          },
+      )
+    },
+    _fetchTopics(vue, topicId) {
+      vue.$fetchSiteTopics(
+          () => vue.status = 0,
+          apiResp => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.$siteTopics.forEach(t => {
+                if (t.id == topicId) {
+                  vue.topic = t
+                  vue._fetchDocuments(vue, topicId, vue.$route.params.did)
+                }
+              })
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          err => {
+            vue.errorMsg = err
+          },
+      )
+    },
+    _fetchDocuments(vue, topicId, docId) {
+      vue.$fetchDocumentsForTopic(topicId,
+          () => vue.status=0,
+          apiResp => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.documentList = apiResp.data
+              vue.documentList.forEach(d => {
+                if (d.id == docId) {
+                  vue._fetchDocument(vue, docId)
+                }
+              })
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          err => vue.errorMsg = err
+      )
+    },
+    _fetchDocument(vue, docId) {
+      vue.$fetchDocument(vue.topic.id, docId,
+          () => vue.status=0,
+          apiResp => {
+            vue.status = apiResp.status
+            if (vue.status == 200) {
+              vue.document = apiResp.data
+              const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
+              document.title = vue.$localedText(vue.document.title) + ' | ' + appNameAndVersion
+            } else {
+              vue.errorMsg = vue.status+": "+apiResp.message
+            }
+          },
+          err => vue.errorMsg = err
+      )
+    },
+  },
+  data() {
+    return {
+      topic: {},
+      documentList: [],
+      document: {},
+      status: -1,
+      errorMsg: '',
+    }
+  },
+}
+</script>
