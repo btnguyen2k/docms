@@ -41,7 +41,7 @@
                   <a><i class="fas fa-language"></i></a>
                   <ul class="dropdown text-nowrap">
                     <li v-for="lang in $siteLanguages" v-bind:key="lang">
-                      <a class="dropdown-item" href="javascript:;" @click="swichLanguage(lang, false)">
+                      <a class="dropdown-item" href="javascript:;" @click="switchLanguage(lang, false)">
                         <span class="badge text-dark">{{ lang }}</span> {{$siteMeta.languages[lang]}}
                       </a>
                     </li>
@@ -73,7 +73,7 @@ export default {
   inject: ['$global', '$siteMeta', '$siteFirstName', '$siteLastName', '$siteTopics', '$siteLanguages'],
   props: ['active', 'topic'],
   methods: {
-    swichLanguage: switchLanguage,
+    switchLanguage,
   },
 }
 </script>

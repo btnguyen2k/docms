@@ -39,73 +39,7 @@
 <!--            </div>-->
           </div>
 
-          <div class="col-lg-4 sidebar">
-            <div class="sidebar-box search-form-wrap mb-4">
-              <form class="sidebar-search-form" @submit.prevent="$doSearch" method="get">
-                <span class="bi-search"></span>
-                <input type="text" class="form-control" id="s" :placeholder="$t('search_prompt')" v-model="$global.searchQuery">
-              </form>
-            </div>
-
-<!--            <div class="sidebar-box">-->
-<!--              <h3 class="heading">Popular Posts</h3>-->
-<!--              <div class="post-entry-sidebar">-->
-<!--                <ul>-->
-<!--                  <li>-->
-<!--                    <a href="">-->
-<!--                      <img src="images/img_1_sq.jpg" alt="Image placeholder" class="me-4 rounded">-->
-<!--                      <div class="text">-->
-<!--                        <h4>There’s a Cool New Way for Men to Wear Socks and Sandals</h4>-->
-<!--                        <div class="post-meta">-->
-<!--                          <span class="mr-2">March 15, 2018 </span>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </a>-->
-<!--                  </li>-->
-<!--                  <li>-->
-<!--                    <a href="">-->
-<!--                      <img src="images/img_2_sq.jpg" alt="Image placeholder" class="me-4 rounded">-->
-<!--                      <div class="text">-->
-<!--                        <h4>There’s a Cool New Way for Men to Wear Socks and Sandals</h4>-->
-<!--                        <div class="post-meta">-->
-<!--                          <span class="mr-2">March 15, 2018 </span>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </a>-->
-<!--                  </li>-->
-<!--                  <li>-->
-<!--                    <a href="">-->
-<!--                      <img src="images/img_3_sq.jpg" alt="Image placeholder" class="me-4 rounded">-->
-<!--                      <div class="text">-->
-<!--                        <h4>There’s a Cool New Way for Men to Wear Socks and Sandals</h4>-->
-<!--                        <div class="post-meta">-->
-<!--                          <span class="mr-2">March 15, 2018 </span>-->
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </a>-->
-<!--                  </li>-->
-<!--                </ul>-->
-<!--              </div>-->
-<!--            </div>-->
-
-            <div class="sidebar-box">
-              <h3 class="heading">{{ $t('topics') }}</h3>
-              <ul class="categories">
-                <li v-for="topic in $siteTopics" v-bind:key="topic.id">
-                  <router-link :to="{name: 'Topic', params:{tid: topic.id}}">{{ $localedText(topic.title) }} <span>({{ topic.num_docs }})</span></router-link>
-                </li>
-              </ul>
-            </div>
-
-            <div class="sidebar-box">
-              <h3 class="heading">{{ $t('tag_cloud') }}</h3>
-              <ul class="tags" style="font-size: small">
-                <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag">
-                  <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)">{{ tag }}</router-link>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <sidebar />
         </div>
       </div>
     </div>
@@ -119,12 +53,13 @@ import {useRoute} from 'vue-router'
 import {watch} from 'vue'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
+import sidebar from './_sidebar.vue'
 import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 export default {
   name: 'Topic',
-  inject: ['$global', '$siteTopics', '$tagCloud', '$latestDocuments'],
-  components: {legoPageHeader, legoPageFooter},
+  inject: ['$global', '$siteTopics', '$latestDocuments'],
+  components: {legoPageHeader, legoPageFooter, sidebar},
   mounted() {
     const vue = this
     const route = useRoute()
@@ -139,18 +74,6 @@ export default {
     this._fetchSiteMeta(this)
   },
   methods: {
-    calcTagCloudCSS(tag) {
-      const cssList = [
-        'bg-primary link-light',
-        'bg-secondary link-light',
-        'bg-success link-light',
-        'bg-danger link-light',
-        'bg-warning text-dark link-dark',
-        'bg-info link-light',
-        'bg-light text-dark link-dark',
-      ]
-      return this.$pickupFromHash(tag, cssList)
-    },
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,

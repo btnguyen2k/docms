@@ -221,10 +221,16 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 				docMeta.TimestampUpdate = fi.ModTime().Unix()
 			}
 			if docMeta.AuthorName == "" {
-				docMeta.AuthorName = goapi.AppConfig.GetString("app.shortname")
+				docMeta.AuthorName = gSiteMeta.AuthorName
+				if docMeta.AuthorName == "" {
+					docMeta.AuthorName = goapi.AppConfig.GetString("app.shortname")
+				}
 			}
 			if docMeta.AuthorEmail == "" {
-				docMeta.AuthorEmail = goapi.AppConfig.GetString("app.shortname") + "@domain.com"
+				docMeta.AuthorEmail = gSiteMeta.AuthorEmail
+				if docMeta.AuthorEmail == "" {
+					docMeta.AuthorEmail = goapi.AppConfig.GetString("app.shortname") + "@domain.com"
+				}
 			}
 		}
 		docMeta.setDirectory(docDir.Name())

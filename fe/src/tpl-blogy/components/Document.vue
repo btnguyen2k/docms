@@ -5,7 +5,8 @@
   <div v-else>
     <lego-page-header active="topic" :topic="topic" />
 
-    <div class="site-cover site-cover-sm same-height overlay single-page" style="background-image: url('//placehold.co/700x440/6c757d/6c757d');">
+    <div class="site-cover site-cover-sm same-height overlay single-page"
+         :style="'background-image: url('+($calcDocumentEntryImgUrl(document, topic.id, '//placehold.co/700x440/6c757d/6c757d'))">
       <div class="container">
         <div class="row same-height justify-content-center">
           <div class="col-md-6">
@@ -33,7 +34,8 @@
               </ul>
             </div>
 
-            <div class="post-content-body" v-html="documentContentRendered">
+            <div class="post-content-body">
+              <div class="img-fit img-center" v-html="documentContentRendered"></div>
             </div>
 
 <!--            <div class="pt-5" v-if="document.tags && $localedText(document.tags).length>0">-->
@@ -155,68 +157,7 @@
 <!--            </div>-->
           </div>
 
-          <div class="col-md-12 col-lg-4 sidebar">
-            <div class="sidebar-box search-form-wrap">
-              <form class="sidebar-search-form" @submit.prevent="$doSearch" method="get">
-                <span class="bi-search"></span>
-                <input type="text" class="form-control" id="s" :placeholder="$t('search_prompt')" v-model="$global.searchQuery">
-              </form>
-            </div>
-
-<!--            <div class="sidebar-box">-->
-<!--              <div class="bio text-center">-->
-<!--                <img src="images/person_2.jpg" alt="Image Placeholder" class="img-fluid mb-3">-->
-<!--                <div class="bio-body">-->
-<!--                  <h2>Hannah Anderson</h2>-->
-<!--                  <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Exercitationem facilis sunt repellendus excepturi beatae porro debitis voluptate nulla quo veniam fuga sit molestias minus.</p>-->
-<!--                  <p><a href="#" class="btn btn-primary btn-sm rounded px-2 py-2">Read my bio</a></p>-->
-<!--                  <p class="social">-->
-<!--                    <a href="#" class="p-2"><span class="fa fa-facebook"></span></a>-->
-<!--                    <a href="#" class="p-2"><span class="fa fa-twitter"></span></a>-->
-<!--                    <a href="#" class="p-2"><span class="fa fa-instagram"></span></a>-->
-<!--                    <a href="#" class="p-2"><span class="fa fa-youtube-play"></span></a>-->
-<!--                  </p>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-
-            <div class="sidebar-box">
-              <h3 class="heading">{{ $t('same_topic') }}</h3>
-              <div class="post-entry-sidebar">
-                <ul>
-                  <li v-for="doc in sameTopicDocuments" v-bind:key="doc.id">
-                    <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}">
-                      <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="me-4 rounded">
-                      <div class="text">
-                        <h4>{{ $localedText(doc.title) }}</h4>
-                        <div class="post-meta">
-                          <span class="mr-2">{{ $unixTimestampToReadable(doc.tu) }}</span>
-                        </div>
-                      </div>
-                    </router-link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="sidebar-box">
-              <h3 class="heading">{{ $t('topics') }}</h3>
-              <ul class="categories">
-                <li v-for="topic in $siteTopics" v-bind:key="topic.id">
-                  <router-link :to="{name: 'Topic', params:{tid: topic.id}}">{{ $localedText(topic.title) }} <span>({{ topic.num_docs }})</span></router-link>
-                </li>
-              </ul>
-            </div>
-
-            <div class="sidebar-box">
-              <h3 class="heading">{{ $t('tag_cloud') }}</h3>
-              <ul class="tags" style="font-size: small">
-                <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag">
-                  <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)">{{ tag }}</router-link>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <sidebar :topic="topic" :document-list="sameTopicDocuments" :document-list-title="$t('same_topic')" />
         </div>
       </div>
     </section>
@@ -235,12 +176,13 @@ import {watch} from 'vue'
 import '@/_shared/assets/markdown-gfm.css'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
+import sidebar from './_sidebar.vue'
 import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 export default {
   name: 'Document',
-  inject: ['$global', '$siteMeta', '$siteTopics', '$latestDocuments', '$tagCloud'],
-  components: {legoPageHeader, legoPageFooter},
+  inject: ['$global', '$siteMeta', '$siteTopics', '$latestDocuments'],
+  components: {legoPageHeader, legoPageFooter, sidebar},
   mounted() {
     const vue = this
     const route = useRoute()
@@ -274,18 +216,6 @@ export default {
     },
   },
   methods: {
-    calcTagCloudCSS(tag) {
-      const cssList = [
-        'bg-primary link-light',
-        'bg-secondary link-light',
-        'bg-success link-light',
-        'bg-danger link-light',
-        'bg-warning text-dark link-dark',
-        'bg-info link-light',
-        'bg-light text-dark link-dark',
-      ]
-      return this.$pickupFromHash(tag, cssList)
-    },
     _updateLightbox() {
       this.$nextTick(() => {
         document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));

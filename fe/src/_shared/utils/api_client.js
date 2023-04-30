@@ -74,12 +74,12 @@ function apiDoGet(apiUri, callbackSuccessful, callbackError) {
     if (cacheExpiryMs > 0) {
         const cacheEntry = cache[apiUri]
         if (cacheEntry && cacheEntry.expiry > new Date().valueOf()) {
-            console.log('Cache hit:', apiUri)
+            // console.log('Cache hit:', apiUri)
             _apiOnSuccess('GET', cacheEntry.data, apiUri, callbackSuccessful)
             return
         }
     }
-    console.log('Cache missed:', apiUri)
+    // console.log('Cache missed:', apiUri)
     const headers = buildHeaders()
     return apiClient.get(apiUri, {
         headers: headers, cache: false

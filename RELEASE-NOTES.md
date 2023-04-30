@@ -4,6 +4,7 @@
 
 Runtime `v0.3.1`:
 - Add Google Analytics support.
+- Add site mode `blog`.
 
 ## 2023-04-25
 

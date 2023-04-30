@@ -15,6 +15,8 @@ const messages = {
         search_no_result: 'Search returns no result, please try another query',
         search_prompt: 'Enter search query',
         tag_cloud: 'Tag cloud',
+        tags: 'Tags',
+        tag: 'Tag',
 
         home: 'Home',
         topics: 'Topics',
@@ -45,6 +47,8 @@ const messages = {
         search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
         tag_cloud: 'Vân tiêu',
+        tags: 'Thẻ',
+        tag: 'Thẻ',
 
         home: 'Trang nhà',
         topics: 'Chủ đề',
