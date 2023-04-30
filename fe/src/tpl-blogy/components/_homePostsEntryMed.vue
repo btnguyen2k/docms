@@ -17,10 +17,9 @@
             <div class="excerpt">
               <h2><router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}">{{ $localedText(doc.title) }}</router-link></h2>
               <div class="post-meta align-items-center text-left clearfix">
-                <!--<figure class="author-figure mb-0 me-3 float-start"><img src="@/tpl-blogy/assets/images/person_1.jpg" class="img-fluid"></figure>-->
-                <!--<figure class="author-figure mb-0 me-3 float-start"><img src="//placehold.co/260x260" class="img-fluid"></figure>-->
-                <!--<span class="d-inline-block mt-1">By <a href="#">David Anderson</a></span>-->
-                <span>{{ $unixTimestampToReadable(doc.tu) }}</span>
+                <figure class="author-figure mb-0 me-3 float-start"><img :src="$calcAuthorAvatarUrl(doc.author)" class="img-fluid"></figure>
+                <span class="d-inline-block mt-1">{{ doc.author.name }}</span>
+                <span> - {{ $unixTimestampToReadable(doc.tu) }}</span>
               </div>
               <p>{{ $localedText(doc.summary) }}</p>
               <p><router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="read-more">{{ $t('read') }}</router-link></p>
