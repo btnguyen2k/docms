@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/btnguyen2k/consu/g18"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli/v2"
 )
@@ -28,7 +29,7 @@ var commandNew = &cli.Command{
 			Aliases: []string{"s"},
 			Usage:   "Create new site content metadata",
 			Flags: []cli.Flag{
-				flagSiteName, flagSiteIcon, flagSiteLanguages,
+				flagSiteName, flagSiteIcon, flagSiteLanguages, flagSiteMode, flagAuthorName, flagAuthorEmail, flagAuthorAvatar,
 			},
 			Action: actionNewSite,
 		},
@@ -73,7 +74,7 @@ func _validateDataDirMustExist(dir string) error {
 
 // handle command "new site"
 func actionNewSite(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustBeValid(opts.DataDir); err != nil {
@@ -93,18 +94,8 @@ func actionNewSite(c *cli.Context) error {
 	// init site meta
 	siteMeta, err := docms.LoadSiteMetaAuto(opts.DataDir)
 	if err == nil && siteMeta != nil {
-		if siteMeta.Name == "" || opts.SiteName != "" {
-			siteMeta.Name = opts.SiteName
-		}
-		if siteMeta.Icon == "" || (opts.SiteIcon != "" && opts.SiteIcon != defaultSiteIcon) {
-			siteMeta.Icon = opts.SiteIcon
-		}
-		if siteMeta.Languages == nil {
-			siteMeta.Languages = make(map[string]string)
-		}
 	} else {
 		siteMeta = &docms.SiteMeta{
-			Name: opts.SiteName,
 			Icon: opts.SiteIcon,
 			Contacts: map[string]string{
 				"website":  "https://my/awesome/website(optional)",
@@ -120,6 +111,18 @@ func actionNewSite(c *cli.Context) error {
 				"build": "${build_datetime}",
 			},
 		}
+	}
+	if siteMeta.Languages == nil {
+		siteMeta.Languages = make(map[string]string)
+	}
+	if siteMeta.Name == "" || opts.SiteName != "" {
+		siteMeta.Name = opts.SiteName
+	}
+	if siteMeta.Icon == "" || (opts.SiteIcon != "" && opts.SiteIcon != defaultSiteIcon) {
+		siteMeta.Icon = opts.SiteIcon
+	}
+	if siteMeta.Mode == "" || opts.SiteMode != "" {
+		siteMeta.Mode = opts.SiteMode
 	}
 
 	// site's name
@@ -176,6 +179,27 @@ func actionNewSite(c *cli.Context) error {
 	}
 	siteMeta.TagsAlias = siteTagAliasMap
 
+	// site's mode
+	validSiteModes := []string{docms.SiteModeBlog, docms.SiteModeDoc, docms.SiteModeDocument}
+	if g18.FindInSlice(siteMeta.Mode, validSiteModes) < 0 {
+		return fmt.Errorf("invalid website mode, valid values are <%s>", validSiteModes)
+	}
+
+	if opts.AuthorName != "" || opts.AuthorEmail != "" || opts.AuthorAvatar != "" {
+		if siteMeta.Author == nil {
+			siteMeta.Author = &docms.Author{}
+		}
+		if siteMeta.Author.Name == "" {
+			siteMeta.Author.Name = opts.AuthorName
+		}
+		if siteMeta.Author.Email == "" {
+			siteMeta.Author.Email = opts.AuthorEmail
+		}
+		if siteMeta.Author.Avatar == "" {
+			siteMeta.Author.Avatar = opts.AuthorAvatar
+		}
+	}
+
 	if err := writeFileYaml(metaFile, siteMeta); err != nil {
 		return err
 	}
@@ -185,7 +209,7 @@ func actionNewSite(c *cli.Context) error {
 
 // handle command "new topic"
 func actionNewTopic(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustExist(opts.DataDir); err != nil {
@@ -274,7 +298,7 @@ func _pint(val int) *int {
 
 // handle command "new document"
 func actionNewDocument(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustExist(opts.DataDir); err != nil {

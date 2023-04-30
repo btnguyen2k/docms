@@ -328,10 +328,13 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 	{
 		newMetadata.TimestampCreate = docMeta.TimestampCreate
 		newMetadata.TimestampUpdate = docMeta.TimestampUpdate
-		if docMeta.TimestampUpdate <= 0 {
-
+		if docMeta.TimestampUpdate <= 0 && docMeta.FileInfo != nil {
+			newMetadata.TimestampUpdate = docMeta.FileInfo.ModTime().UTC().Unix()
 		}
 	}
+
+	// author
+	newMetadata.Author = docMeta.Author
 
 	return newMetadata, checkPass
 }

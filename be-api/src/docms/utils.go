@@ -79,17 +79,17 @@ type Author struct {
 
 // SiteMeta captures metadata of the website.
 type SiteMeta struct {
-	FileInfo        os.FileInfo            `json:"-" yaml:"-"`                     // internal use only!
-	Name            string                 `json:"name" yaml:"name"`               // name of the website
-	Description     interface{}            `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Languages       map[string]string      `json:"languages" yaml:"languages"`     // available languages of the website content
-	DefaultLanguage string                 `json:"-" yaml:"-"`                     // site's default language
-	Icon            string                 `json:"icon" yaml:"icon"`               // website's icon
-	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`       // site's contact info
-	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
-	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
-	Mode            string                 `json:"mode" yaml:"mode"`               // site's mode, current support modes are: document/doc and blog
-	Author          *Author                `json:"author" yaml:"author"`           // site's author (also default document's author)
+	FileInfo        os.FileInfo            `json:"-" yaml:"-"`                                   // internal use only!
+	Name            string                 `json:"name" yaml:"name"`                             // name of the website
+	Description     interface{}            `json:"description" yaml:"description"`               // short description, can be a single string, or a map[language-code:string]string
+	Languages       map[string]string      `json:"languages" yaml:"languages"`                   // available languages of the website content
+	DefaultLanguage string                 `json:"-" yaml:"-"`                                   // site's default language
+	Icon            string                 `json:"icon" yaml:"icon"`                             // website's icon
+	Contacts        map[string]string      `json:"contacts,omitempty" yaml:"contacts,omitempty"` // site's contact info
+	Tags            map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`         // site's tags
+	TagsAlias       interface{}            `json:"tagalias,omitempty" yaml:"tagalias,omitempty"` // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
+	Mode            string                 `json:"mode" yaml:"mode"`                             // site's mode, current support modes are: document/doc and blog
+	Author          *Author                `json:"author,omitempty" yaml:"author,omitempty"`     // site's author (also default document's author)
 }
 
 var (
