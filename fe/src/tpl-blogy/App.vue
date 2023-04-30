@@ -39,18 +39,41 @@ export default {
     const app = getCurrentInstance()
     app.appContext.config.globalProperties.$unixTimestampToReadable = this.unixTimestampToReadable
     app.appContext.config.globalProperties.$calcDocumentEntryImgUrl = this.calcDocumentEntryImgUrl
-    this._fetchLatestDocuments(this)
+    app.appContext.config.globalProperties.$calcAuthorAvatarUrl = this.calcAuthorAvatarUrl
+
+    const vue = this
+    document.addEventListener('click', function (event) {
+      const specifiedElement = document.querySelector(".site-mobile-menu")
+      const btnSidebarOpen = document.querySelector("#sidebarOpen")
+      if (!specifiedElement || !btnSidebarOpen) {
+        return
+      }
+      const isClickInside = specifiedElement.contains(event.target)
+      const mt = btnSidebarOpen.contains(event.target)
+      if (!isClickInside && !mt) {
+        document.body.classList.remove('offcanvas-menu')
+        document.querySelector("#sidebarOpen").classList.remove('active')
+        const el = document.querySelector("#collapseTogglerLanguages")
+        if (el && !el.classList.contains('collapsed')) {
+          el.click()
+        }
+      }
+    });
+
+    vue._fetchLatestDocuments(vue)
   },
   methods: {
     _fetchLatestDocuments(vue) {
       vue.$fetchLatestDocuments(undefined, 10,
-          () => {},
+          () => {
+          },
           apiResp => {
             if (apiResp.status == 200) {
               vue.latestDocuments = apiResp.data
             }
           },
-          () => {},
+          () => {
+          },
       )
     },
     unixTimestampToReadable(timeInSeconds) {
@@ -65,6 +88,15 @@ export default {
     calcDocumentEntryImgUrl(doc, topicId, defaultUrl) {
       if (doc.img != '') {
         return router.meta.base + '/' + topicId + '/' + doc.id + '/' + doc.img
+      }
+      return defaultUrl
+    },
+    calcAuthorAvatarUrl(auth, defaultUrl) {
+      if (auth && auth.avatar) {
+        return auth.avatar
+      }
+      if (auth && auth.email) {
+        return '//www.gravatar.com/avatar/' + auth.email.toLowerCase().md5()
       }
       return defaultUrl
     }

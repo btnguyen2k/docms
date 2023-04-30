@@ -70,19 +70,25 @@ var (
 	AllSiteModes = []string{SiteModeDoc, SiteModeDocument, SiteModeBlog}
 )
 
-// SiteMeta capture metadata of the website.
+// Author is site's/document's author
+type Author struct {
+	Name   string `json:"name" yaml:"name"`
+	Email  string `json:"email" yaml:"email"`
+	Avatar string `json:"avatar" yaml:"avatar"`
+}
+
+// SiteMeta captures metadata of the website.
 type SiteMeta struct {
-	Name            string                 `json:"name" yaml:"name"`                  // name of the website
-	Description     interface{}            `json:"description" yaml:"description"`    // short description, can be a single string, or a map[language-code:string]string
-	Languages       map[string]string      `json:"languages" yaml:"languages"`        // available languages of the website content
-	DefaultLanguage string                 `json:"-" yaml:"-"`                        // site's default language
-	Icon            string                 `json:"icon" yaml:"icon"`                  // website's icon
-	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`          // site's contact info
-	Tags            map[string]interface{} `json:"tags" yaml:"tags"`                  // site's tags
-	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`          // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
-	Mode            string                 `json:"mode" yaml:"mode"`                  // site's mode, current support modes are: document/doc and blog
-	AuthorName      string                 `json:"author_name" yaml:"author_name""`   // display name of site's author (also default document's author)
-	AuthorEmail     string                 `json:"author_email" yaml:"author_email""` // email of document's author (also default document's author)
+	Name            string                 `json:"name" yaml:"name"`               // name of the website
+	Description     interface{}            `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
+	Languages       map[string]string      `json:"languages" yaml:"languages"`     // available languages of the website content
+	DefaultLanguage string                 `json:"-" yaml:"-"`                     // site's default language
+	Icon            string                 `json:"icon" yaml:"icon"`               // website's icon
+	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`       // site's contact info
+	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
+	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
+	Mode            string                 `json:"mode" yaml:"mode"`               // site's mode, current support modes are: document/doc and blog
+	Author          *Author                `json:"author" yaml:"author"`           // site's author (also default document's author)
 }
 
 var (
@@ -138,8 +144,7 @@ func (sm *SiteMeta) toMap() map[string]interface{} {
 		"contacts":        sm.Contacts,
 		"tags":            sm.Tags,
 		"mode":            sm.Mode,
-		"author_name":     sm.AuthorName,
-		"author_email":    sm.AuthorEmail,
+		"author":          sm.Author,
 	}
 }
 
@@ -368,21 +373,20 @@ func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 
 // DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
-	index           int         `json:"-" yaml:"-"`                        // document index, for ordering
-	id              string      `json:"-" yaml:"-"`                        // document id
-	dir             string      `json:"-" yaml:"-"`                        // name of directory where document's data locates
-	Title           interface{} `json:"title" yaml:"title"`                // title of the document, can be a single string, or a map[language-code:string]string
-	Summary         interface{} `json:"summary" yaml:"summary"`            // document summary, can be a single string, or a map[language-code:string]string
-	Icon            string      `json:"icon" yaml:"icon"`                  // document's icon
-	ContentFile     interface{} `json:"file" yaml:"file"`                  // name of document's content file, can be a single string, or a map[language-code:string]string
-	Tags            interface{} `json:"tags" yaml:"tags"`                  // document's tags, can be []string or map[language-code][]string
-	EntryImage      string      `json:"img" yaml:"img"`                    // document's entry image
-	DocPage         string      `json:"page" yaml:"page"`                  // document plays as the special page on site (such as "contact" or "about")
-	DocStyle        string      `json:"style" yaml:"style"`                // document's special style
-	TimestampCreate int64       `json:"tc" yaml:"tc"`                      // UNIX timestamp when the document was created
-	TimestampUpdate int64       `json:"tu" yaml:"tu"`                      // UNIX timestamp when the document was last updated
-	AuthorName      string      `json:"author_name" yaml:"author_name""`   // display name of document's author
-	AuthorEmail     string      `json:"author_email" yaml:"author_email""` // email of document's author
+	index           int         `json:"-" yaml:"-"`             // document index, for ordering
+	id              string      `json:"-" yaml:"-"`             // document id
+	dir             string      `json:"-" yaml:"-"`             // name of directory where document's data locates
+	Title           interface{} `json:"title" yaml:"title"`     // title of the document, can be a single string, or a map[language-code:string]string
+	Summary         interface{} `json:"summary" yaml:"summary"` // document summary, can be a single string, or a map[language-code:string]string
+	Icon            string      `json:"icon" yaml:"icon"`       // document's icon
+	ContentFile     interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
+	Tags            interface{} `json:"tags" yaml:"tags"`       // document's tags, can be []string or map[language-code][]string
+	EntryImage      string      `json:"img" yaml:"img"`         // document's entry image
+	DocPage         string      `json:"page" yaml:"page"`       // document plays as the special page on site (such as "contact" or "about")
+	DocStyle        string      `json:"style" yaml:"style"`     // document's special style
+	TimestampCreate int64       `json:"tc" yaml:"tc"`           // UNIX timestamp when the document was created
+	TimestampUpdate int64       `json:"tu" yaml:"tu"`           // UNIX timestamp when the document was last updated
+	Author          *Author     `json:"author" yaml:"author"`   // document's author
 }
 
 func (dm *DocumentMeta) setDirectory(dir string) bool {
@@ -398,18 +402,17 @@ func (dm *DocumentMeta) setDirectory(dir string) bool {
 
 func (dm *DocumentMeta) toMap() map[string]interface{} {
 	return map[string]interface{}{
-		"id":           dm.id,
-		"icon":         dm.Icon,
-		"title":        dm.GetTitleMap(),
-		"summary":      dm.GetSummaryMap(),
-		"tags":         dm.GetTagsMap(),
-		"img":          dm.EntryImage,
-		"page":         dm.DocPage,
-		"style":        dm.DocStyle,
-		"tc":           dm.TimestampCreate,
-		"tu":           dm.TimestampUpdate,
-		"author_name":  dm.AuthorName,
-		"author_email": dm.AuthorEmail,
+		"id":      dm.id,
+		"icon":    dm.Icon,
+		"title":   dm.GetTitleMap(),
+		"summary": dm.GetSummaryMap(),
+		"tags":    dm.GetTagsMap(),
+		"img":     dm.EntryImage,
+		"page":    dm.DocPage,
+		"style":   dm.DocStyle,
+		"tc":      dm.TimestampCreate,
+		"tu":      dm.TimestampUpdate,
+		"author":  dm.Author,
 	}
 }
 
