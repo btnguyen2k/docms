@@ -79,6 +79,7 @@ type Author struct {
 
 // SiteMeta captures metadata of the website.
 type SiteMeta struct {
+	FileInfo        os.FileInfo            `json:"-" yaml:"-"`                     // internal use only!
 	Name            string                 `json:"name" yaml:"name"`               // name of the website
 	Description     interface{}            `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
 	Languages       map[string]string      `json:"languages" yaml:"languages"`     // available languages of the website content
@@ -228,6 +229,10 @@ func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
 }
 
 func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -235,12 +240,17 @@ func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 	var metadata *SiteMeta
 	err = yaml.Unmarshal(buf, &metadata)
 	if err == nil {
+		metadata.FileInfo = fi
 		metadata.init()
 	}
 	return metadata, err
 }
 
 func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -248,6 +258,7 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 	var metadata *SiteMeta
 	err = json.Unmarshal(buf, &metadata)
 	if err == nil {
+		metadata.FileInfo = fi
 		metadata.init()
 	}
 	return metadata, err
@@ -257,6 +268,7 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 
 // TopicMeta capture metadata of a topic.
 type TopicMeta struct {
+	FileInfo    os.FileInfo `json:"-" yaml:"-"`                     // internal use only!
 	index       int         `json:"-" yaml:"-"`                     // topic index, for ordering
 	id          string      `json:"-" yaml:"-"`                     // topic id
 	dir         string      `json:"-" yaml:"-"`                     // name of directory where topic's data locates
@@ -352,27 +364,44 @@ func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
 }
 
 func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 	var metadata *TopicMeta
-	return metadata, yaml.Unmarshal(buf, &metadata)
+	err = yaml.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.FileInfo = fi
+	}
+	return metadata, err
 }
 
 func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 	var metadata *TopicMeta
-	return metadata, json.Unmarshal(buf, &metadata)
+	err = json.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.FileInfo = fi
+	}
+	return metadata, err
 }
 
 /*----------------------------------------------------------------------*/
 
 // DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
+	FileInfo        os.FileInfo `json:"-" yaml:"-"`             // internal use only!
 	index           int         `json:"-" yaml:"-"`             // document index, for ordering
 	id              string      `json:"-" yaml:"-"`             // document id
 	dir             string      `json:"-" yaml:"-"`             // name of directory where document's data locates
@@ -518,21 +547,37 @@ func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
 }
 
 func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 	var metadata *DocumentMeta
-	return metadata, yaml.Unmarshal(buf, &metadata)
+	err = yaml.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.FileInfo = fi
+	}
+	return metadata, err
 }
 
 func LoadDocumentMetaFromJson(filePath string) (*DocumentMeta, error) {
+	fi, err := os.Stat(filePath)
+	if err == nil {
+		return nil, err
+	}
 	buf, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 	var metadata *DocumentMeta
-	return metadata, json.Unmarshal(buf, &metadata)
+	err = json.Unmarshal(buf, &metadata)
+	if err == nil {
+		metadata.FileInfo = fi
+	}
+	return metadata, err
 }
 
 /*----------------------------------------------------------------------*/
