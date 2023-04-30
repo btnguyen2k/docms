@@ -9,7 +9,7 @@
             <div class="site-logo">
               <router-link class="navbar-brand" :to="{name: 'Home'}">
                 <span class="logo-text"><i v-if="$siteMeta.icon!=''" :class="$siteMeta.icon"></i> {{ $siteFirstName }}<span class="text-alt">{{ $siteLastName }}</span></span>
-                <!--<img class="logo-icon me-2" :src="$router.options.meta.base.replace(/\/+$/, '')+'/images/coderdocs-logo.svg'" alt="logo">-->
+                <!--<img class="logo-icon me-2" :src="$router.options.meta.base.replace(/\/+$/, '')+'/images/coderdocs-logo.svg'">-->
                 <!--<span class="logo-text">{{ $siteFirstName }}<span class="text-alt">{{ $siteLastName }}</span></span>-->
               </router-link>
             </div>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import {swichLanguage} from '@/_shared/i18n'
+import {switchLanguage} from '@/_shared/i18n'
 import legoSocialList from './_socialList.vue'
 
 export default {
@@ -119,7 +119,7 @@ export default {
     this._fetchSiteMeta(this)
   },
   methods: {
-    swichLanguage,
+    swichLanguage: switchLanguage,
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,

@@ -42,14 +42,14 @@
 </template>
 
 <script>
-import {swichLanguage} from "@/_shared/i18n"
+import {switchLanguage} from "@/_shared/i18n"
 
 export default {
   name: 'lego-page-header',
   inject: ['$siteMeta', '$siteFirstName', '$siteLastName', '$siteTopics', '$siteLanguages'],
   props: ['active'],
   methods: {
-    swichLanguage,
+    swichLanguage: switchLanguage,
   },
 }
 </script>

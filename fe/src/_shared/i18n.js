@@ -15,6 +15,8 @@ const messages = {
         search_no_result: 'Search returns no result, please try another query',
         search_prompt: 'Enter search query',
         tag_cloud: 'Tag cloud',
+        tags: 'Tags',
+        tag: 'Tag',
 
         home: 'Home',
         topics: 'Topics',
@@ -22,8 +24,11 @@ const messages = {
         documents: 'Documents',
         document: 'Document',
         read: 'Read',
+        view_all: 'View all',
         explore: 'Explore',
         contact_info: 'Contact us at',
+        recent_posts: 'Recent posts',
+        same_topic: 'In the same topic',
 
         error: 'Error',
         error_topic_not_found: 'Topic "{topic}" not found',
@@ -42,6 +47,8 @@ const messages = {
         search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
         tag_cloud: 'Vân tiêu',
+        tags: 'Thẻ',
+        tag: 'Thẻ',
 
         home: 'Trang nhà',
         topics: 'Chủ đề',
@@ -49,8 +56,11 @@ const messages = {
         documents: 'Bài viết',
         document: 'Bài viết',
         read: 'Xem',
+        view_all: 'Xem tất cả',
         explore: 'Khám phá',
         contact_info: 'Thông tin liên hệ',
+        recent_posts: 'Các bài viết mới',
+        same_topic: 'Trong cùng chủ đề',
 
         error: 'Lỗi',
         error_topic_not_found: 'Không tìm thấy chủ đề "{topic}"',
@@ -81,7 +91,7 @@ watchEffect(() => {
 
 export default i18n
 
-export function swichLanguage(locale, refreshPage) {
+export function switchLanguage(locale, refreshPage) {
     if (locale == '') {
         locale = localStorageGet('_l')
     }

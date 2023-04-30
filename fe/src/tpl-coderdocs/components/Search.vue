@@ -45,7 +45,7 @@
 
 <script>
 import {registerPopstate, unregisterPopstate} from "@/_shared/utils/docms_utils"
-import {swichLanguage} from "@/_shared/i18n"
+import {switchLanguage} from "@/_shared/i18n"
 import {watch} from 'vue'
 import {useRoute} from "vue-router"
 import legoPageHeader from './_pageHeader.vue'
@@ -77,7 +77,7 @@ export default {
         () => route.query.l,
         async () => vue._search(vue),
     )
-    swichLanguage(this.searchLocale)
+    switchLanguage(this.searchLocale)
     this.$global.searchQuery = this.searchTerm
     this._fetchSiteMeta(this)
   },

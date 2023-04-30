@@ -43,17 +43,17 @@ function configRoutes(components) {
             path: '/_tagsearch', name: 'TagSearch', meta: {labelId: 'search'},
             component: components['_tagsearch'],
         },
-        {
-            path: '/:tid/:did/:img', name: 'CaptureImgLinks',
-            redirect: to => {
-                if (to.params.img.endsWith('.jpg') || to.params.img.endsWith('.jpeg') || to.params.img.endsWith('.gif')
-                    || to.params.img.endsWith('.png') || to.params.img.endsWith('.svg')) {
-                    window.location = APP_CONFIG.api_client.be_api_base_url + '/img/' + to.params.tid + '/' + to.params.did + '/' + to.params.img
-                } else {
-                    return {name: 'Home'}
-                }
-            },
-        },
+        // {
+        //     path: '/:tid/:did/:img', name: 'CaptureImgLinks',
+        //     redirect: to => {
+        //         if (to.params.img.endsWith('.jpg') || to.params.img.endsWith('.jpeg') || to.params.img.endsWith('.gif')
+        //             || to.params.img.endsWith('.png') || to.params.img.endsWith('.svg')) {
+        //             window.location = APP_CONFIG.api_client.be_api_base_url + '/img/' + to.params.tid + '/' + to.params.did + '/' + to.params.img
+        //         } else {
+        //             return {name: 'Home'}
+        //         }
+        //     },
+        // },
         {
             path: '/',
             component: {

@@ -204,6 +204,7 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 	if err != nil {
 		panic(err)
 	}
+	topicMeta.numDocs = len(docDirList)
 	for _, docDir := range docDirList {
 		docDirPath := gDataDir + "/" + topicMeta.dir + "/" + docDir.Name()
 		log.Printf("[%s] Loading Document data from <%s>...", logLevelInfo, docDirPath)
@@ -213,10 +214,29 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 		if err != nil {
 			panic(err)
 		}
-		topicDocId := topicMeta.id + ":" + docMeta.id
+		{
+			// temp fix
+			fi, _ := os.Stat(docDirPath)
+			if docMeta.TimestampUpdate <= 0 {
+				docMeta.TimestampUpdate = fi.ModTime().Unix()
+			}
+			if docMeta.AuthorName == "" {
+				docMeta.AuthorName = gSiteMeta.AuthorName
+				if docMeta.AuthorName == "" {
+					docMeta.AuthorName = goapi.AppConfig.GetString("app.shortname")
+				}
+			}
+			if docMeta.AuthorEmail == "" {
+				docMeta.AuthorEmail = gSiteMeta.AuthorEmail
+				if docMeta.AuthorEmail == "" {
+					docMeta.AuthorEmail = goapi.AppConfig.GetString("app.shortname") + "@domain.com"
+				}
+			}
+		}
 		docMeta.setDirectory(docDir.Name())
+		topicDocId := topicMeta.id + ":" + docMeta.id
 		gDocumentListPerTopic[topicMeta.id] = append(gDocumentListPerTopic[topicMeta.id], docMeta)
-		gDocumentList = append(gDocumentList, docMeta)
+		gDocumentList = append(gDocumentList, fmt.Sprintf("%d", docMeta.index)+"/"+topicDocId)
 		gDocumentMeta[topicDocId] = docMeta
 		gDocumentContent[topicDocId] = make(map[string]string)
 		if docMeta.DocPage != "" {
@@ -313,8 +333,10 @@ func _loadTopics() {
 	})
 	if gSiteMeta.Mode == SiteModeBlog {
 		sort.Slice(gDocumentList, func(i, j int) bool {
-			return gDocumentList[i].index > gDocumentList[j].index
+			return gDocumentList[i] > gDocumentList[j]
 		})
+	} else {
+		gDocumentList = make([]string, 0)
 	}
 }
 
@@ -363,6 +385,7 @@ func _reloadCMSData() {
 func initApiHandlers(router *itineris.ApiRouter) {
 	router.SetHandler("getSiteMeta", apiGetSiteMeta)
 	router.SetHandler("getTopics", apiGetTopics)
+	router.SetHandler("getDocuments", apiGetDocuments)
 	router.SetHandler("getDocumentsForTopic", apiGetDocumentsForTopic)
 	router.SetHandler("getDocument", apiGetDocument)
 	router.SetHandler("search", apiSearch)
