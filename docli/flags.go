@@ -35,6 +35,20 @@ var (
 	flagDocIcon        = &cli.StringFlag{Name: fieldIcon, Value: defaultDocumentIcon, Usage: "icon of the document (support FontAwesome icons)"}
 )
 
+type OptionsCmdBuild struct {
+	SrcDir         string
+	OutputDir      string
+	PurgeOutputDir bool
+}
+
+func OptsCmdBuild(c *cli.Context) *OptionsCmdBuild {
+	return &OptionsCmdBuild{
+		SrcDir:         c.String(fieldSrc),
+		OutputDir:      c.String(fieldOutput),
+		PurgeOutputDir: c.Bool(fieldPurge),
+	}
+}
+
 type Options struct {
 	SrcDir         string
 	OutputDir      string

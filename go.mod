@@ -4,7 +4,8 @@ go 1.19
 
 require (
 	github.com/blevesearch/bleve/v2 v2.3.7
-	github.com/btnguyen2k/docms/be-api v0.0.0-20230430045011-7e3495c5fe8a
+	github.com/btnguyen2k/consu/g18 v0.0.1
+	github.com/btnguyen2k/docms/be-api v0.0.0-20230430122433-2f9f7cae2fb2
 	github.com/urfave/cli/v2 v2.25.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -27,7 +28,6 @@ require (
 	github.com/blevesearch/zapx/v13 v13.3.7 // indirect
 	github.com/blevesearch/zapx/v14 v14.3.7 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.9 // indirect
-	github.com/btnguyen2k/consu/g18 v0.0.1 // indirect
 	github.com/btnguyen2k/consu/olaf v0.1.3 // indirect
 	github.com/btnguyen2k/consu/reddo v0.1.7 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

@@ -25,7 +25,7 @@ var commandBuild = &cli.Command{
 	Action: actionBuild,
 }
 
-func _loadSiteMetadata(opts *Options) (*docms.SiteMeta, error) {
+func _loadSiteMetadata(opts *OptionsCmdBuild) (*docms.SiteMeta, error) {
 	for _, metaFileYaml := range []string{opts.SrcDir + "/meta.yaml", opts.SrcDir + "/meta.yml"} {
 		log.Printf("[INFO] looking for file <%s>...\n", metaFileYaml)
 		if isFile(metaFileYaml) {
@@ -118,10 +118,13 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 		}
 	}
 
+	// author
+	newMetadata.Author = siteMeta.Author
+
 	return newMetadata, checkPass
 }
 
-func _loadTopicMetadata(opts *Options, topicDir os.DirEntry) (*docms.TopicMeta, error) {
+func _loadTopicMetadata(opts *OptionsCmdBuild, topicDir os.DirEntry) (*docms.TopicMeta, error) {
 	dir := opts.SrcDir + "/" + topicDir.Name()
 	for _, metaFileYaml := range []string{dir + "/meta.yaml", dir + "/meta.yml"} {
 		log.Printf("[INFO]\t looking for file <%s>...\n", metaFileYaml)
@@ -180,10 +183,16 @@ func _verifyTopicMetadata(siteMeta *docms.SiteMeta, topicMeta *docms.TopicMeta) 
 	// "icon"
 	newMetadata.Icon = topicMeta.Icon
 
+	// entry-image
+	newMetadata.EntryImage = topicMeta.EntryImage
+
+	// hidden
+	newMetadata.Hidden = topicMeta.Hidden
+
 	return newMetadata, checkPass
 }
 
-func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntry, fti bleve.Index) error {
+func _buildTopicDir(opts *OptionsCmdBuild, siteMeta *docms.SiteMeta, topicDir os.DirEntry, fti bleve.Index) error {
 	log.Printf("[INFO] building topic from <%s>...\n", opts.SrcDir+"/"+topicDir.Name())
 
 	topicMeta, err := _loadTopicMetadata(opts, topicDir)
@@ -222,7 +231,7 @@ func _buildTopicDir(opts *Options, siteMeta *docms.SiteMeta, topicDir os.DirEntr
 	return nil
 }
 
-func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) (*docms.DocumentMeta, error) {
+func _loadDocumentMetadata(opts *OptionsCmdBuild, topicDir, docDir os.DirEntry) (*docms.DocumentMeta, error) {
 	dir := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name()
 	for _, metaFileYaml := range []string{dir + "/meta.yaml", dir + "/meta.yml"} {
 		log.Printf("[INFO]\t\t looking for file <%s>...\n", metaFileYaml)
@@ -241,7 +250,7 @@ func _loadDocumentMetadata(opts *Options, topicDir, docDir os.DirEntry) (*docms.
 	return nil, fmt.Errorf("no metadata file found")
 }
 
-func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMeta) (*docms.DocumentMeta, bool) {
+func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMeta, opts *OptionsCmdBuild, topicDir, docDir os.DirEntry) (*docms.DocumentMeta, bool) {
 	checkPass := true
 	newMetadata := &docms.DocumentMeta{}
 	log.Printf("[INFO]\t\t veryfing metadata file...\n")
@@ -286,31 +295,55 @@ func _verifyDocumentMetadata(siteMeta *docms.SiteMeta, docMeta *docms.DocumentMe
 
 	// check & normalize "content file"
 	{
-		contentFile := docMeta.GetContentFileMap()
-		if len(contentFile) == 0 {
+		contentFileMap := docMeta.GetContentFileMap()
+		if len(contentFileMap) == 0 {
 			log.Printf("[ERROR] cannot parse {file} config or it is empty\n")
 			checkPass = false
 		} else {
-			for k := range contentFile {
+			for k := range contentFileMap {
 				if _, ok := siteMeta.Languages[k]; !ok {
 					log.Printf("[WARN] language <%s> defined in {file} does not exist\n", k)
+				} else {
+					contentFile := opts.SrcDir + "/" + topicDir.Name() + "/" + docDir.Name() + "/" + contentFileMap[k]
+					if !isFile(contentFile) {
+						log.Printf("[ERROR] file <%s> does not exist, or not readable\n", contentFile)
+						checkPass = false
+					}
 				}
 			}
 		}
-		newMetadata.ContentFile = contentFile
+		newMetadata.ContentFile = contentFileMap
+	}
+
+	// "entry-image"
+	newMetadata.EntryImage = docMeta.EntryImage
+
+	// "doc-page"
+	newMetadata.DocPage = docMeta.DocPage
+
+	// "doc-style"
+	newMetadata.DocStyle = docMeta.DocStyle
+
+	// "timestamp-create" and "timestamp_updated"
+	{
+		newMetadata.TimestampCreate = docMeta.TimestampCreate
+		newMetadata.TimestampUpdate = docMeta.TimestampUpdate
+		if docMeta.TimestampUpdate <= 0 {
+
+		}
 	}
 
 	return newMetadata, checkPass
 }
 
-func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry, fti bleve.Index) error {
+func _buildDocDir(opts *OptionsCmdBuild, siteMeta *docms.SiteMeta, topicDir, docDir os.DirEntry, fti bleve.Index) error {
 	log.Printf("[INFO]\t building document from <%s>...\n", opts.SrcDir+"/"+topicDir.Name()+"/"+docDir.Name())
 
 	docMeta, err := _loadDocumentMetadata(opts, topicDir, docDir)
 	if err != nil {
 		return err
 	}
-	newDocMeta, ok := _verifyDocumentMetadata(siteMeta, docMeta)
+	newDocMeta, ok := _verifyDocumentMetadata(siteMeta, docMeta, opts, topicDir, docDir)
 	if !ok {
 		return fmt.Errorf("there is error while checking metadata file")
 	}
@@ -362,7 +395,7 @@ func _buildDocDir(opts *Options, siteMeta *docms.SiteMeta, topicDir, docDir os.D
 
 // handle command "build"
 func actionBuild(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdBuild(c)
 	if fi, err := os.Stat(opts.SrcDir); err != nil || !fi.IsDir() {
 		return fmt.Errorf("<%s> is not an existing directory or not readable", opts.SrcDir)
 	}
