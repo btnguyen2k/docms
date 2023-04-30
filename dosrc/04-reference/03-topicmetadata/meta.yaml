@@ -13,5 +13,5 @@ file:
   vi: index-vi.md
 tags:
   # (map[language-code]Array(string))
-  en: [metadata, chủ đề]
+  en: [metadata, topic]
   vi: [metadata, chủ đề]
