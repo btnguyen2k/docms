@@ -191,9 +191,15 @@ func actionNewSite(c *cli.Context) error {
 		}
 		if siteMeta.Author.Name == "" {
 			siteMeta.Author.Name = opts.AuthorName
+			if siteMeta.Author.Name == "" {
+				siteMeta.Author.Name = "DOCLI"
+			}
 		}
 		if siteMeta.Author.Email == "" {
 			siteMeta.Author.Email = opts.AuthorEmail
+			if siteMeta.Author.Email == "" {
+				siteMeta.Author.Email = "docli@docms"
+			}
 		}
 		if siteMeta.Author.Avatar == "" {
 			siteMeta.Author.Avatar = opts.AuthorAvatar
