@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/btnguyen2k/consu/g18"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli/v2"
 )
@@ -106,6 +107,16 @@ func _verifySiteMetadata(siteMeta *docms.SiteMeta) (*docms.SiteMeta, bool) {
 
 	// normalize "tag alias"
 	newMetadata.TagsAlias = siteMeta.GetTagAliasMap()
+
+	// "mode" should be valid
+	{
+		validModes := []string{docms.SiteModeBlog, docms.SiteModeDocument, docms.SiteModeDoc}
+		newMetadata.Mode = siteMeta.Mode
+		if g18.FindInSlice(siteMeta.Mode, validModes) < 0 {
+			log.Printf("[WARN] invalid site mode <%s> falling back to defaul <%s>\n", siteMeta.Mode, docms.DefaultSiteMode)
+			newMetadata.Mode = docms.DefaultSiteMode
+		}
+	}
 
 	return newMetadata, checkPass
 }
