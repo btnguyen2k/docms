@@ -4,6 +4,8 @@
 
 Runtime `v0.3.1`:
 - Add Google Analytics support.
+- Add site mode `blog`.
+- New FE template `Blogy`.
 
 ## 2023-04-25
 

@@ -37,7 +37,7 @@ var (
 	gDocumentTags = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
 
 	gSpecialPages = make(map[string][]string) // map[special-page-name][]"topic-id:document-id"
-	gDocumentList = make([]*DocumentMeta, 0)  // list of all documents, sorted by index
+	gDocumentList = make([]string, 0)         // list of all documents (format: index/topic-id:doc-id), sorted by index
 )
 
 func _resetGlobalVars() {
@@ -56,7 +56,7 @@ func _resetGlobalVars() {
 	gDocumentTags = make(map[string]map[string][]string) // map[language-code]map[tag][]"topic-id:document-id"
 
 	gSpecialPages = make(map[string][]string) // map[special-page-name][]"topic-id:document-id"
-	gDocumentList = make([]*DocumentMeta, 0)  // list of all documents, sorted by index
+	gDocumentList = make([]string, 0)         // list of all documents (format: index/topic-id:doc-id), sorted by index
 }
 
 const (
@@ -70,7 +70,14 @@ var (
 	AllSiteModes = []string{SiteModeDoc, SiteModeDocument, SiteModeBlog}
 )
 
-// SiteMeta capture metadata of the website.
+// Author is site's/document's author
+type Author struct {
+	Name   string `json:"name" yaml:"name"`
+	Email  string `json:"email" yaml:"email"`
+	Avatar string `json:"avatar" yaml:"avatar"`
+}
+
+// SiteMeta captures metadata of the website.
 type SiteMeta struct {
 	Name            string                 `json:"name" yaml:"name"`               // name of the website
 	Description     interface{}            `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
@@ -81,6 +88,7 @@ type SiteMeta struct {
 	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
 	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
 	Mode            string                 `json:"mode" yaml:"mode"`               // site's mode, current support modes are: document/doc and blog
+	Author          *Author                `json:"author" yaml:"author"`           // site's author (also default document's author)
 }
 
 var (
@@ -124,6 +132,20 @@ func (sm *SiteMeta) init() error {
 	}
 
 	return nil
+}
+
+func (sm *SiteMeta) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":            sm.Name,
+		"languages":       sm.Languages,
+		"defaultLanguage": sm.DefaultLanguage,
+		"icon":            sm.Icon,
+		"description":     sm.GetDescriptionMap(),
+		"contacts":        sm.Contacts,
+		"tags":            sm.Tags,
+		"mode":            sm.Mode,
+		"author":          sm.Author,
+	}
 }
 
 func (sm *SiteMeta) GetDescriptionMap() map[string]string {
@@ -238,10 +260,12 @@ type TopicMeta struct {
 	index       int         `json:"-" yaml:"-"`                     // topic index, for ordering
 	id          string      `json:"-" yaml:"-"`                     // topic id
 	dir         string      `json:"-" yaml:"-"`                     // name of directory where topic's data locates
+	numDocs     int         `json:"-" yaml:"-"`                     // number of documents in this topic
 	Title       interface{} `json:"title" yaml:"title"`             // topic's title, can be a single string, or a map[language-code:string]string
 	Description interface{} `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
 	Icon        string      `json:"icon" yaml:"icon"`               // topic's icon
 	EntryImage  string      `json:"img" yaml:"img"`                 // topic's entry image
+	Hidden      bool        `json:"hidden" yaml:"hidden"`           // if 'true', this topic is "hidden" from GUI
 }
 
 func (tm *TopicMeta) setDirectory(dir string) bool {
@@ -253,6 +277,18 @@ func (tm *TopicMeta) setDirectory(dir string) bool {
 	tm.index, _ = strconv.Atoi(matches[1])
 	tm.id = matches[2]
 	return true
+}
+
+func (tm *TopicMeta) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"id":          tm.id,
+		"num_docs":    tm.numDocs,
+		"icon":        tm.Icon,
+		"title":       tm.GetTitleMap(),
+		"description": tm.GetDescriptionMap(),
+		"img":         tm.EntryImage,
+		"hidden":      tm.Hidden,
+	}
 }
 
 func (tm *TopicMeta) GetDescriptionMap() map[string]string {
@@ -337,17 +373,20 @@ func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 
 // DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
-	index       int         `json:"-" yaml:"-"`             // document index, for ordering
-	id          string      `json:"-" yaml:"-"`             // document id
-	dir         string      `json:"-" yaml:"-"`             // name of directory where document's data locates
-	Title       interface{} `json:"title" yaml:"title"`     // title of the document, can be a single string, or a map[language-code:string]string
-	Summary     interface{} `json:"summary" yaml:"summary"` // document summary, can be a single string, or a map[language-code:string]string
-	Icon        string      `json:"icon" yaml:"icon"`       // document's icon
-	ContentFile interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
-	Tags        interface{} `json:"tags" yaml:"tags"`       // document's tags, can be []string or map[language-code][]string
-	EntryImage  string      `json:"img" yaml:"img"`         // document's entry image
-	DocPage     string      `json:"page" yaml:"page"`       // document plays as the special page on site (such as "contact" or "about")
-	DocStyle    string      `json:"style" yaml:"style"`     // document's special style
+	index           int         `json:"-" yaml:"-"`             // document index, for ordering
+	id              string      `json:"-" yaml:"-"`             // document id
+	dir             string      `json:"-" yaml:"-"`             // name of directory where document's data locates
+	Title           interface{} `json:"title" yaml:"title"`     // title of the document, can be a single string, or a map[language-code:string]string
+	Summary         interface{} `json:"summary" yaml:"summary"` // document summary, can be a single string, or a map[language-code:string]string
+	Icon            string      `json:"icon" yaml:"icon"`       // document's icon
+	ContentFile     interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
+	Tags            interface{} `json:"tags" yaml:"tags"`       // document's tags, can be []string or map[language-code][]string
+	EntryImage      string      `json:"img" yaml:"img"`         // document's entry image
+	DocPage         string      `json:"page" yaml:"page"`       // document plays as the special page on site (such as "contact" or "about")
+	DocStyle        string      `json:"style" yaml:"style"`     // document's special style
+	TimestampCreate int64       `json:"tc" yaml:"tc"`           // UNIX timestamp when the document was created
+	TimestampUpdate int64       `json:"tu" yaml:"tu"`           // UNIX timestamp when the document was last updated
+	Author          *Author     `json:"author" yaml:"author"`   // document's author
 }
 
 func (dm *DocumentMeta) setDirectory(dir string) bool {
@@ -359,6 +398,22 @@ func (dm *DocumentMeta) setDirectory(dir string) bool {
 	dm.index, _ = strconv.Atoi(matches[1])
 	dm.id = matches[2]
 	return true
+}
+
+func (dm *DocumentMeta) toMap() map[string]interface{} {
+	return map[string]interface{}{
+		"id":      dm.id,
+		"icon":    dm.Icon,
+		"title":   dm.GetTitleMap(),
+		"summary": dm.GetSummaryMap(),
+		"tags":    dm.GetTagsMap(),
+		"img":     dm.EntryImage,
+		"page":    dm.DocPage,
+		"style":   dm.DocStyle,
+		"tc":      dm.TimestampCreate,
+		"tu":      dm.TimestampUpdate,
+		"author":  dm.Author,
+	}
 }
 
 func (dm *DocumentMeta) GetSummaryMap() map[string]string {

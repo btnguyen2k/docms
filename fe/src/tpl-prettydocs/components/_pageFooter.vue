@@ -28,13 +28,13 @@
 </template>
 
 <script>
-import {swichLanguage} from '@/_shared/i18n'
+import {switchLanguage} from '@/_shared/i18n'
 
 export default {
   name: 'lego-page-footer',
   inject: ['$siteMeta', '$siteLanguages'],
   methods: {
-    swichLanguage,
+    swichLanguage: switchLanguage,
   }
 }
 </script>

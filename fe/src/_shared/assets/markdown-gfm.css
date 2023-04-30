@@ -3,6 +3,7 @@ DO CMS - Markdown style
 by Thanh Nguyen
 */
 
+.img-fit img:not([class]),
 .img-fit img[class]:not(:where(
     [class*="docms-reset"],
     [class*="do-reset"]
@@ -10,6 +11,7 @@ by Thanh Nguyen
     max-width: 95%;
 }
 
+.img-center img:not([class]),
 .img-center img[class]:not(:where(
     [class*="docms-reset"],
     [class*="do-reset"]

@@ -8,46 +8,10 @@ import (
 	"time"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/btnguyen2k/consu/g18"
 	"github.com/btnguyen2k/consu/reddo"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 )
-
-var _apiResultGetSiteMeta *itineris.ApiResult
-
-// API handler "getSiteMeta"
-func apiGetSiteMeta(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
-	if _apiResultGetSiteMeta == nil {
-		_apiResultGetSiteMeta = itineris.NewApiResult(itineris.StatusOk).SetData(map[string]interface{}{
-			"name":            gSiteMeta.Name,
-			"languages":       gSiteMeta.Languages,
-			"defaultLanguage": gSiteMeta.DefaultLanguage,
-			"icon":            gSiteMeta.Icon,
-			"description":     gSiteMeta.GetDescriptionMap(),
-			"contacts":        gSiteMeta.Contacts,
-			"tags":            gSiteMeta.Tags,
-		})
-	}
-	return _apiResultGetSiteMeta
-}
-
-var _apiResultGetTopics *itineris.ApiResult
-
-// API handler "getTopics"
-func apiGetTopics(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
-	if _apiResultGetTopics == nil {
-		topics := make([]map[string]interface{}, len(gTopicList))
-		for i, topic := range gTopicList {
-			topics[i] = map[string]interface{}{
-				"id":          topic.id,
-				"icon":        topic.Icon,
-				"title":       topic.GetTitleMap(),
-				"description": topic.GetDescriptionMap(),
-			}
-		}
-		_apiResultGetTopics = itineris.NewApiResult(itineris.StatusOk).SetData(topics)
-	}
-	return _apiResultGetTopics
-}
 
 func _extractParam(params *itineris.ApiParams, paramName string, typ reflect.Type, defValue interface{}, regexp *regexp.Regexp) interface{} {
 	v, _ := params.GetParamAsType(paramName, typ)
@@ -65,6 +29,86 @@ func _extractParam(params *itineris.ApiParams, paramName string, typ reflect.Typ
 	return v
 }
 
+var _apiResultGetSiteMeta *itineris.ApiResult
+
+// API handler "getSiteMeta"
+func apiGetSiteMeta(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	if _apiResultGetSiteMeta == nil {
+		_apiResultGetSiteMeta = itineris.NewApiResult(itineris.StatusOk).SetData(gSiteMeta.toMap())
+	}
+	return _apiResultGetSiteMeta
+}
+
+var _apiResultGetTopics *itineris.ApiResult
+
+// API handler "getTopics"
+func apiGetTopics(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
+	if _apiResultGetTopics == nil {
+		topics := make([]map[string]interface{}, len(gTopicList))
+		for i, topic := range gTopicList {
+			if !topic.Hidden {
+				topics[i] = topic.toMap()
+			}
+		}
+		_apiResultGetTopics = itineris.NewApiResult(itineris.StatusOk).SetData(topics)
+	}
+	return _apiResultGetTopics
+}
+
+var _apiEmptyResultGetDocuments = itineris.NewApiResult(itineris.StatusOk).SetData(make([]interface{}, 0))
+
+func latestDocumentsForTopics(num int, topicIdList []string) []interface{} {
+	result := make([]interface{}, 0)
+	for len(topicIdList) == 0 {
+		return result
+	}
+	for _, indexTopicDocId := range gDocumentList {
+		tokens := strings.Split(indexTopicDocId, "/")
+		topicDocId := tokens[1]
+		topicId := topicDocId[:strings.Index(topicDocId, ":")]
+		if gDocumentMeta[topicDocId] != nil && !gTopicMeta[topicId].Hidden && g18.FindInSlice(topicId, topicIdList) >= 0 {
+			docData := gDocumentMeta[topicDocId].toMap()
+			docData["topic"] = gTopicMeta[topicId].toMap()
+			result = append(result, docData)
+			if len(result) >= num {
+				break
+			}
+		}
+	}
+	return result
+}
+
+// API handler "getDocuments"
+func apiGetDocuments(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
+	purpose := _extractParam(params, "p", reddo.TypeString, "", nil)
+	if purpose == "latest" {
+		// fetching "latest" documents is supported only in blog mode
+		if gSiteMeta.Mode != SiteModeBlog {
+			return _apiEmptyResultGetDocuments
+		}
+		num := _extractParam(params, "n", reddo.TypeInt, 10, nil)
+		if num == nil || num.(int64) <= 0 || num.(int64) > 10 {
+			num = 10
+		}
+		topics := _extractParam(params, "t", reddo.TypeString, "", nil)
+		if topics == nil {
+			topics = ""
+		}
+		topicIdList := regexp.MustCompile(`[\s,;:]+`).Split(topics.(string), -1)
+		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v\n", num, topics, topicIdList)
+		if topics.(string) == "" || topicIdList == nil || len(topicIdList) == 0 {
+			topicIdList = make([]string, 0)
+			for _, t := range gTopicList {
+				topicIdList = append(topicIdList, t.id)
+			}
+		}
+		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v / gTopicList: %#v\n", num, topics, topicIdList, gTopicList)
+		docs := latestDocumentsForTopics(int(num.(int64)), topicIdList)
+		return itineris.NewApiResult(itineris.StatusOk).SetData(docs)
+	}
+	return _apiEmptyResultGetDocuments
+}
+
 // API handler "getDocumentsForTopic"
 func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	topicId := _extractParam(params, "tid", reddo.TypeString, "", nil)
@@ -74,13 +118,7 @@ func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params
 	}
 	documents := make([]map[string]interface{}, len(docMetaList))
 	for i, docMeta := range docMetaList {
-		documents[i] = map[string]interface{}{
-			"id":      docMeta.id,
-			"icon":    docMeta.Icon,
-			"title":   docMeta.GetTitleMap(),
-			"summary": docMeta.GetSummaryMap(),
-			"tags":    docMeta.GetTagsMap(),
-		}
+		documents[i] = docMeta.toMap()
 	}
 	return itineris.NewApiResult(itineris.StatusOk).SetData(documents)
 }
@@ -97,14 +135,8 @@ func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	if docMeta == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Document <%s/%s> not found", topicId, docId))
 	}
-	document := map[string]interface{}{
-		"id":      docMeta.id,
-		"icon":    docMeta.Icon,
-		"title":   docMeta.GetTitleMap(),
-		"summary": docMeta.GetSummaryMap(),
-		"tags":    docMeta.GetTagsMap(),
-		"content": gDocumentContent[topicId.(string)+":"+docId.(string)],
-	}
+	document := docMeta.toMap()
+	document["content"] = gDocumentContent[topicId.(string)+":"+docId.(string)]
 	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
 }
 
@@ -145,23 +177,13 @@ func apiSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.A
 	}
 	docs := make([]map[string]interface{}, 0)
 	for _, hit := range searchResults.Hits {
-		// hit.ID is concatation of "topic-Id:doc-id:lang-code"
+		// hit.ID is concatenation of "topic-Id:doc-id:lang-code"
 		topicDocId := hit.ID[:strings.LastIndex(hit.ID, ":")]
 		if gDocumentMeta[topicDocId] != nil {
 			topicId := hit.ID[:strings.Index(hit.ID, ":")]
-			docs = append(docs, map[string]interface{}{
-				"id":      gDocumentMeta[topicDocId].id,
-				"icon":    gDocumentMeta[topicDocId].Icon,
-				"title":   gDocumentMeta[topicDocId].GetTitleMap(),
-				"summary": gDocumentMeta[topicDocId].GetSummaryMap(),
-				"tags":    gDocumentMeta[topicDocId].GetTagsMap(),
-				"topic": map[string]interface{}{
-					"id":          topicId,
-					"icon":        gTopicMeta[topicId].Icon,
-					"title":       gTopicMeta[topicId].GetTitleMap(),
-					"description": gTopicMeta[topicId].GetDescriptionMap(),
-				},
-			})
+			docData := gDocumentMeta[topicDocId].toMap()
+			docData["topic"] = gTopicMeta[topicId].toMap()
+			docs = append(docs, docData)
 			if len(docs) >= 10 {
 				break
 			}
@@ -201,19 +223,9 @@ func apiTagSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	for _, topicDocId := range docIdList {
 		if gDocumentMeta[topicDocId] != nil {
 			topicId := topicDocId[:strings.Index(topicDocId, ":")]
-			docs = append(docs, map[string]interface{}{
-				"id":      gDocumentMeta[topicDocId].id,
-				"icon":    gDocumentMeta[topicDocId].Icon,
-				"title":   gDocumentMeta[topicDocId].GetTitleMap(),
-				"summary": gDocumentMeta[topicDocId].GetSummaryMap(),
-				"tags":    gDocumentMeta[topicDocId].GetTagsMap(),
-				"topic": map[string]interface{}{
-					"id":          topicId,
-					"icon":        gTopicMeta[topicId].Icon,
-					"title":       gTopicMeta[topicId].GetTitleMap(),
-					"description": gTopicMeta[topicId].GetDescriptionMap(),
-				},
-			})
+			docData := gDocumentMeta[topicDocId].toMap()
+			docData["topic"] = gTopicMeta[topicId].toMap()
+			docs = append(docs, docData)
 			if len(docs) >= 10 {
 				break
 			}
