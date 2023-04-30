@@ -13,8 +13,9 @@
             <div class="post-entry text-center">
               <h1 class="mb-4">{{ $localedText(document.title) }}</h1>
               <div class="post-meta align-items-center text-center">
-                <figure class="author-figure mb-0 me-3 d-inline-block"><img :src="'//www.gravatar.com/avatar/'+document.author_email.md5()" alt="Image" class="img-fluid"></figure>
-                <!--<figure class="author-figure mb-0 me-3 d-inline-block"><img src="images/person_1.jpg" alt="Image" class="img-fluid"></figure>-->
+                <figure class="author-figure mb-0 me-3 d-inline-block">
+                  <img :src="$calcAuthorAvatarUrl(document.author)" class="img-fluid">
+                </figure>
                 <span class="d-inline-block mt-1">{{ document.author_name }}</span>
                 <span>&nbsp;-&nbsp;{{ $unixTimestampToReadable(document.tu) }}</span>
               </div>

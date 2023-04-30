@@ -9256,7 +9256,7 @@ textarea.form-control-lg {
     color: #fff; }
 
 .site-nav {
-  position: relative;
+  /*position: relative; */ /* customized for DO CMS */
   width: 100%;
   background-color: #214252;
   padding: 10px 0; }
