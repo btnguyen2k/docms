@@ -407,7 +407,7 @@ func actionNewDocument(c *cli.Context) error {
 	if err == nil && docMeta != nil {
 		docMeta.TimestampUpdate = now.UTC().Unix()
 		if docMeta.TimestampCreate <= 0 {
-			docMeta.TimestampCreate = now.UTC().Unix()
+			docMeta.TimestampCreate = docMeta.FileInfo.ModTime().UTC().Unix()
 		}
 	} else {
 		docMeta = &docms.DocumentMeta{

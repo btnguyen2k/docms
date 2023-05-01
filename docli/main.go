@@ -9,7 +9,7 @@ import (
 
 const (
 	// Version defined the version number of DO CMS CLI
-	Version = "0.3.1-test"
+	Version = "0.3.1.1"
 )
 
 func main() {
@@ -24,6 +24,7 @@ func main() {
 		Commands: []*cli.Command{
 			commandBuild,
 			commandNew,
+			commandTouch,
 		},
 	}
 	if err := app.Run(os.Args); err != nil {

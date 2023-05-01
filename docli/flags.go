@@ -114,3 +114,17 @@ func OptsCmdNew(c *cli.Context) *OptionsCmdNew {
 		DocStyle:        c.String(fieldDocStyle),
 	}
 }
+
+type OptionsCmdTouch struct {
+	DataDir,
+	DocTopic,
+	DocId string
+}
+
+func OptsCmdTouch(c *cli.Context) *OptionsCmdTouch {
+	return &OptionsCmdTouch{
+		DataDir:  c.String(fieldDir),
+		DocTopic: c.String(fieldTopic),
+		DocId:    c.String(fieldId),
+	}
+}
