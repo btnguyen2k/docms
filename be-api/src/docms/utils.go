@@ -79,17 +79,17 @@ type Author struct {
 
 // SiteMeta captures metadata of the website.
 type SiteMeta struct {
-	FileInfo        os.FileInfo            `json:"-" yaml:"-"`                     // internal use only!
-	Name            string                 `json:"name" yaml:"name"`               // name of the website
-	Description     interface{}            `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Languages       map[string]string      `json:"languages" yaml:"languages"`     // available languages of the website content
-	DefaultLanguage string                 `json:"-" yaml:"-"`                     // site's default language
-	Icon            string                 `json:"icon" yaml:"icon"`               // website's icon
-	Contacts        map[string]string      `json:"contacts" yaml:"contacts"`       // site's contact info
-	Tags            map[string]interface{} `json:"tags" yaml:"tags"`               // site's tags
-	TagsAlias       interface{}            `json:"tagalias" yaml:"tagalias"`       // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
-	Mode            string                 `json:"mode" yaml:"mode"`               // site's mode, current support modes are: document/doc and blog
-	Author          *Author                `json:"author" yaml:"author"`           // site's author (also default document's author)
+	FileInfo        os.FileInfo            `json:"-" yaml:"-"`                                   // internal use only!
+	Name            string                 `json:"name" yaml:"name"`                             // name of the website
+	Description     interface{}            `json:"description" yaml:"description"`               // short description, can be a single string, or a map[language-code:string]string
+	Languages       map[string]string      `json:"languages" yaml:"languages"`                   // available languages of the website content
+	DefaultLanguage string                 `json:"-" yaml:"-"`                                   // site's default language
+	Icon            string                 `json:"icon" yaml:"icon"`                             // website's icon
+	Contacts        map[string]string      `json:"contacts,omitempty" yaml:"contacts,omitempty"` // site's contact info
+	Tags            map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`         // site's tags
+	TagsAlias       interface{}            `json:"tagalias,omitempty" yaml:"tagalias,omitempty"` // tags-alias, can be map[tag][]string or map[language-code]map[tag][]string
+	Mode            string                 `json:"mode" yaml:"mode"`                             // site's mode, current support modes are: document/doc and blog
+	Author          *Author                `json:"author,omitempty" yaml:"author,omitempty"`     // site's author (also default document's author)
 }
 
 var (
@@ -230,7 +230,7 @@ func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
 
 func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -248,7 +248,7 @@ func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 
 func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -268,16 +268,16 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 
 // TopicMeta capture metadata of a topic.
 type TopicMeta struct {
-	FileInfo    os.FileInfo `json:"-" yaml:"-"`                     // internal use only!
-	index       int         `json:"-" yaml:"-"`                     // topic index, for ordering
-	id          string      `json:"-" yaml:"-"`                     // topic id
-	dir         string      `json:"-" yaml:"-"`                     // name of directory where topic's data locates
-	numDocs     int         `json:"-" yaml:"-"`                     // number of documents in this topic
-	Title       interface{} `json:"title" yaml:"title"`             // topic's title, can be a single string, or a map[language-code:string]string
-	Description interface{} `json:"description" yaml:"description"` // short description, can be a single string, or a map[language-code:string]string
-	Icon        string      `json:"icon" yaml:"icon"`               // topic's icon
-	EntryImage  string      `json:"img" yaml:"img"`                 // topic's entry image
-	Hidden      bool        `json:"hidden" yaml:"hidden"`           // if 'true', this topic is "hidden" from GUI
+	FileInfo    os.FileInfo `json:"-" yaml:"-"`                                         // internal use only!
+	index       int         `json:"-" yaml:"-"`                                         // topic index, for ordering
+	id          string      `json:"-" yaml:"-"`                                         // topic id
+	dir         string      `json:"-" yaml:"-"`                                         // name of directory where topic's data locates
+	numDocs     int         `json:"-" yaml:"-"`                                         // number of documents in this topic
+	Title       interface{} `json:"title" yaml:"title"`                                 // topic's title, can be a single string, or a map[language-code:string]string
+	Description interface{} `json:"description,omitempty" yaml:"description,omitempty"` // short description, can be a single string, or a map[language-code:string]string
+	Icon        string      `json:"icon,omitempty" yaml:"icon,omitempty"`               // topic's icon
+	EntryImage  string      `json:"img,omitempty" yaml:"img,omitempty"`                 // topic's entry image
+	Hidden      bool        `json:"hidden,omitempty" yaml:"hidden,omitempty"`           // if 'true', this topic is "hidden" from GUI
 }
 
 func (tm *TopicMeta) setDirectory(dir string) bool {
@@ -365,7 +365,7 @@ func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
 
 func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -382,7 +382,7 @@ func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
 
 func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -401,21 +401,21 @@ func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 
 // DocumentMeta capture metadata of a document.
 type DocumentMeta struct {
-	FileInfo        os.FileInfo `json:"-" yaml:"-"`             // internal use only!
-	index           int         `json:"-" yaml:"-"`             // document index, for ordering
-	id              string      `json:"-" yaml:"-"`             // document id
-	dir             string      `json:"-" yaml:"-"`             // name of directory where document's data locates
-	Title           interface{} `json:"title" yaml:"title"`     // title of the document, can be a single string, or a map[language-code:string]string
-	Summary         interface{} `json:"summary" yaml:"summary"` // document summary, can be a single string, or a map[language-code:string]string
-	Icon            string      `json:"icon" yaml:"icon"`       // document's icon
-	ContentFile     interface{} `json:"file" yaml:"file"`       // name of document's content file, can be a single string, or a map[language-code:string]string
-	Tags            interface{} `json:"tags" yaml:"tags"`       // document's tags, can be []string or map[language-code][]string
-	EntryImage      string      `json:"img" yaml:"img"`         // document's entry image
-	DocPage         string      `json:"page" yaml:"page"`       // document plays as the special page on site (such as "contact" or "about")
-	DocStyle        string      `json:"style" yaml:"style"`     // document's special style
-	TimestampCreate int64       `json:"tc" yaml:"tc"`           // UNIX timestamp when the document was created
-	TimestampUpdate int64       `json:"tu" yaml:"tu"`           // UNIX timestamp when the document was last updated
-	Author          *Author     `json:"author" yaml:"author"`   // document's author
+	FileInfo        os.FileInfo `json:"-" yaml:"-"`                                 // internal use only!
+	index           int         `json:"-" yaml:"-"`                                 // document index, for ordering
+	id              string      `json:"-" yaml:"-"`                                 // document id
+	dir             string      `json:"-" yaml:"-"`                                 // name of directory where document's data locates
+	Title           interface{} `json:"title" yaml:"title"`                         // title of the document, can be a single string, or a map[language-code:string]string
+	Summary         interface{} `json:"summary,omitempty" yaml:"summary,omitempty"` // document summary, can be a single string, or a map[language-code:string]string
+	Icon            string      `json:"icon,omitempty" yaml:"icon,omitempty"`       // document's icon
+	ContentFile     interface{} `json:"file" yaml:"file"`                           // name of document's content file, can be a single string, or a map[language-code:string]string
+	Tags            interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`       // document's tags, can be []string or map[language-code][]string
+	EntryImage      string      `json:"img,omitempty" yaml:"img,omitempty"`         // document's entry image
+	DocPage         string      `json:"page,omitempty" yaml:"page,omitempty"`       // document plays as the special page on site (such as "contact" or "about")
+	DocStyle        string      `json:"style,omitempty" yaml:"style,omitempty"`     // document's special style
+	TimestampCreate int64       `json:"tc" yaml:"tc"`                               // UNIX timestamp when the document was created
+	TimestampUpdate int64       `json:"tu" yaml:"tu"`                               // UNIX timestamp when the document was last updated
+	Author          *Author     `json:"author,omitempty" yaml:"author,omitempty"`   // document's author
 }
 
 func (dm *DocumentMeta) setDirectory(dir string) bool {
@@ -548,7 +548,7 @@ func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
 
 func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -565,7 +565,7 @@ func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 
 func LoadDocumentMetaFromJson(filePath string) (*DocumentMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
