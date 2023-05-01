@@ -17,6 +17,8 @@ const (
 	fieldLanguages    = "languages"
 	fieldId           = "id"
 	fieldTopic        = "topic"
+	fieldHidden       = "hidden"
+	fieldEntryImage   = "img"
 	fieldUseTimestamp = "use-timestamp"
 	fieldAuthorName   = "author.name"
 	fieldAuthorEmail  = "author.email"
@@ -35,6 +37,8 @@ var (
 	flagSiteMode       = &cli.StringFlag{Name: fieldMode, Value: docms.DefaultSiteMode, Usage: "website's mode (valid values: document, blog)"}
 	flagTopicId        = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
 	flagTopicIcon      = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
+	flagTopicEntryImge = &cli.StringFlag{Name: fieldEntryImage, Usage: "topic's entry image url"}
+	flagTopicHidden    = &cli.BoolFlag{Name: fieldHidden, Usage: "hide this topic from listing on frontend"}
 	flagDocTopic       = &cli.StringFlag{Name: fieldTopic, Usage: "id of document's topic"}
 	flagDocId          = &cli.StringFlag{Name: fieldId, Usage: "document's unique id"}
 	flagDocIdTimestamp = &cli.BoolFlag{Name: fieldUseTimestamp, Aliases: []string{"ts", "timestamp", "use-ts"}, Usage: "use current timestamp as document's id"}
@@ -69,7 +73,9 @@ type OptionsCmdNew struct {
 	AuthorEmail,
 	AuthorAvatar string
 	TopicId,
-	TopicIcon string
+	TopicIcon,
+	TopicEntryImage string
+	TopicHidden bool
 	DocTopic,
 	DocId,
 	DocIcon string
@@ -78,20 +84,22 @@ type OptionsCmdNew struct {
 
 func OptsCmdNew(c *cli.Context) *OptionsCmdNew {
 	return &OptionsCmdNew{
-		DataDir:        c.String(fieldDir),
-		OverrideTarget: c.Bool(fieldOverride),
-		SiteName:       c.String(fieldName),
-		SiteIcon:       c.String(fieldIcon),
-		SiteLanguages:  c.String(fieldLanguages),
-		SiteMode:       c.String(fieldMode),
-		AuthorName:     c.String(fieldAuthorName),
-		AuthorEmail:    c.String(fieldAuthorEmail),
-		AuthorAvatar:   c.String(fieldAuthorAvatar),
-		TopicId:        c.String(fieldId),
-		TopicIcon:      c.String(fieldIcon),
-		DocTopic:       c.String(fieldTopic),
-		DocId:          c.String(fieldId),
-		DocIdTimestamp: c.Bool(fieldUseTimestamp),
-		DocIcon:        c.String(fieldIcon),
+		DataDir:         c.String(fieldDir),
+		OverrideTarget:  c.Bool(fieldOverride),
+		SiteName:        c.String(fieldName),
+		SiteIcon:        c.String(fieldIcon),
+		SiteLanguages:   c.String(fieldLanguages),
+		SiteMode:        c.String(fieldMode),
+		AuthorName:      c.String(fieldAuthorName),
+		AuthorEmail:     c.String(fieldAuthorEmail),
+		AuthorAvatar:    c.String(fieldAuthorAvatar),
+		TopicId:         c.String(fieldId),
+		TopicIcon:       c.String(fieldIcon),
+		TopicEntryImage: c.String(fieldEntryImage),
+		TopicHidden:     c.Bool(fieldHidden),
+		DocTopic:        c.String(fieldTopic),
+		DocId:           c.String(fieldId),
+		DocIdTimestamp:  c.Bool(fieldUseTimestamp),
+		DocIcon:         c.String(fieldIcon),
 	}
 }

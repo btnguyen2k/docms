@@ -265,13 +265,17 @@ func actionNewTopic(c *cli.Context) error {
 	}
 	topicMeta, err := docms.LoadTopicMetaAuto(opts.DataDir + "/" + topicDir)
 	if err == nil && topicMeta != nil {
-		if topicMeta.Icon == "" || (opts.TopicIcon != "" && opts.TopicIcon != defaultTopicIcon) {
-			topicMeta.Icon = opts.TopicIcon
+		if opts.TopicHidden {
+			topicMeta.Hidden = opts.TopicHidden
 		}
 	} else {
 		topicMeta = &docms.TopicMeta{
-			Icon: opts.TopicIcon,
+			Icon:   opts.TopicIcon,
+			Hidden: opts.TopicHidden,
 		}
+	}
+	if topicMeta.Icon == "" || (opts.TopicIcon != "" && opts.TopicIcon != defaultTopicIcon) {
+		topicMeta.Icon = opts.TopicIcon
 	}
 
 	// topic's title and description
@@ -290,6 +294,11 @@ func actionNewTopic(c *cli.Context) error {
 	}
 	topicMeta.Title = topicTitleMap
 	topicMeta.Description = topicDescMap
+
+	// topic's entry-image
+	if opts.TopicEntryImage != "" {
+		topicMeta.EntryImage = opts.TopicEntryImage
+	}
 
 	if err := writeFileYaml(metaFile, topicMeta); err != nil {
 		return err
