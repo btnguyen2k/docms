@@ -230,7 +230,7 @@ func LoadSiteMetaAuto(dir string) (*SiteMeta, error) {
 
 func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -248,7 +248,7 @@ func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 
 func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -365,7 +365,7 @@ func LoadTopicMetaAuto(dir string) (*TopicMeta, error) {
 
 func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -382,7 +382,7 @@ func LoadTopicMetaFromYaml(filePath string) (*TopicMeta, error) {
 
 func LoadTopicMetaFromJson(filePath string) (*TopicMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -548,7 +548,7 @@ func LoadDocumentMetaAuto(dir string) (*DocumentMeta, error) {
 
 func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
@@ -565,7 +565,7 @@ func LoadDocumentMetaFromYaml(filePath string) (*DocumentMeta, error) {
 
 func LoadDocumentMetaFromJson(filePath string) (*DocumentMeta, error) {
 	fi, err := os.Stat(filePath)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	buf, err := os.ReadFile(filePath)
