@@ -9,6 +9,10 @@ Runtime `v0.3.1`:
 
 ## 2023-05-01
 
+CLI `v0.3.1.1`:
+- Command `touch` to update document's timestamp.
+- Minor enhancement.
+
 CLI `v0.3.1`:
 - In-sync with runtime `v0.3.1` (site mode/author, page special purpose/style and author).
 
