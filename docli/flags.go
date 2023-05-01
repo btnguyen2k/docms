@@ -23,29 +23,34 @@ const (
 	fieldAuthorName   = "author.name"
 	fieldAuthorEmail  = "author.email"
 	fieldAuthorAvatar = "author.avatar"
+	fieldDocPage      = "page"
+	fieldDocStyle     = "style"
 )
 
 var (
-	flagSrc            = &cli.StringFlag{Name: fieldSrc, Value: defaultSrcFolder, Usage: "source directory"}
-	flagOutput         = &cli.StringFlag{Name: fieldOutput, Value: defaultOutputFolder, Usage: "output directory"}
-	flagPurge          = &cli.BoolFlag{Name: fieldPurge, Usage: "purge output directory if not empty"}
-	flagDir            = &cli.StringFlag{Name: fieldDir, Value: defaultDataFolder, Usage: "directory to store data"}
-	flagOverride       = &cli.BoolFlag{Name: fieldOverride, Usage: "override if destination exists"}
-	flagSiteName       = &cli.StringFlag{Name: fieldName, Usage: "(short) name of the website"}
-	flagSiteIcon       = &cli.StringFlag{Name: fieldIcon, Value: defaultSiteIcon, Usage: "icon of the website (support FontAwesome icons)"}
-	flagSiteLanguages  = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>],<default:code>)"}
-	flagSiteMode       = &cli.StringFlag{Name: fieldMode, Value: docms.DefaultSiteMode, Usage: "website's mode (valid values: document, blog)"}
-	flagTopicId        = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
-	flagTopicIcon      = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
-	flagTopicEntryImge = &cli.StringFlag{Name: fieldEntryImage, Usage: "topic's entry image url"}
-	flagTopicHidden    = &cli.BoolFlag{Name: fieldHidden, Usage: "hide this topic from listing on frontend"}
-	flagDocTopic       = &cli.StringFlag{Name: fieldTopic, Usage: "id of document's topic"}
-	flagDocId          = &cli.StringFlag{Name: fieldId, Usage: "document's unique id"}
-	flagDocIdTimestamp = &cli.BoolFlag{Name: fieldUseTimestamp, Aliases: []string{"ts", "timestamp", "use-ts"}, Usage: "use current timestamp as document's id"}
-	flagDocIcon        = &cli.StringFlag{Name: fieldIcon, Value: defaultDocumentIcon, Usage: "icon of the document (support FontAwesome icons)"}
-	flagAuthorName     = &cli.StringFlag{Name: fieldAuthorName, Usage: "author's name"}
-	flagAuthorEmail    = &cli.StringFlag{Name: fieldAuthorEmail, Usage: "author's email"}
-	flagAuthorAvatar   = &cli.StringFlag{Name: fieldAuthorAvatar, Usage: "author's avatar url"}
+	flagSrc             = &cli.StringFlag{Name: fieldSrc, Value: defaultSrcFolder, Usage: "source directory"}
+	flagOutput          = &cli.StringFlag{Name: fieldOutput, Value: defaultOutputFolder, Usage: "output directory"}
+	flagPurge           = &cli.BoolFlag{Name: fieldPurge, Usage: "purge output directory if not empty"}
+	flagDir             = &cli.StringFlag{Name: fieldDir, Value: defaultDataFolder, Usage: "directory to store data"}
+	flagOverride        = &cli.BoolFlag{Name: fieldOverride, Usage: "override if destination exists"}
+	flagSiteName        = &cli.StringFlag{Name: fieldName, Usage: "(short) name of the website"}
+	flagSiteIcon        = &cli.StringFlag{Name: fieldIcon, Value: defaultSiteIcon, Usage: "icon of the website (support FontAwesome icons)"}
+	flagSiteLanguages   = &cli.StringFlag{Name: fieldLanguages, Value: defaultSiteLanguages, Usage: "supported languages (format: <code1:label1>[,<code2:label2>],<default:code>)"}
+	flagSiteMode        = &cli.StringFlag{Name: fieldMode, Value: docms.DefaultSiteMode, Usage: "website's mode (valid values: document, blog)"}
+	flagTopicId         = &cli.StringFlag{Name: fieldId, Usage: "topic's unique id"}
+	flagTopicIcon       = &cli.StringFlag{Name: fieldIcon, Value: defaultTopicIcon, Usage: "icon of the topic (support FontAwesome icons)"}
+	flagTopicEntryImage = &cli.StringFlag{Name: fieldEntryImage, Usage: "topic's entry image url"}
+	flagTopicHidden     = &cli.BoolFlag{Name: fieldHidden, Usage: "hide this topic from listing on frontend"}
+	flagDocTopic        = &cli.StringFlag{Name: fieldTopic, Usage: "id of document's topic"}
+	flagDocId           = &cli.StringFlag{Name: fieldId, Usage: "document's unique id"}
+	flagDocIdTimestamp  = &cli.BoolFlag{Name: fieldUseTimestamp, Aliases: []string{"ts", "timestamp", "use-ts"}, Usage: "use current timestamp as document's id"}
+	flagDocIcon         = &cli.StringFlag{Name: fieldIcon, Value: defaultDocumentIcon, Usage: "icon of the document (support FontAwesome icons)"}
+	flagDocEntryImage   = &cli.StringFlag{Name: fieldEntryImage, Usage: "document's entry image url"}
+	flagDocPage         = &cli.StringFlag{Name: fieldDocPage, Usage: "document's role as a special page"}
+	flagDocStyle        = &cli.StringFlag{Name: fieldDocStyle, Usage: "document's special style"}
+	flagAuthorName      = &cli.StringFlag{Name: fieldAuthorName, Usage: "author's name"}
+	flagAuthorEmail     = &cli.StringFlag{Name: fieldAuthorEmail, Usage: "author's email"}
+	flagAuthorAvatar    = &cli.StringFlag{Name: fieldAuthorAvatar, Usage: "author's avatar url"}
 )
 
 type OptionsCmdBuild struct {
@@ -78,7 +83,10 @@ type OptionsCmdNew struct {
 	TopicHidden bool
 	DocTopic,
 	DocId,
-	DocIcon string
+	DocIcon,
+	DocEntryImage,
+	DocPage,
+	DocStyle string
 	DocIdTimestamp bool
 }
 
@@ -101,5 +109,8 @@ func OptsCmdNew(c *cli.Context) *OptionsCmdNew {
 		DocId:           c.String(fieldId),
 		DocIdTimestamp:  c.Bool(fieldUseTimestamp),
 		DocIcon:         c.String(fieldIcon),
+		DocEntryImage:   c.String(fieldEntryImage),
+		DocPage:         c.String(fieldDocPage),
+		DocStyle:        c.String(fieldDocStyle),
 	}
 }
