@@ -147,9 +147,10 @@ func serveImage(c echo.Context) error {
 }
 
 func initCMSData() {
+	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
 	if os.Getenv("DEBUG") == "true" {
+		log.Printf("[%s] watching for directory change <%s>", logLevelDebug, gDataDir)
 		w := watcher.New()
-		// w.SetMaxEvents(1)
 		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
 		go func() {
 			for {
@@ -372,9 +373,8 @@ func _reloadCMSData() {
 		return
 	}
 	defer dataLock.Unlock()
-	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
-	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 
+	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 	_resetGlobalVars()
 	_loadSiteMeta()
 	_loadTopics()
