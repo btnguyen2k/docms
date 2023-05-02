@@ -15,9 +15,12 @@ hljs.registerLanguage('dockerfile', require('highlight.js/lib/languages/dockerfi
 import katex from 'katex'
 import 'katex/contrib/mhchem/mhchem'
 import 'katex/dist/katex.min.css'
-import {marked} from "marked"
-import DOMPurify from "dompurify"
-import {APP_CONFIG} from "@/_shared/utils/app_config"
+import {marked} from 'marked'
+import mermaid from 'mermaid'
+
+mermaid.initialize({startOnLoad: false})
+import DOMPurify from 'dompurify'
+import {APP_CONFIG} from '@/_shared/utils/app_config'
 
 //ref: https://github.com/markedjs/marked/issues/1538#issuecomment-575838181
 let katexId = 0
@@ -27,6 +30,8 @@ const reKatexId = /(__special_katext_id_\d+__)/g
 
 let bsTabsGroupId = 0
 const bsTabsGroupArr = []
+
+let mermaidId = 0
 
 const reUrlWithProtocol = /^([a-z]+:)/i
 
@@ -272,10 +277,31 @@ class MyRenderer extends marked.Renderer {
 
     code(code, infoString, escaped) {
         infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString.toLowerCase().trim()
-        if (infoString == 'katex') {
+        if (infoString == 'katex' || infoString.startsWith('katex ')) {
             const id = nextKatexId()
             mathExpMap[id] = {type: 'block', expression: code}
             return id
+        }
+        if (infoString == 'mermaid' || infoString.startsWith('mermaid ')) {
+            const mid = 'm' + code.md5() + (mermaidId++)
+            // const el = document.createElement('div')
+            // el.id = mid
+            // document.querySelector('#mermaid-temp').appendChild(el)
+            mermaid.render(mid, code)
+                .then(value => {
+                    const elList = document.querySelectorAll('.' + mid)
+                    elList.forEach(el => {
+                        el.innerHTML = value.svg
+                    })
+                })
+                .finally(() => {
+                    //hack do get rid of mermaid's error box
+                    const el = document.querySelector("#d" + mid)
+                    if (el) {
+                        el.remove()
+                    }
+                })
+            return '<pre class="docms-mermaid mermaid ' + mid + '">' + code + '</pre>'
         }
         if (infoString.startsWith('gh-gist ')) {
             return this._renderGithubGist(infoString.slice('gh-gist'.length))
@@ -373,31 +399,6 @@ function unescapeHtml(html) {
         .replace(/&amp;/g, '&')
 }
 
-// function replaceMathWithIds(text) {
-//     if (reKatexId.test(text)) {
-//         return text
-//     }
-//     // block Mathematics and Chemical formulas: allowing newlines between $$...$$
-//     text = text.replace(/\$\$\s([\s\S]+?)\s\$\$/g, (_match, expression) => {
-//         expression = unescapeHtml(expression).replace(/\\(\s)/g, (_match, capture) => {
-//             return '\\\\' + capture
-//         })
-//         const id = nextKatexId()
-//         mathExpMap[id] = {type: 'block', expression}
-//         return id
-//     })
-//
-//     // inline Mathematics and Chemical formulas: _not_ allowing newlines between $...$
-//     text = text.replace(/\$([^$\n]+?)\$/g, (_match, expression) => {
-//         expression = unescapeHtml(expression)
-//         const id = nextKatexId()
-//         mathExpMap[id] = {type: 'inline', expression}
-//         return id
-//     })
-//
-//     return text
-// }
-
 const defaultMarkedOpts = {
     gfm: true,
     renderer: myRenderer,
@@ -409,6 +410,7 @@ const defaultMarkedOpts = {
 }
 
 function markdownRender(markdownInput, opts) {
+    //parse: marked
     let markedOpts = {...defaultMarkedOpts}
     if (typeof opts == 'object') {
         markedOpts = {...markedOpts, ...opts}
@@ -416,6 +418,8 @@ function markdownRender(markdownInput, opts) {
     delete markedOpts['sanitize']
     markedOpts.renderer = new MyRenderer(markedOpts)
     const html = marked.parse(markdownInput, markedOpts)
+
+    //render: katex
     const latexHtml = html.replace(reKatexId, (_match, capture) => {
         const token = mathExpMap[capture]
         return katex.renderToString(token.expression, {
@@ -424,6 +428,18 @@ function markdownRender(markdownInput, opts) {
             throwOnError: false
         })
     })
+
+    // //render:mermaid
+    // setTimeout(() => {
+    //     mermaid.run({
+    //         suppressErrors: true,
+    //         querySelector: '.docms-mermaid',
+    //         postRenderCallback: (id) => {
+    //             console.log(id)
+    //         },
+    //     });
+    // }, 250)
+
     const sanitize = typeof opts == 'boolean' ? opts : (typeof opts == 'object' ? opts['sanitize'] : false)
     return sanitize ? DOMPurify.sanitize(latexHtml, {
         ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // needed for embed GitHug Gist

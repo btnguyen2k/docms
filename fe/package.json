@@ -32,6 +32,7 @@
     "jsrsasign": "^10.7.0",
     "katex": "^0.16.4",
     "marked": "^4.2.12",
+    "mermaid": "^10.1.0",
     "sass-loader": "^13.2.1",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",

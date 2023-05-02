@@ -16,7 +16,7 @@ import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_uti
 import {computed} from 'vue'
 import MD5 from "crypto-js/md5"
 String.prototype.md5 = function () {
-    return MD5(this)
+    return MD5(this).toString()
 }
 
 import {library} from '@fortawesome/fontawesome-svg-core'
