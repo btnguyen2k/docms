@@ -267,7 +267,7 @@ func actionNewTopic(c *cli.Context) error {
 
 	// init topic meta
 	if topicDir == nil {
-		topicDir = g18.PointerOf(fmt.Sprintf("%02d-%s", index, topicId))
+		topicDir = g18.PointerOf(fmt.Sprintf("%02d-%s", *index, topicId))
 	}
 	metaFile := opts.DataDir + "/" + *topicDir + "/meta.yaml"
 	if err := os.Mkdir(opts.DataDir+"/"+*topicDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
