@@ -232,5 +232,62 @@ Hầu hết các ngôn ngữ lập trình phổ biến đều được hỗ tr�
     ]]
 ```
 
+## Biểu đổ
+
+Biểu đồ có thể được nhúng vào tài liệu sử dụng [cú pháp mermaid](https://mermaid.js.org/intro/):
+
+```bs-tabs
+    [[bs-tab Markdown
+    Biểu đồ tròn:
+
+        ```mermaid
+        pie title Browser Market Share (statcounter, Mar 2022 - Apr 2023)
+            "Chrome": 63.51
+            "Safari"   : 20.43
+            "Edge"    : 4.96
+            "Firefox": 2.77
+            "Others": 8.33
+        ```
+
+    Biểu đồ trình tự:
+    
+        ```mermaid
+        sequenceDiagram
+            Alice ->> Bob: Hello Bob, how are you?
+            Bob-->>John: How about you John?
+            Bob--x Alice: I am good thanks!
+            Bob-x John: I am good thanks!
+            Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+            Bob-->Alice: Checking with John...
+            Alice->John: Yes... John, how are you?
+        ```
+    ]]
+    [[bs-tab Rendered result
+    Pipechart:
+    ```mermaid
+    pie title Browser Market Share Worldwide (statcounter, Mar 2022 - Apr 2023)
+        "Chrome": 63.51
+        "Safari"   : 20.43
+        "Edge"    : 4.96
+        "Firefox": 2.77
+        "Others": 8.33
+    ```
+
+    Sequence diagram:
+    ```mermaid
+    sequenceDiagram
+        Alice ->> Bob: Hello Bob, how are you?
+        Bob-->>John: How about you John?
+        Bob--x Alice: I am good thanks!
+        Bob-x John: I am good thanks!
+        Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+        Bob-->Alice: Checking with John...
+        Alice->John: Yes... John, how are you?
+    ```
+    ]]
+```
+
 Xem thêm:
 - Hỗ trợ [giao diện Bootstrap](../bootstrap/).

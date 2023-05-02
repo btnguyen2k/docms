@@ -11,7 +11,7 @@ go install github.com/btnguyen2k/docms/docli@latest
 
 You can also install a specific version (*):
 ```shell
-go install github.com/btnguyen2k/docms/docli@cli-v0.1.1
+go install github.com/btnguyen2k/docms/docli@cli-v0.3.1.1
 ```
 
 ```bs-alert warning
@@ -36,15 +36,16 @@ USAGE:
    docli [global options] command [command options] [arguments...]
 
 VERSION:
-   0.1.1
+   0.3.1.1
 
 AUTHOR:
    Thanh Nguyen <btnguyen2k (at) gmail (dot) com>
 
 COMMANDS:
-   build, b  Preprocess website content, ready for DO CMS runtime
-   new, n    Helper to create assets with default metadata
-   help, h   Shows a list of commands or help for one command
+   build, b           Preprocess website content, ready for DO CMS runtime
+   new, n, create, c  Helper to create assets with default metadata
+   touch, t           Touch document metadata file to update timestamp
+   help, h            Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -123,7 +124,11 @@ Command's options:
 |---|---|---|---|
 |`--name value`|true||(short) name of the website|
 |`--icon value`|false|`fas fa-globe`|icon of the website (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
-|`--languages value`|false|`en:english,default:en`|content's supported languages, in format `<code1:label1>[,<code2:label2>...],<default:code>`|
+|<span class="text-nowrap">`--languages value`</span>|false|`en:english,default:en`|content's supported languages, in format `<code1:label1>[,<code2:label2>...],<default:code>`|
+|`--mode value`|false|`document`|site's mode, current valid values are `document` and `blog`|
+|`--author.name`|false|site's default author's name|
+|`--author.email`|false|site's default author's email|
+|`--author.avatar`|false|site's default author's avatar url|
 
 ```bs-alert warning
 
@@ -143,7 +148,9 @@ Command's options:
 |Option|Required|Defaut value|Description|
 |---|---|---|---|
 |`--id value`|true||topic's unique id|
-|`--icon value`|false|`fas fa-book`|icon of the topic (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
+|<span class="text-nowrap">`--icon value`</span>|false|`fas fa-book`|icon of the topic (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
+|`--hidden`|false| |if specified, the topic is hidden from listing on the frontend|
+|`--img value`|false| |url of topic's entry image|
 
 ```bs-alert warning
 
@@ -167,7 +174,13 @@ Command's options:
 |`--topic value`|true||id of the topic where the document belongs to|
 |`--id value`|true||document's unique id (within the topic)|
 |`--icon value`|false|`fas fa-file`|icon of the document (support [FontAwesome icons](https://fontawesome.com/search?m=free))|
-|`--use-timestamp`|false||use current timestamp to prefix document directory name (format `yyyyMMddHHmm`), see below (*)|
+|<span class="text-nowrap">`--use-timestamp`</span>|false||use current timestamp to prefix document directory name (format `yyyyMMddHHmm`), see below (*)|
+|`--img value`|false| |url of document's entry image|
+|`--page value`|false| |set document's role as a special page|
+|`--style value`|false| |set document's special style|
+|`--author.name`|false|document's author's name|
+|`--author.email`|false|document's author's email|
+|`--author.avatar`|false|document's author's avatar url|
 
 ```bs-alert warning
 
@@ -175,3 +188,7 @@ Document's id must be unique (within the topic), recommended to contain only low
 
 (*) Name of the directory that stores document data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering. If option `--use-timestamp` is supplied, the current timestamp (format `yyyyMMddHHmm`) will be used as the prefix number.
 ```
+
+### Other utilities
+
+- `docli touch --topic <topic-id> --id <doc-id>`: update document's `last-updated` timestamp.

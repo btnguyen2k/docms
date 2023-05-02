@@ -232,5 +232,62 @@ Popular programming languages are supported:
     ]]
 ```
 
+## Diagrams
+
+Diagrams can be embedded to the document using [mermaid syntax](https://mermaid.js.org/intro/):
+
+```bs-tabs
+    [[bs-tab Markdown
+    Pie chart:
+
+        ```mermaid
+        pie title Browser Market Share (statcounter, Mar 2022 - Apr 2023)
+            "Chrome": 63.51
+            "Safari"   : 20.43
+            "Edge"    : 4.96
+            "Firefox": 2.77
+            "Others": 8.33
+        ```
+
+    Sequence diagram:
+
+        ```mermaid
+        sequenceDiagram
+            Alice ->> Bob: Hello Bob, how are you?
+            Bob-->>John: How about you John?
+            Bob--x Alice: I am good thanks!
+            Bob-x John: I am good thanks!
+            Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+            Bob-->Alice: Checking with John...
+            Alice->John: Yes... John, how are you?
+        ```
+    ]]
+    [[bs-tab Rendered result
+    Pie chart:
+    ```mermaid
+    pie title Browser Market Share Worldwide (statcounter, Mar 2022 - Apr 2023)
+        "Chrome": 63.51
+        "Safari"   : 20.43
+        "Edge"    : 4.96
+        "Firefox": 2.77
+        "Others": 8.33
+    ```
+
+    Sequence diagram:
+    ```mermaid
+    sequenceDiagram
+        Alice ->> Bob: Hello Bob, how are you?
+        Bob-->>John: How about you John?
+        Bob--x Alice: I am good thanks!
+        Bob-x John: I am good thanks!
+        Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+        Bob-->Alice: Checking with John...
+        Alice->John: Yes... John, how are you?
+    ```
+    ]]
+```
+
 See more:
 - [Bootstrap components](../bootstrap/) support.
