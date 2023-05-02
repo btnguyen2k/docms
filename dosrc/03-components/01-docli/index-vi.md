@@ -188,3 +188,7 @@ Các tham số của lệnh:
 
 (*) Tên thư mục lưu nôi dung bài viết sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của bài viết trên trang web. Nếu tham số `--use-timestamp` được sử dụng, thời gian hiện tại (định dạng `yyyyMMddHHmm`) sẽ được sử dụng làm chuỗi số tiền tố.
 ```
+
+### Các tính năng khác
+
+- `docli touch --topic <topic-id> --id <doc-id>`: cập nhật thời gian `last-updated` của tài liệu.

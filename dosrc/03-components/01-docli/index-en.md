@@ -188,3 +188,7 @@ Document's id must be unique (within the topic), recommended to contain only low
 
 (*) Name of the directory that stores document data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering. If option `--use-timestamp` is supplied, the current timestamp (format `yyyyMMddHHmm`) will be used as the prefix number.
 ```
+
+### Other utilities
+
+- `docli touch --topic <topic-id> --id <doc-id>`: update document's `last-updated` timestamp.
