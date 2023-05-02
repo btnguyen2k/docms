@@ -68,4 +68,24 @@ and block Chemical formulas:
 C_p[\ce{H2O(l)}] = \pu{75.3 J // mol K}
 ```
 
+## Diagrams
+
+Use [mermaid syntax](https://mermaid.js.org/intro/) to draw diagrams:
+
+```mermaid
+flowchart LR
+    Author([fa:fa-user<br>Content author])==1:push document==>Git{Git repo}
+    subgraph CICD[3:CI/CD]
+        DOCLI(A><code>DOCLI</code>: Pre-process content)-->P(B>Package pre-processed data together with<br><code>DO CMS Runtime</code> as Docker image)
+    end
+    Git<==2:pull content==>CICD
+    CICD==4:push image==>CR[(Container Registry)]
+    CICD==5:deploy==>Env{{Dev/UAT/Prod<br>env}}
+    Env==6:pull image==>CR
+    Users([fa:fa-users<br>Users])<==visit website==>Env
+```
+
+```bs-alert success
+
 See detailed supported Markdown syntax [here](../../reference/markdown/).
+```

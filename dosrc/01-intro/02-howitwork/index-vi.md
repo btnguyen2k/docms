@@ -2,7 +2,18 @@ Làm việc với DO CMS tương tự như công việc hàng ngày của một 
 
 Toàn bộ qui trình được tóm tắt trong sơ đồ sau:
 
-![DO CMS - Cách thức hoạt động](docms-howitwork.svg "cách thức hoạt động")
+```mermaid
+flowchart LR
+    Author([fa:fa-user<br>Tác giả])==1:push document==>Git{Git repo}
+    subgraph CICD[3:CI/CD]
+        DOCLI(A><code>DOCLI</code>: Tiền xử lý nội dung)-->P(B>Đóng gói nội dung đã xử lý với<br><code>DO CMS Runtime</code> thành Docker image)
+    end
+    Git<==2:pull content==>CICD
+    CICD==4:push image==>CR[(Container Registry)]
+    CICD==5:deploy==>Env{{Môi trường<br>Dev/UAT/Prod}}
+    Env==6:pull image==>CR
+    Users([fa:fa-users<br>Độc giả])<==ghé thăm trang web==>Env
+```
 
 Xem thêm:
 - [Công cụ DOCLI](../../components/cli/)
