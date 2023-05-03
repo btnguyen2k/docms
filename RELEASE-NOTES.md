@@ -8,7 +8,7 @@ Runtime `v0.3.1`:
 - New FE template `Blogy`.
 - Add diagram support using [mermaid](https://mermaid.js.org/).
 
-CLI `v0.3.x`:
+CLI `v0.3.1.2`:
 - Bug fixes & enhancements.
 
 ## 2023-05-01
