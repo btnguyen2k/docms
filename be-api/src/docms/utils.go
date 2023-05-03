@@ -23,6 +23,8 @@ const (
 )
 
 var (
+	DEBUG_MODE = os.Getenv("DEBUG") == "true"
+
 	gDataDir              string
 	gSiteMeta             *SiteMeta
 	gTopicList            = make([]*TopicMeta, 0)              // list of topics, sorted by index

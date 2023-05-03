@@ -12,7 +12,7 @@
         <div class="col-lg-4 mb-4" v-for="doc in docs" v-bind:key="doc.id">
           <div class="post-entry-alt">
             <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="img-link">
-              <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x440/214252/90A1A9?text='+$localedText(doc.topic.id).replaceAll(' ','%20'))" class="img-fluid">
+              <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x440/214252/90A1A9?text='+$localedText(doc.topic.id).replaceAll(' ','%20'), 'h')" class="img-fluid">
             </router-link>
             <div class="excerpt">
               <h2><router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}">{{ $localedText(doc.title) }}</router-link></h2>

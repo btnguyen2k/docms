@@ -33,6 +33,7 @@ type MyBootstrapper struct {
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (m MyBootstrapper) Bootstrap() error {
+
 	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, func(e *echo.Echo) error {
 		if err := postInitEchoSetup(e); err != nil {
 			panic(err)
@@ -57,7 +58,7 @@ func postInitEchoSetup(e *echo.Echo) error {
 	const confKeyFeTemplate = "docms.frontend.template"
 	feTemplate := goapi.AppConfig.GetString(confKeyFeTemplate)
 
-	if os.Getenv("DEBUG") != "true" {
+	if !DEBUG_MODE {
 		if fePath == "" || feDir == "" || feTemplate == "" {
 			return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
 		}
@@ -147,9 +148,10 @@ func serveImage(c echo.Context) error {
 }
 
 func initCMSData() {
-	if os.Getenv("DEBUG") == "true" {
+	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
+	if DEBUG_MODE {
+		log.Printf("[%s] watching for directory change <%s>", logLevelDebug, gDataDir)
 		w := watcher.New()
-		// w.SetMaxEvents(1)
 		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
 		go func() {
 			for {
@@ -189,7 +191,7 @@ func _loadSiteMeta() {
 			}
 		}
 	}
-	if os.Getenv("DEBUG") == "true" {
+	if DEBUG_MODE {
 		log.Printf("[%s] site's tags: %#v", logLevelDebug, gSiteMeta.Tags)
 		log.Printf("[%s] site's tag-alias: %#v", logLevelDebug, gTagAlias)
 	}
@@ -251,7 +253,9 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 			specialPages = append(specialPages, topicDocId)
 		}
 
-		if os.Getenv("DEBUG") == "true" {
+		if DEBUG_MODE {
+			log.Printf("[%s] page <%#v> / style <%#v> / icon <%#v> / title <%#v> / summary <%#v>",
+				logLevelDebug, docMeta.DocPage, docMeta.DocStyle, docMeta.Icon, docMeta.Title, docMeta.Summary)
 			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
 			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
 		}
@@ -329,6 +333,11 @@ func _loadTopics() {
 		gTopicMeta[topicMeta.id] = topicMeta
 		gDocumentListPerTopic[topicMeta.id] = make([]*DocumentMeta, 0)
 
+		if DEBUG_MODE {
+			log.Printf("[%s] hidden: %#v / icon <%#v> / title <%#v> / desc <%#v>",
+				logLevelDebug, topicMeta.Hidden, topicMeta.Icon, topicMeta.Title, topicMeta.Description)
+		}
+
 		_loadDocumentsForTopic(topicMeta)
 	}
 	sort.Slice(gTopicList, func(i, j int) bool {
@@ -372,9 +381,8 @@ func _reloadCMSData() {
 		return
 	}
 	defer dataLock.Unlock()
-	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
-	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 
+	log.Printf("[%s] Loading CMS data from <%s>...", logLevelInfo, gDataDir)
 	_resetGlobalVars()
 	_loadSiteMeta()
 	_loadTopics()

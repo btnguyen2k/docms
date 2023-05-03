@@ -1,6 +1,5 @@
 <template>
-  <div class="page-wrapper">
-    <div class="container">
+  <div class="container">
       <nav class="pb-2 g-0">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle"
@@ -49,7 +48,7 @@
         </div>
       </div>
     </div>
-  </div>
+  <div id="mermaid-temp" class="d-none"></div>
 </template>
 
 <script>
