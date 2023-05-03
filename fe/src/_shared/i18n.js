@@ -26,7 +26,7 @@ const messages = {
         read: 'Read',
         view_all: 'View all',
         explore: 'Explore',
-        contact_info: 'Contact us at',
+        contact_info: 'Contact info',
         recent_posts: 'Recent posts',
         same_topic: 'In the same topic',
 

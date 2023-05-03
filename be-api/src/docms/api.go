@@ -33,7 +33,7 @@ var _apiResultGetSiteMeta *itineris.ApiResult
 
 // API handler "getSiteMeta"
 func apiGetSiteMeta(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
-	if _apiResultGetSiteMeta == nil {
+	if _apiResultGetSiteMeta == nil || DEBUG_MODE {
 		_apiResultGetSiteMeta = itineris.NewApiResult(itineris.StatusOk).SetData(gSiteMeta.toMap())
 	}
 	return _apiResultGetSiteMeta
@@ -43,11 +43,11 @@ var _apiResultGetTopics *itineris.ApiResult
 
 // API handler "getTopics"
 func apiGetTopics(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
-	if _apiResultGetTopics == nil {
-		topics := make([]map[string]interface{}, len(gTopicList))
-		for i, topic := range gTopicList {
+	if _apiResultGetTopics == nil || DEBUG_MODE {
+		topics := make([]map[string]interface{}, 0)
+		for _, topic := range gTopicList {
 			if !topic.Hidden {
-				topics[i] = topic.toMap()
+				topics = append(topics, topic.toMap())
 			}
 		}
 		_apiResultGetTopics = itineris.NewApiResult(itineris.StatusOk).SetData(topics)
@@ -116,6 +116,7 @@ func apiGetDocumentsForTopic(_ *itineris.ApiContext, _ *itineris.ApiAuth, params
 	if docMetaList == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Topic <%s> not found", topicId))
 	}
+	// TODO: cache result
 	documents := make([]map[string]interface{}, len(docMetaList))
 	for i, docMeta := range docMetaList {
 		documents[i] = docMeta.toMap()
@@ -135,6 +136,7 @@ func apiGetDocument(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	if docMeta == nil {
 		return itineris.NewApiResult(itineris.StatusNotFound).SetMessage(fmt.Sprintf("Document <%s/%s> not found", topicId, docId))
 	}
+	// TODO: cache result
 	document := docMeta.toMap()
 	document["content"] = gDocumentContent[topicId.(string)+":"+docId.(string)]
 	return itineris.NewApiResult(itineris.StatusOk).SetData(document)
@@ -201,6 +203,8 @@ func apiTagSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 		return apiResultNoSearchResult
 	}
 
+	// TODO: cache result
+
 	start := time.Now()
 	clientLocale := ctx.GetClientLocale()
 	if !reLocale.MatchString(clientLocale) {
@@ -235,7 +239,12 @@ func apiTagSearch(ctx *itineris.ApiContext, _ *itineris.ApiAuth, params *itineri
 	return itineris.NewApiResult(itineris.StatusOk).SetData(result)
 }
 
+var _apiResultGetTagCloud *itineris.ApiResult
+
 // API handler "getTagCloud"
 func apiGetTagCloud(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiParams) *itineris.ApiResult {
-	return itineris.NewApiResult(itineris.StatusOk).SetData(gDocumentTags)
+	if _apiResultGetTagCloud == nil || DEBUG_MODE {
+		_apiResultGetTagCloud = itineris.NewApiResult(itineris.StatusOk).SetData(gDocumentTags)
+	}
+	return _apiResultGetTagCloud
 }

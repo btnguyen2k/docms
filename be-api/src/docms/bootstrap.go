@@ -33,6 +33,7 @@ type MyBootstrapper struct {
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (m MyBootstrapper) Bootstrap() error {
+
 	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, func(e *echo.Echo) error {
 		if err := postInitEchoSetup(e); err != nil {
 			panic(err)
@@ -57,7 +58,7 @@ func postInitEchoSetup(e *echo.Echo) error {
 	const confKeyFeTemplate = "docms.frontend.template"
 	feTemplate := goapi.AppConfig.GetString(confKeyFeTemplate)
 
-	if os.Getenv("DEBUG") != "true" {
+	if !DEBUG_MODE {
 		if fePath == "" || feDir == "" || feTemplate == "" {
 			return fmt.Errorf("frontend path/directory/template is not defined at key [%s/%s/%s]", confKeyFePath, confKeyFeDir, confKeyFeTemplate)
 		}
@@ -148,7 +149,7 @@ func serveImage(c echo.Context) error {
 
 func initCMSData() {
 	gDataDir = goapi.AppConfig.GetString("docms.data_dir")
-	if os.Getenv("DEBUG") == "true" {
+	if DEBUG_MODE {
 		log.Printf("[%s] watching for directory change <%s>", logLevelDebug, gDataDir)
 		w := watcher.New()
 		w.FilterOps(watcher.Create, watcher.Write, watcher.Move)
@@ -190,7 +191,7 @@ func _loadSiteMeta() {
 			}
 		}
 	}
-	if os.Getenv("DEBUG") == "true" {
+	if DEBUG_MODE {
 		log.Printf("[%s] site's tags: %#v", logLevelDebug, gSiteMeta.Tags)
 		log.Printf("[%s] site's tag-alias: %#v", logLevelDebug, gTagAlias)
 	}
@@ -252,7 +253,9 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 			specialPages = append(specialPages, topicDocId)
 		}
 
-		if os.Getenv("DEBUG") == "true" {
+		if DEBUG_MODE {
+			log.Printf("[%s] page <%#v> / style <%#v> / icon <%#v> / title <%#v> / summary <%#v>",
+				logLevelDebug, docMeta.DocPage, docMeta.DocStyle, docMeta.Icon, docMeta.Title, docMeta.Summary)
 			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.Tags)
 			log.Printf("[%s] document's tags: %#v", logLevelDebug, docMeta.GetTagsMap())
 		}
@@ -329,6 +332,11 @@ func _loadTopics() {
 		gTopicList = append(gTopicList, topicMeta)
 		gTopicMeta[topicMeta.id] = topicMeta
 		gDocumentListPerTopic[topicMeta.id] = make([]*DocumentMeta, 0)
+
+		if DEBUG_MODE {
+			log.Printf("[%s] hidden: %#v / icon <%#v> / title <%#v> / desc <%#v>",
+				logLevelDebug, topicMeta.Hidden, topicMeta.Icon, topicMeta.Title, topicMeta.Description)
+		}
 
 		_loadDocumentsForTopic(topicMeta)
 	}

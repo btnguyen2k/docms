@@ -85,9 +85,19 @@ export default {
       const min = ('0' + d.getMinutes()).slice(-2)     // Add leading 0.
       return yyyy + '-' + mm + '-' + dd + ', ' + hh + ':' + min
     },
-    calcDocumentEntryImgUrl(doc, topicId, defaultUrl) {
-      if (doc.img != '') {
-        return router.meta.base + '/' + topicId + '/' + doc.id + '/' + doc.img
+    calcDocumentEntryImgUrl(doc, topicId, defaultUrl, selection) {
+      let img = doc.img
+      if (img && selection) {
+        const imgMap = JSON.parse(doc.img)
+        img = imgMap && imgMap[selection] ? imgMap[selection] : ''
+      }
+      if (img != '') {
+        const reAbsUrl = /^([a-z]+:)?\//i
+        if (reAbsUrl.test(img)) {
+          return img
+        }
+        const base = router.resolve({name: 'Document', params: {tid: topicId, did: doc.id}}).href
+        return base + img
       }
       return defaultUrl
     },

@@ -65,7 +65,7 @@
               <ul>
                 <li v-for="doc in $props['documentList'].slice(0,3)" v-bind:key="doc.id">
                   <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}">
-                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id)" class="me-4 rounded">
+                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id, 's')" class="me-4 rounded">
                     <div class="text">
                       <h4>{{ $localedText(doc.title) }}</h4>
                       <div class="post-meta">
