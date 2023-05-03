@@ -23,6 +23,8 @@ const (
 )
 
 var (
+	DEBUG_MODE = os.Getenv("DEBUG") == "true"
+
 	gDataDir              string
 	gSiteMeta             *SiteMeta
 	gTopicList            = make([]*TopicMeta, 0)              // list of topics, sorted by index
@@ -187,7 +189,7 @@ func (sm *SiteMeta) GetTagAliasMap() map[string]map[string][]string {
 		// then the next level must be either array/slice
 		if result, err := reddo.Convert(sm.TagsAlias, reflect.TypeOf(make(map[string][]string))); err == nil && result != nil {
 			return map[string]map[string][]string{
-				gSiteMeta.DefaultLanguage: result.(map[string][]string),
+				sm.DefaultLanguage: result.(map[string][]string),
 			}
 		}
 	} else if nextLevelKind == reflect.Map {
@@ -242,6 +244,9 @@ func LoadSiteMetaFromYaml(filePath string) (*SiteMeta, error) {
 	if err == nil {
 		metadata.FileInfo = fi
 		metadata.init()
+		if os.Getenv("CLI") == "true" {
+			gSiteMeta = metadata
+		}
 	}
 	return metadata, err
 }
@@ -260,6 +265,9 @@ func LoadSiteMetaFromJson(filePath string) (*SiteMeta, error) {
 	if err == nil {
 		metadata.FileInfo = fi
 		metadata.init()
+		if os.Getenv("CLI") == "true" {
+			gSiteMeta = metadata
+		}
 	}
 	return metadata, err
 }

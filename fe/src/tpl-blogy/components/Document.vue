@@ -6,7 +6,7 @@
     <lego-page-header active="topic" :topic="topic" />
 
     <div class="site-cover site-cover-sm same-height overlay single-page"
-         :style="'background-image: url('+($calcDocumentEntryImgUrl(document, topic.id, '//placehold.co/700x440/6c757d/6c757d'))">
+         :style="'background-image: url('+($calcDocumentEntryImgUrl(document, topic.id, '//placehold.co/700x440/6c757d/6c757d', 'h'))">
       <div class="container">
         <div class="row same-height justify-content-center">
           <div class="col-md-6">
@@ -16,7 +16,7 @@
                 <figure class="author-figure mb-0 me-3 d-inline-block">
                   <img :src="$calcAuthorAvatarUrl(document.author)" class="img-fluid">
                 </figure>
-                <span class="d-inline-block mt-1">{{ document.author_name }}</span>
+                <span class="d-inline-block mt-1">{{ document.author.name }}</span>
                 <span>&nbsp;-&nbsp;{{ $unixTimestampToReadable(document.tu) }}</span>
               </div>
             </div>

@@ -6,6 +6,10 @@ Runtime `v0.3.1`:
 - Add Google Analytics support.
 - Add site mode `blog`.
 - New FE template `Blogy`.
+- Add diagram support using [mermaid](https://mermaid.js.org/).
+
+CLI `v0.3.1.2`:
+- Bug fixes & enhancements.
 
 ## 2023-05-01
 
