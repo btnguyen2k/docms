@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/btnguyen2k/consu/g18"
 	"github.com/btnguyen2k/docms/be-api/src/goapi"
 	"github.com/btnguyen2k/docms/be-api/src/itineris"
 	"github.com/labstack/echo/v4"
@@ -261,31 +262,36 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 		}
 
 		// normalize document's tags
-		docTagsMap := make(map[string][]string)
-		for lang, docTags := range docMeta.GetTagsMap() {
-			tagDocMap := gDocumentTags[lang]
-			if tagDocMap == nil {
-				tagDocMap = make(map[string][]string)
-				gDocumentTags[lang] = tagDocMap
+		mapLangTagsForDoc := make(map[string][]string)
+		for lang, docTagsForLang := range docMeta.GetTagsMap() {
+			mapTagDocsForLang := gDocumentTags[lang]
+			if mapTagDocsForLang == nil {
+				mapTagDocsForLang = make(map[string][]string)
+				gDocumentTags[lang] = mapTagDocsForLang
 			}
 
-			docTagsMap[lang] = make([]string, 0)
-			for _, alias := range docTags {
+			mapLangTagsForDoc[lang] = make([]string, 0)
+			for _, alias := range docTagsForLang {
 				alias = strings.ToLower(strings.TrimSpace(alias))
-				tag, ok := gTagAlias[lang][alias]
+				tagAliasForLang := gTagAlias[lang]
+				if tagAliasForLang == nil {
+					tagAliasForLang = make(map[string]string)
+					gTagAlias[lang] = tagAliasForLang
+				}
+				tag, ok := tagAliasForLang[alias]
 				if !ok {
 					tag = alias
-					gTagAlias[lang][alias] = tag
+					tagAliasForLang[alias] = tag
 				}
-				docTagsMap[lang] = append(docTagsMap[lang], tag)
-				tagDocMap[tag] = append(tagDocMap[tag], topicDocId)
+				mapLangTagsForDoc[lang] = append(mapLangTagsForDoc[lang], tag)
+				mapTagDocsForLang[tag] = append(mapTagDocsForLang[tag], topicDocId)
 			}
-			docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+			mapLangTagsForDoc[lang] = g18.Deduplicate(mapLangTagsForDoc[lang])
 		}
-		for lang := range docTagsMap {
-			docTagsMap[lang] = removeDuplicateStrings(docTagsMap[lang])
+		for lang := range mapLangTagsForDoc {
+			mapLangTagsForDoc[lang] = g18.Deduplicate(mapLangTagsForDoc[lang])
 		}
-		docMeta.Tags = docTagsMap
+		docMeta.Tags = mapLangTagsForDoc
 
 		// load document content
 		docFileContentMap := docMeta.GetContentFileMap()
@@ -355,7 +361,7 @@ func _loadTopics() {
 func _normalizeTags() {
 	for lang, tagDocMap := range gDocumentTags {
 		for tag := range tagDocMap {
-			tagDocMap[tag] = removeDuplicateStrings(tagDocMap[tag])
+			tagDocMap[tag] = g18.Deduplicate(tagDocMap[tag])
 		}
 		gDocumentTags[lang] = tagDocMap
 	}
