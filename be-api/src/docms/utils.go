@@ -590,7 +590,7 @@ func LoadDocumentMetaFromJson(filePath string) (*DocumentMeta, error) {
 
 /*----------------------------------------------------------------------*/
 
-var RexpContentDir = regexp.MustCompile(`^(\d+)-(\w+)$`)
+var RexpContentDir = regexp.MustCompile(`^(\d+)-([\w-]+)$`)
 
 var defaultDirFilter = func(entry os.DirEntry) bool {
 	return entry.Name() != "." && entry.Name() != ".."
