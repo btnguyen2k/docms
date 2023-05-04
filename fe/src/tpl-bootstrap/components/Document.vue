@@ -29,7 +29,7 @@
               </p>
             </header>
             <section class="mb-5">
-              <div class="img-fit img-center" v-html="documentContentRendered"></div>
+              <div class="docms-content img-fit img-center" v-html="documentContentRendered"></div>
             </section>
           </article>
         </div>

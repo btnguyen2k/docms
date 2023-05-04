@@ -47,7 +47,9 @@
       <h3 class="heading">{{ $t('topics') }}</h3>
       <ul class="categories">
         <li v-for="topic in $siteTopics" v-bind:key="topic.id">
-          <router-link :to="{name: 'Topic', params:{tid: topic.id}}">{{ $localedText(topic.title) }} <span>({{ topic.num_docs }})</span></router-link>
+          <router-link :to="{name: 'Topic', params:{tid: topic.id}}">
+            <i v-if="topic.icon!=''" :class="topic.icon+' fa-fw'"></i> {{ $localedText(topic.title) }} <span>({{ topic.num_docs }})</span>
+          </router-link>
         </li>
       </ul>
     </div>

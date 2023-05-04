@@ -22,7 +22,7 @@
                 {{ tag }}
               </router-link>
             </p>
-            <section class="docs-section img-fit img-center" v-html="documentContentRendered"></section>
+            <section class="docs-section docms-content img-fit img-center" v-html="documentContentRendered"></section>
           </article>
 
           <lego-page-footer/>

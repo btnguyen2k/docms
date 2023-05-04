@@ -36,7 +36,7 @@
             </div>
 
             <div class="post-content-body">
-              <div class="img-fit img-center" v-html="documentContentRendered"></div>
+              <div class="docms-content img-fit img-center" v-html="documentContentRendered"></div>
             </div>
 
 <!--            <div class="pt-5" v-if="document.tags && $localedText(document.tags).length>0">-->
