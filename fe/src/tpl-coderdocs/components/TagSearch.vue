@@ -1,6 +1,10 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
   <div v-else class="docs-page">
     <lego-page-header />
 
