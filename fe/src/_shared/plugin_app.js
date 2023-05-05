@@ -188,6 +188,13 @@ export default {
             }, delayInSeconds * 1000)
         }
 
+        // use $transferToTopic(topicId, seconds) to redirect to Home page
+        app.config.globalProperties.$transferToTopic = (topicId, delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Topic', params: {tid: topicId}})
+            }, delayInSeconds * 1000)
+        }
+
         // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
         app.config.globalProperties.$pickupFromHash = (input, list) => {
             let hash = 0

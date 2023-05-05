@@ -1,7 +1,20 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">{{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
+  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">
+    {{ $t('error_topic_not_found', {topic: $route.params.tid}) }}
+    <hr/>
+    <span v-html="$t('transfer_to_home', {url: $router.resolve({name: 'Home'}).href})"></span>
+  </div>
+  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">
+    {{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}
+    <hr/>
+    <span v-html="$t('transfer_to_topic', {url: $router.resolve({name: 'Topic', params: {tid: topic.id}}).href})"></span>
+  </div>
   <div v-else>
     <legoPageHeader />
 
@@ -117,7 +130,10 @@ export default {
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.topic.id) {
+              vue.$transferToHome(3)
             }
           },
           err => {
@@ -138,7 +154,10 @@ export default {
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.document.id) {
+              vue.$transferToTopic(vue.topic.id, 3)
             }
           },
           err => vue.errorMsg = err
