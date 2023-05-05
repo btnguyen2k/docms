@@ -24,7 +24,7 @@
           <div class="col-lg-8">
             <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in documentList" v-bind:key="doc.id">
               <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="img-link me-4">
-                <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="img-fluid">
+                <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
               </router-link>
               <div class="col-9">
                 <span class="date">{{ $unixTimestampToReadable(doc.tu) }}</span>
@@ -90,10 +90,7 @@ export default {
             if (vue.status == 200) {
               vue._fetchTopics(vue, vue.$route.params.tid)
             } else {
-              // vue.errorMsg = vue.status+": "+apiResp.message
-            }
-            if (!vue.topic.id) {
-              vue.$transferToHome(3)
+              vue.errorMsg = vue.status+": "+apiResp.message
             }
           },
           err => {
@@ -116,7 +113,10 @@ export default {
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.topic.id) {
+              vue.$transferToHome(3)
             }
           },
           err => {

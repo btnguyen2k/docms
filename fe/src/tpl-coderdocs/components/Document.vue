@@ -156,11 +156,15 @@ export default {
               vue.documentList = apiResp.data
               vue.documentList.forEach(d => {
                 if (d.id == docId) {
+                  vue.document = d
                   vue._fetchDocument(vue, docId)
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.document.id) {
+              vue.$transferToTopic(vue.topic.id, 3)
             }
           },
           err => {
@@ -178,10 +182,7 @@ export default {
               const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
               document.title = vue.$localedText(vue.document.title) + ' | ' + appNameAndVersion
             } else {
-              // vue.errorMsg = vue.status+": "+apiResp.message
-            }
-            if (!vue.document.id) {
-              vue.$transferToTopic(vue.topic.id, 3)
+              vue.errorMsg = vue.status+": "+apiResp.message
             }
             vue.$nextTick(()=>{
               // CoderDocs: onload
