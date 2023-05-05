@@ -154,7 +154,7 @@ Command's options:
 
 ```bs-alert warning
 
-Topic's id must be unique, recommended to contain only lower-cased letters (`a-z`) and digits (`0-9`).
+Topic's id must be unique, recommended to contain only lower-cased letters (`a-z`), digits (`0-9`) and hyphens (`-`).
 
 Name of the directory that stores topic data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering.
 ```
@@ -184,7 +184,7 @@ Command's options:
 
 ```bs-alert warning
 
-Document's id must be unique (within the topic), recommended to contain only lower-cased letters and digits.
+Document's id must be unique (within the topic), recommended to contain only lower-cased letters (`a-z`), digits (`0-9`) and hyphens (`-`).
 
 (*) Name of the directory that stores document data will be automatically prefixed with a number and dash (format `\d+-`). The number is used to determine the topic order when rendering. If option `--use-timestamp` is supplied, the current timestamp (format `yyyyMMddHHmm`) will be used as the prefix number.
 ```
