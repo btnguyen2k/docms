@@ -52,7 +52,7 @@
       </div>
     </div>
 
-    <lego-page-footer :document-list="$latestDocuments" />
+    <lego-page-footer :document-list="latestDocuments" />
   </div>
 </template>
 
@@ -80,6 +80,24 @@ export default {
         }
     )
     this._fetchSiteMeta(this)
+  },
+  computed: {
+    latestDocuments() {
+      const result = []
+      for (let i = 0; i < this.$latestDocuments.length; i++) {
+        let found = false
+        for (let j = 0; j < this.documentList.length; j++) {
+          if (this.$latestDocuments[i].id == this.documentList[j].id) {
+            found = true
+            break
+          }
+        }
+        if (!found) {
+          result.push(this.$latestDocuments[i])
+        }
+      }
+      return result
+    },
   },
   methods: {
     _fetchSiteMeta(vue) {

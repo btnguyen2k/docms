@@ -8,7 +8,7 @@
   <div v-else>
     <lego-page-header active="home"/>
 
-    <lego-home-layout-retroy2 :document-list="$latestDocuments"/>
+    <lego-home-layout-retroy2 :document-list="$latestDocuments.slice(0,4)"/>
 
     <template v-for="(topic, index) in largeTopics()" v-bind:key="topic.id">
       <lego-home-posts-entry-text-right :topic="topic" :document-list="latestDocsPerTopic[topic.id]" v-if="index%3==0"/>

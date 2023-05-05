@@ -176,7 +176,7 @@
       </div>
     </section>
 
-    <lego-page-footer :document-list="$latestDocuments" />
+    <lego-page-footer :document-list="latestDocuments" />
   </div>
 </template>
 
@@ -212,6 +212,15 @@ export default {
     this._fetchSiteMeta(this)
   },
   computed: {
+    latestDocuments() {
+      const result = []
+      for (let i = 0; i < this.$latestDocuments.length; i++) {
+        if (this.$latestDocuments[i].id != this.document.id) {
+          result.push(this.$latestDocuments[i])
+        }
+      }
+      return result
+    },
     documentContentRendered() {
       this._updateLightbox()
       return markdownRender(this.$localedText(this.document.content), {
