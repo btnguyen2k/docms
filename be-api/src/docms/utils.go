@@ -590,7 +590,7 @@ func LoadDocumentMetaFromJson(filePath string) (*DocumentMeta, error) {
 
 /*----------------------------------------------------------------------*/
 
-var RexpContentDir = regexp.MustCompile(`^(\d+)-(\w+)$`)
+var RexpContentDir = regexp.MustCompile(`^(\d+)-([\w-]+)$`)
 
 var defaultDirFilter = func(entry os.DirEntry) bool {
 	return entry.Name() != "." && entry.Name() != ".."
@@ -611,19 +611,4 @@ func GetDirContent(path string, filter func(entry os.DirEntry) bool) ([]os.DirEn
 		}
 	}
 	return result, nil
-}
-
-func removeDuplicateStrings(s []string) []string {
-	if len(s) < 1 {
-		return s
-	}
-	sort.Strings(s)
-	prev := 1
-	for curr := 1; curr < len(s); curr++ {
-		if s[curr-1] != s[curr] {
-			s[prev] = s[curr]
-			prev++
-		}
-	}
-	return s[:prev]
 }

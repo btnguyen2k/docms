@@ -3,6 +3,16 @@ DO CMS - Markdown style
 by Thanh Nguyen
 */
 
+.docms-content th {
+    vertical-align: middle !important;
+}
+
+.docms-content th[align]:where(
+    [align*="center"]
+) {
+    text-align: center !important;
+}
+
 .img-fit img:not([class]),
 .img-fit img[class]:not(:where(
     [class*="docms-reset"],

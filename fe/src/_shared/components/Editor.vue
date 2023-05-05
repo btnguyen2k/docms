@@ -23,7 +23,7 @@
             </div>
             <div class="col-6">
               <label for="hhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important; overflow: auto;"
+              <div id="hhtml" class="form-control docms-content img-fit img-center" style="height: 75vh !important; overflow: auto;"
                    v-html="markdownRendered"></div>
             </div>
           </div>

@@ -23,7 +23,7 @@
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
                 <section class="doc-section">
-                  <div class="section-block img-fit img-center" v-html="documentContentRendered"></div>
+                  <div class="section-block docms-content img-fit img-center" v-html="documentContentRendered"></div>
                 </section>
               </div>
             </div>
