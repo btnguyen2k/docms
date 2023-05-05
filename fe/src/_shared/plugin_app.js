@@ -15,6 +15,7 @@ import {
 import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_utils"
 import {computed} from 'vue'
 import MD5 from "crypto-js/md5"
+
 String.prototype.md5 = function () {
     return MD5(this).toString()
 }
@@ -178,6 +179,13 @@ export default {
         // use $reload() to reload the browser tab
         app.config.globalProperties.$reload = () => {
             window.location.reload()
+        }
+
+        // use $transferToHome(seconds) to redirect to Home page
+        app.config.globalProperties.$transferToHome = (delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Home'})
+            }, delayInSeconds * 1000)
         }
 
         // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
