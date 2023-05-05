@@ -10,6 +10,7 @@ const messages = {
 
         language: 'Language',
         wait: 'Please wait...',
+        reload: 'Reload',
         search: 'Search',
         search_result: 'Search result',
         search_no_result: 'Search returns no result, please try another query',
@@ -42,6 +43,7 @@ const messages = {
 
         language: 'Ngôn ngữ',
         wait: 'Vui lòng giờ giây lát...',
+        reload: 'Tải lại',
         search: 'Tìm kiếm',
         search_result: 'Kết quả tìm kiếm',
         search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',

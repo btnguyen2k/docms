@@ -175,6 +175,11 @@ export default {
         app.provide('$siteTopics', computed(() => global.siteTopics))
         app.provide('$tagCloud', computed(() => global.tagCloud))
 
+        // use $reload() to reload the browser tab
+        app.config.globalProperties.$reload = () => {
+            window.location.reload()
+        }
+
         // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
         app.config.globalProperties.$pickupFromHash = (input, list) => {
             let hash = 0
