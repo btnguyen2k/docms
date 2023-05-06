@@ -1,9 +1,9 @@
 <template>
   <div class="col-md-12 col-lg-4 sidebar">
     <div class="sidebar-box search-form-wrap">
-      <form class="sidebar-search-form" @submit.prevent="$doSearch" method="get">
-        <span class="bi-search"></span>
+      <form class="sidebar-search-form" @submit.prevent="$doSearch" method="get" style="position: relative;">
         <input type="text" class="form-control" id="s" :placeholder="$t('search_prompt')" v-model="$global.searchQuery">
+        <span class="bi-search"></span>
       </form>
     </div>
 
