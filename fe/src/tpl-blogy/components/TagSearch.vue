@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import {switchLanguage} from "@/_shared/i18n"
+import {switchLanguage} from '@/_shared/i18n'
 import {watch} from 'vue'
 import {useRoute} from "vue-router"
 import legoPageHeader from './_pageHeader.vue'

@@ -82,6 +82,7 @@ import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
 import {APP_CONFIG} from '@/_shared/utils/app_config'
+import {switchLanguage} from '@/_shared/i18n'
 
 export default {
   name: 'Topic',
@@ -89,6 +90,9 @@ export default {
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
+    if (vue.$route.query.l) {
+      switchLanguage(vue.$route.query.l, false)
+    }
     const route = useRoute()
     watch(
         () => route.params.tid,
