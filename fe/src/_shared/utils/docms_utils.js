@@ -85,7 +85,7 @@ class MyRenderer extends marked.Renderer {
             for (let i = 0; i < tokens.length; i++) {
                 value = typeof value == 'object' ? value[tokens[i]] : undefined
             }
-            return value !== undefined ? value : '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
+            return value !== undefined ? markdownRender(value, this.options) : '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
         })
         return text
     }
