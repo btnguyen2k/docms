@@ -20,6 +20,7 @@ const messages = {
         tag_cloud: 'Tag cloud',
         tags: 'Tags',
         tag: 'Tag',
+        document_length: '{words} words, {time} mins read',
 
         home: 'Home',
         topics: 'Topics',
@@ -55,6 +56,7 @@ const messages = {
         tag_cloud: 'Vân tiêu',
         tags: 'Thẻ',
         tag: 'Thẻ',
+        document_length: '{words} từ, {time} phút đọc',
 
         home: 'Trang nhà',
         topics: 'Chủ đề',

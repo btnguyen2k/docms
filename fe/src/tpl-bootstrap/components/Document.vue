@@ -80,11 +80,15 @@ export default {
     }
     const route = useRoute()
     watch(
+        () => route.params.tid,
+        async newTid => {
+          vue._fetchTopics(vue, newTid)
+        }
+    )
+    watch(
         () => route.params.did,
-        async newDid => {
-          if (newDid) {
-            vue._fetchDocument(vue, newDid)
-          }
+        async () => {
+          vue._fetchTopics(vue, route.params.tid)
         }
     )
     this.$global.searchQuery = this.$route.query.q ? this.$route.query.q : ''

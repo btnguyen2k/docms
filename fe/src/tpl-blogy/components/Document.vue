@@ -49,6 +49,7 @@
             </div>
 
             <div class="post-content-body">
+              <p class="text-end" style="font-size: small">{{ $t('document_length', {words: documentContentNumWords, time: documentContentTimeRead}) }}</p>
               <div class="docms-content img-fit img-center" v-html="documentContentRendered"></div>
             </div>
 
@@ -205,11 +206,15 @@ export default {
     }
     const route = useRoute()
     watch(
+        () => route.params.tid,
+        async newTid => {
+          vue._fetchTopics(vue, newTid)
+        }
+    )
+    watch(
         () => route.params.did,
-        async newDid => {
-          if (newDid) {
-            vue._fetchDocument(vue, newDid)
-          }
+        async () => {
+          vue._fetchTopics(vue, route.params.tid)
         }
     )
     this.$global.searchQuery = this.$route.query.q ? this.$route.query.q : ''
@@ -224,6 +229,14 @@ export default {
         }
       }
       return result
+    },
+    documentContentNumWords() {
+      return this.$localedText(this.document.content).split(/[^\p{L}\d]+/u).length
+    },
+    documentContentTimeRead() {
+      const numWords = this.documentContentNumWords
+      const numMins = Math.round(numWords/130)
+      return numMins
     },
     documentContentRendered() {
       this._updateLightbox()
