@@ -1,7 +1,5 @@
 import {h, resolveComponent} from 'vue'
 import {createRouter, createWebHistory} from 'vue-router'
-import {APP_CONFIG} from '@/_shared/utils/app_config'
-import i18n from '@/_shared/i18n'
 
 export function initRouter(components) {
     const router = createRouter({
@@ -14,16 +12,6 @@ export function initRouter(components) {
         },
         strict: true,
         routes: configRoutes(components),
-    })
-
-    router.afterEach((to) => {
-        const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
-        if (to.name == 'Home') {
-            document.title = appNameAndVersion
-        } else {
-            const label = to.meta.label ? to.meta.label : (to.meta.labelId ? i18n.global.t(to.meta.labelId) : undefined)
-            document.title = label ? (label + " | " + appNameAndVersion) : appNameAndVersion
-        }
     })
 
     return router

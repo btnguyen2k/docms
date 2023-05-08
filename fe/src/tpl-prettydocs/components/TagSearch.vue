@@ -96,6 +96,7 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
+              vue.$updatePageTitle({search: vue.searchTerm})
               vue._fetchTopics(vue)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message

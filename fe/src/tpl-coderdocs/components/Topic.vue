@@ -57,7 +57,6 @@ import {registerPopstate, unregisterPopstate} from '@/_shared/utils/docms_utils'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
-import {APP_CONFIG} from '@/_shared/utils/app_config'
 import {switchLanguage} from '@/_shared/i18n'
 
 const regTrailingSlash = /\/+$/
@@ -120,9 +119,8 @@ export default {
             if (vue.status == 200) {
               vue.$siteTopics.forEach(t => {
                 if (t.id == topicId) {
+                  vue.$updatePageTitle({topic: t})
                   vue.topic = t
-                  const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
-                  document.title = vue.$localedText(vue.topic.title) + ' | ' + appNameAndVersion
                   vue._fetchDocuments(vue)
                 }
               })

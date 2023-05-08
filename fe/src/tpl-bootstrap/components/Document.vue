@@ -66,7 +66,6 @@ import '@/_shared/assets/markdown-gfm.css'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
-import {APP_CONFIG} from '@/_shared/utils/app_config'
 import {switchLanguage} from '@/_shared/i18n'
 
 export default {
@@ -158,6 +157,7 @@ export default {
               vue.documentList = apiResp.data
               vue.documentList.forEach(d => {
                 if (d.id == docId) {
+                  vue.$updatePageTitle({document: d})
                   vue.document = d
                   vue._fetchDocument(vue, docId)
                 }
@@ -179,8 +179,6 @@ export default {
             vue.status = apiResp.status
             if (vue.status == 200) {
               vue.document = apiResp.data
-              const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
-              document.title = vue.$localedText(vue.document.title) + ' | ' + appNameAndVersion
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message
             }

@@ -58,8 +58,8 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
+              vue.$updatePageTitle()
               vue._fetchTopics(vue)
-              // vue._fetchLatestDocuments(vue)
             } else {
               vue.errorMsg = vue.status + ": " + apiResp.message
             }
