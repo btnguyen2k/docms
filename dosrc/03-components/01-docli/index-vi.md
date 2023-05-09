@@ -154,7 +154,7 @@ Các tham số của lệnh:
 
 ```bs-alert warning
 
-Định danh của chủ đề phải là duy nhất (không trùng lắp), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
+Định danh của chủ đề phải là duy nhất (không trùng lắp), và chỉ nên chứa chữ cái thường (`a-z`), chữ số (`0-9`) và dấu gạch nối (`-`).
 
 Tên thư mục lưu nôi dung chủ đề sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của chủ đề trên trang web.
 ```
@@ -184,7 +184,7 @@ Các tham số của lệnh:
 
 ```bs-alert warning
 
-Định danh của bài viết phải là duy nhất trong chủ đề (trong cùng 1 chủ đề không có bài viết trùng lắp định danh), và chỉ nên chứa chữ cái thường (`a-z`) và chữ số (`0-9`).
+Định danh của bài viết phải là duy nhất trong chủ đề (trong cùng 1 chủ đề không có bài viết trùng lắp định danh), và chỉ nên chứa chữ cái thường (`a-z`), chữ số (`0-9`) và dấu gạch nối (`-`).
 
 (*) Tên thư mục lưu nôi dung bài viết sẽ được tự động thêm tiền tố là 1 chuỗi số và ký tự `-` (định dạng `\d+-`). Chuỗi số tiền tố được dùng để xác định thứ tự hiển thị của bài viết trên trang web. Nếu tham số `--use-timestamp` được sử dụng, thời gian hiện tại (định dạng `yyyyMMddHHmm`) sẽ được sử dụng làm chuỗi số tiền tố.
 ```

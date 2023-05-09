@@ -46,6 +46,7 @@ tags:
       key1: value 1
       key2: value 2
     tag2: [1, "2", true]
+    tag3: this tag _content_ has **markdown**
 ```
 
 Các thẻ định nghĩa trong tập tin có thể được nhúng vào trong tài liệu thông qua cú pháp `[[do-tag tag-key]]`:
@@ -56,7 +57,9 @@ Các thẻ định nghĩa trong tập tin có thể được nhúng vào trong t
         Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
         Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
 
-        Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+        Kiểm tra xem có hỗ trợ markdown không: [[do-tag demo.tag3]].
+
+        Nếu thẻ không tồn tại: [[do-tag demo.tag4]]<br/>
         Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
     [[bs-tab Hiển thị
@@ -65,7 +68,9 @@ Các thẻ định nghĩa trong tập tin có thể được nhúng vào trong t
     Lấy giá trị của thẻ từ cấu trúc cây: <code>[[do-tag demo.tag1.key1]]</code><br/>
     Và cũng có thể là 1 phần tử của array (tính từ 0): **[[do-tag demo.tag2.2]]**
 
-    Nếu thẻ không tồn tại: [[do-tag demo.tag3]]<br/>
+    Kiểm tra xem có hỗ trợ markdown không: [[do-tag demo.tag3]].
+
+    Nếu thẻ không tồn tại: [[do-tag demo.tag4]]<br/>
     Hoặc rớt ra ngoài mảng: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
 ```
