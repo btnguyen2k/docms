@@ -32,6 +32,7 @@ tags:
       key1: value 1
       key2: value 2
     tag2: [1, "2", true]
+    tag3: this tag _content_ has **markdown**
 tagalias:
   # (map[language-code]map[string]Array(string))
   en:

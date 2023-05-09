@@ -46,6 +46,7 @@ tags:
       key1: value 1
       key2: value 2
     tags2: [1, "2", true]
+    tag3: this tag _content_ has **markdown**
 ```
 
 Tags defined in the file can be embedded to the document using the syntax `[[do-tag tag-key]]`:
@@ -56,7 +57,9 @@ Tags defined in the file can be embedded to the document using the syntax `[[do-
         Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
         And also from an array (0-based): **[[do-tag demo.tag2.2]]**
 
-        If tag does not exist: [[do-tag demo.tag3]]<br/>
+        Test if markdown is supported: [[do-tag demo.tag3]].
+
+        If tag does not exist: [[do-tag demo.tag4]]<br/>
         Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
     [[bs-tab Rendered result
@@ -65,7 +68,9 @@ Tags defined in the file can be embedded to the document using the syntax `[[do-
     Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
     And also from an array (0-based): **[[do-tag demo.tag2.2]]**
 
-    If tag does not exist: [[do-tag demo.tag3]]<br/>
+    Test if markdown is supported: [[do-tag demo.tag3]].
+
+    If tag does not exist: [[do-tag demo.tag4]]<br/>
     Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
 ```
