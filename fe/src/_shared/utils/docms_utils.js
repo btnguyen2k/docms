@@ -85,7 +85,14 @@ class MyRenderer extends marked.Renderer {
             for (let i = 0; i < tokens.length; i++) {
                 value = typeof value == 'object' ? value[tokens[i]] : undefined
             }
-            return value !== undefined ? value : '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
+            if (value == undefined) {
+                return '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
+            }
+            // let render = markdownRender(String(value), this.options)
+            // // hack for marked: remove leading tag <p> and trailing </p>
+            // render = render.replace(/^<\s*p[^>]*>/i,'').replace(/<\s*\/\s*p[^>]>^/i,'')
+            // return render
+            return String(value)
         })
         return text
     }
@@ -271,7 +278,7 @@ class MyRenderer extends marked.Renderer {
 
     processInlineElements(text) {
         let result = this._inlineMathToIds(text)
-        result = this._renderInlineDoTags(result, typeof this.options['tags'] == 'object' ? this.options['tags'] : {})
+        // result = this._renderInlineDoTags(result, typeof this.options['tags'] == 'object' ? this.options['tags'] : {})
         return result
     }
 
@@ -416,7 +423,12 @@ function markdownRender(markdownInput, opts) {
         markedOpts = {...markedOpts, ...opts}
     }
     delete markedOpts['sanitize']
-    markedOpts.renderer = new MyRenderer(markedOpts)
+    const myRenderer = new MyRenderer(markedOpts)
+    markedOpts.renderer = myRenderer
+
+    // process all instances of [[do-tag...]] first
+    markdownInput = myRenderer._renderInlineDoTags(markdownInput, typeof opts['tags'] == 'object' ? opts['tags'] : {})
+
     const html = marked.parse(markdownInput, markedOpts)
 
     //render: katex

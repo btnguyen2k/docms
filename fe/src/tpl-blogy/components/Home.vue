@@ -1,10 +1,14 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
   <div v-else>
     <lego-page-header active="home"/>
 
-    <lego-home-layout-retroy2 :document-list="$latestDocuments"/>
+    <lego-home-layout-retroy2 :document-list="$latestDocuments.slice(0,4)"/>
 
     <template v-for="(topic, index) in largeTopics()" v-bind:key="topic.id">
       <lego-home-posts-entry-text-right :topic="topic" :document-list="latestDocsPerTopic[topic.id]" v-if="index%3==0"/>
@@ -54,8 +58,8 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
+              vue.$updatePageTitle()
               vue._fetchTopics(vue)
-              // vue._fetchLatestDocuments(vue)
             } else {
               vue.errorMsg = vue.status + ": " + apiResp.message
             }

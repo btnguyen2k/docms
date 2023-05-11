@@ -1,5 +1,5 @@
 //#DO CMS frontend
-import i18n from "./i18n"
+import i18n from './i18n'
 import {
     apiInfo,
     apiDocument,
@@ -11,10 +11,11 @@ import {
     apiSite, apiTags,
     apiTagSearch,
     apiTopics
-} from "./utils/api_client"
-import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_utils"
+} from './utils/api_client'
+import {extractLeadingFromName, extractTrailingFromName} from './utils/docms_utils'
 import {computed} from 'vue'
-import MD5 from "crypto-js/md5"
+import MD5 from 'crypto-js/md5'
+
 String.prototype.md5 = function () {
     return MD5(this).toString()
 }
@@ -39,7 +40,7 @@ import {
     Tooltip
 } from 'bootstrap'
 
-import VueGtag from "vue-gtag"
+import VueGtag from 'vue-gtag'
 
 class Global {
     get router() {
@@ -174,6 +175,47 @@ export default {
         app.provide('$siteLastName', computed(() => global.siteLastName))
         app.provide('$siteTopics', computed(() => global.siteTopics))
         app.provide('$tagCloud', computed(() => global.tagCloud))
+
+        // use $reload() to reload the browser tab
+        app.config.globalProperties.$reload = () => {
+            window.location.reload()
+        }
+
+        // use $transferToHome(seconds) to redirect to Home page
+        app.config.globalProperties.$transferToHome = (delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Home'})
+            }, delayInSeconds * 1000)
+        }
+
+        // use $transferToTopic(topicId, seconds) to redirect to Home page
+        app.config.globalProperties.$transferToTopic = (topicId, delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Topic', params: {tid: topicId}})
+            }, delayInSeconds * 1000)
+        }
+
+        // use $updatePageTitle({...}) update browser's title
+        app.config.globalProperties.$updatePageTitle = (opts) => {
+            opts = opts ? opts : {}
+            const calcTitle = () => {
+                const siteName = global.siteMeta.name
+                let title = ''
+                if (opts.topic) {
+                    title = app.config.globalProperties.$localedText(opts.topic.title)
+                } else if (opts.document || opts.doc) {
+                    const doc = opts.document ? opts.document : opts.doc
+                    title = app.config.globalProperties.$localedText(doc.title)
+                } else if (opts.search) {
+                    title = i18n.global.t('search') + ': ' + opts.search
+                }
+                if (title) {
+                    return title + (siteName ? (' | ' + siteName) : '')
+                }
+                return siteName + ' | ' + app.config.globalProperties.$localedText(global.siteMeta.description)
+            }
+            document.title = calcTitle()
+        }
 
         // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
         app.config.globalProperties.$pickupFromHash = (input, list) => {

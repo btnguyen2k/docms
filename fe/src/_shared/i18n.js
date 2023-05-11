@@ -10,6 +10,9 @@ const messages = {
 
         language: 'Language',
         wait: 'Please wait...',
+        reload: 'Reload',
+        transfer_to_home: 'We will transfer you to the home page in a few seconds, or you can click <a href="{url}">here</a> to be transferred now',
+        transfer_to_topic: 'We will transfer you to the topic page in a few seconds, or you can click <a href="{url}">here</a> to be transferred now',
         search: 'Search',
         search_result: 'Search result',
         search_no_result: 'Search returns no result, please try another query',
@@ -17,6 +20,7 @@ const messages = {
         tag_cloud: 'Tag cloud',
         tags: 'Tags',
         tag: 'Tag',
+        document_length: '{words} words, {time} mins read',
 
         home: 'Home',
         topics: 'Topics',
@@ -42,6 +46,9 @@ const messages = {
 
         language: 'Ngôn ngữ',
         wait: 'Vui lòng giờ giây lát...',
+        reload: 'Tải lại',
+        transfer_to_home: 'Bạn sẽ được chuyển về trang nhà trong vài giây nữa, hoặc bạn có thể nhấn <a href="{url}">vào đây</a> để về trang nhà',
+        transfer_to_topic: 'Bạn sẽ được chuyển về trang chủ đề trong vài giây nữa, hoặc bạn có thể nhấn <a href="{url}">vào đây</a> để về trang nhà',
         search: 'Tìm kiếm',
         search_result: 'Kết quả tìm kiếm',
         search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',
@@ -49,6 +56,7 @@ const messages = {
         tag_cloud: 'Vân tiêu',
         tags: 'Thẻ',
         tag: 'Thẻ',
+        document_length: '{words} từ, {time} phút đọc',
 
         home: 'Trang nhà',
         topics: 'Chủ đề',

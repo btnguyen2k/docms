@@ -1,7 +1,15 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">{{ $t('error_topic_not_found', {topic: $route.params.tid}) }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
+  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">
+    {{ $t('error_topic_not_found', {topic: $route.params.tid}) }}
+    <hr/>
+    <span v-html="$t('transfer_to_home', {url: $router.resolve({name: 'Home'}).href})"></span>
+  </div>
   <div v-else>
     <lego-page-header active="topic" :topic="topic" />
 
@@ -16,7 +24,7 @@
           <div class="col-lg-8">
             <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in documentList" v-bind:key="doc.id">
               <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="img-link me-4">
-                <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="img-fluid">
+                <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
               </router-link>
               <div class="col-9">
                 <span class="date">{{ $unixTimestampToReadable(doc.tu) }}</span>
@@ -44,7 +52,7 @@
       </div>
     </div>
 
-    <lego-page-footer :document-list="$latestDocuments" />
+    <lego-page-footer :document-list="latestDocuments" />
   </div>
 </template>
 
@@ -54,7 +62,7 @@ import {watch} from 'vue'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import sidebar from './_sidebar.vue'
-import {APP_CONFIG} from '@/_shared/utils/app_config'
+import {switchLanguage} from '@/_shared/i18n'
 
 export default {
   name: 'Topic',
@@ -62,6 +70,9 @@ export default {
   components: {legoPageHeader, legoPageFooter, sidebar},
   mounted() {
     const vue = this
+    if (vue.$route.query.l) {
+      switchLanguage(vue.$route.query.l, false)
+    }
     const route = useRoute()
     watch(
         () => route.params.tid,
@@ -72,6 +83,24 @@ export default {
         }
     )
     this._fetchSiteMeta(this)
+  },
+  computed: {
+    latestDocuments() {
+      const result = []
+      for (let i = 0; i < this.$latestDocuments.length; i++) {
+        let found = false
+        for (let j = 0; j < this.documentList.length; j++) {
+          if (this.$latestDocuments[i].id == this.documentList[j].id) {
+            found = true
+            break
+          }
+        }
+        if (!found) {
+          result.push(this.$latestDocuments[i])
+        }
+      }
+      return result
+    },
   },
   methods: {
     _fetchSiteMeta(vue) {
@@ -98,14 +127,16 @@ export default {
             if (vue.status == 200) {
               vue.$siteTopics.forEach(t => {
                 if (t.id == topicId) {
+                  vue.$updatePageTitle({topic: t})
                   vue.topic = t
-                  const appNameAndVersion = APP_CONFIG.app.name + ' v' + APP_CONFIG.app.version
-                  document.title = vue.$localedText(vue.topic.title) + ' | ' + appNameAndVersion
                   vue._fetchDocuments(vue, topicId)
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.topic.id) {
+              vue.$transferToHome(3)
             }
           },
           err => {
