@@ -1,12 +1,13 @@
 # DOCMS Release Notes
 
-## 2023-05-xx
+## 2023-05-11
 
 Runtime `v0.3.1`:
 - Add Google Analytics support.
 - Add site mode `blog`.
 - New FE template `Blogy`.
 - Add diagram support using [mermaid](https://mermaid.js.org/).
+- Bug fixes & enhancements.
 
 CLI `v0.3.1.2`:
 - Bug fixes & enhancements.
