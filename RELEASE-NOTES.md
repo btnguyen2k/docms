@@ -9,7 +9,7 @@ Runtime `v0.3.1`:
 - Add diagram support using [mermaid](https://mermaid.js.org/).
 - Bug fixes & enhancements.
 
-CLI `v0.3.1.2`:
+CLI `v0.3.1.3`:
 - Bug fixes & enhancements.
 
 ## 2023-05-01

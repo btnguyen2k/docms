@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	reId = regexp.MustCompile(`^[a-z0-9_]+$`)
+	reId = regexp.MustCompile(`^[a-z0-9_-]+$`)
 )
 
 func isDir(path string) bool {
