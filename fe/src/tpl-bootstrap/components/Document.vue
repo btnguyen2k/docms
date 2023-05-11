@@ -1,7 +1,20 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
-  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">{{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
+  <div v-else-if="!topic.id" class="alert alert-danger m-4" role="alert">
+    {{ $t('error_topic_not_found', {topic: $route.params.tid}) }}
+    <hr/>
+    <span v-html="$t('transfer_to_home', {url: $router.resolve({name: 'Home'}).href})"></span>
+  </div>
+  <div v-else-if="!document.id" class="alert alert-danger m-4" role="alert">
+    {{ $t('error_document_not_found', {topic: $route.params.tid, document: $route.params.did}) }}
+    <hr/>
+    <span v-html="$t('transfer_to_topic', {url: $router.resolve({name: 'Topic', params: {tid: topic.id}}).href})"></span>
+  </div>
   <div v-else>
     <legoPageHeader />
 
@@ -29,7 +42,7 @@
               </p>
             </header>
             <section class="mb-5">
-              <div class="img-fit img-center" v-html="documentContentRendered"></div>
+              <div class="docms-content img-fit img-center" v-html="documentContentRendered"></div>
             </section>
           </article>
         </div>
@@ -46,13 +59,14 @@
 /* Lightbox for Bootstrap 5 */
 import Lightbox from 'bs5-lightbox'
 
-import {markdownRender} from "@/_shared/utils/docms_utils"
+import {markdownRender} from '@/_shared/utils/docms_utils'
 import {useRoute} from 'vue-router'
 import {watch} from 'vue'
 import '@/_shared/assets/markdown-gfm.css'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
 import legoSidebar from './_sidebar.vue'
+import {switchLanguage} from '@/_shared/i18n'
 
 export default {
   name: 'Document',
@@ -60,13 +74,20 @@ export default {
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
     const vue = this
+    if (vue.$route.query.l) {
+      switchLanguage(vue.$route.query.l, false)
+    }
     const route = useRoute()
     watch(
+        () => route.params.tid,
+        async newTid => {
+          vue._fetchTopics(vue, newTid)
+        }
+    )
+    watch(
         () => route.params.did,
-        async newDid => {
-          if (newDid) {
-            vue._fetchDocument(vue, newDid)
-          }
+        async () => {
+          vue._fetchTopics(vue, route.params.tid)
         }
     )
     this.$global.searchQuery = this.$route.query.q ? this.$route.query.q : ''
@@ -116,7 +137,10 @@ export default {
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.topic.id) {
+              vue.$transferToHome(3)
             }
           },
           err => {
@@ -133,11 +157,16 @@ export default {
               vue.documentList = apiResp.data
               vue.documentList.forEach(d => {
                 if (d.id == docId) {
+                  vue.$updatePageTitle({document: d})
+                  vue.document = d
                   vue._fetchDocument(vue, docId)
                 }
               })
             } else {
-              vue.errorMsg = vue.status+": "+apiResp.message
+              // vue.errorMsg = vue.status+": "+apiResp.message
+            }
+            if (!vue.document.id) {
+              vue.$transferToTopic(vue.topic.id, 3)
             }
           },
           err => vue.errorMsg = err

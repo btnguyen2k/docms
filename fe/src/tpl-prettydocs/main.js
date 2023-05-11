@@ -12,7 +12,9 @@ import router from './router'
 app.use(router)
 
 import globalPlugin from '@/_shared/plugin_app.js'
-app.use(globalPlugin)
+app.use(globalPlugin, {
+    router: router
+})
 
 /* PrettyDocs only */
 app.config.globalProperties.$styleByHash = (input, styleList) => {

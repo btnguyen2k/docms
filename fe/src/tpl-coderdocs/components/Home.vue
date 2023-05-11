@@ -1,6 +1,10 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
   <div v-else>
     <header class="header fixed-top">
       <div class="branding docs-branding">
@@ -9,7 +13,7 @@
             <div class="site-logo">
               <router-link class="navbar-brand" :to="{name: 'Home'}">
                 <span class="logo-text"><i v-if="$siteMeta.icon!=''" :class="$siteMeta.icon"></i> {{ $siteFirstName }}<span class="text-alt">{{ $siteLastName }}</span></span>
-                <!--<img class="logo-icon me-2" :src="$router.options.meta.base.replace(/\/+$/, '')+'/images/coderdocs-logo.svg'" alt="logo">-->
+                <!--<img class="logo-icon me-2" :src="$router.options.meta.base.replace(/\/+$/, '')+'/images/coderdocs-logo.svg'">-->
                 <!--<span class="logo-text">{{ $siteFirstName }}<span class="text-alt">{{ $siteLastName }}</span></span>-->
               </router-link>
             </div>
@@ -108,7 +112,7 @@
 </template>
 
 <script>
-import {swichLanguage} from '@/_shared/i18n'
+import {switchLanguage} from '@/_shared/i18n'
 import legoSocialList from './_socialList.vue'
 
 export default {
@@ -119,13 +123,14 @@ export default {
     this._fetchSiteMeta(this)
   },
   methods: {
-    swichLanguage,
+    swichLanguage: switchLanguage,
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
           () => vue.status = 0,
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
+              vue.$updatePageTitle()
               vue._fetchTopics(vue)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message

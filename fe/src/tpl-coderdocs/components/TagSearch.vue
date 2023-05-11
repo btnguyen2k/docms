@@ -1,6 +1,10 @@
 <template>
-  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">{{ errorMsg }}</div>
-  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert">{{ $t('wait') }}</div>
+  <div v-if="errorMsg!=''" class="alert alert-danger m-4" role="alert">
+    {{ errorMsg }}
+    <hr/>
+    <p class="btn btn-outline-primary mb-0" @click="$reload()"><i class="bi bi-arrow-clockwise"></i> {{ $t('reload') }}</p>
+  </div>
+  <div v-else-if="status<=0" class="alert alert-info m-4" role="alert"><i class="bi bi-hourglass"></i> {{ $t('wait') }}</div>
   <div v-else class="docs-page">
     <lego-page-header />
 
@@ -45,7 +49,7 @@
 
 <script>
 import {registerPopstate, unregisterPopstate} from "@/_shared/utils/docms_utils"
-import {swichLanguage} from "@/_shared/i18n"
+import {switchLanguage} from "@/_shared/i18n"
 import {watch} from 'vue'
 import {useRoute} from "vue-router"
 import legoPageHeader from './_pageHeader.vue'
@@ -77,7 +81,7 @@ export default {
         () => route.query.l,
         async () => vue._search(vue),
     )
-    swichLanguage(this.searchLocale)
+    switchLanguage(this.searchLocale)
     this.$global.searchQuery = this.searchTerm
     this._fetchSiteMeta(this)
   },
@@ -104,6 +108,7 @@ export default {
           apiResp => {
             vue.status = apiResp.status
             if (vue.status == 200) {
+              vue.$updatePageTitle({search: vue.searchTerm})
               vue._fetchTopics(vue)
             } else {
               vue.errorMsg = vue.status+": "+apiResp.message

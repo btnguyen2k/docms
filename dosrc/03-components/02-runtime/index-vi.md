@@ -30,6 +30,19 @@ docker run --name docms \
     btnguyen2k/docmsruntime
 ```
 
+**GOOGLE_TAG** - chỉ định Google Tag ID để đẩy data lên Google Analytics, ví dụ:
+```shell
+docker run --name docms \
+    -p 8000:8000 \
+    -e GOOGLE_TAG=G-ABC123D4E5 \
+    btnguyen2k/docmsruntime
+```
+
+```bs-alert info
+
+`GOOGLE_TAG` được hỗ trợ từ bản runtime `v0.3.1` hoặc Docker image `:20230426`.
+```
+
 **DOCMS_DATA_DIR** - chỉ định thư mục gốc chứa nội dung trang web. Giá trị mặc định là `./dodata`. Câu lệnh sau chỉ định `DO CMS runtime` tải nội dung trang web từ thư mục `/mydata`:
 ```shell
 docker run --name docms \

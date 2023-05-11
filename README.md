@@ -5,6 +5,14 @@
 
 DO CMS is a Content Management System targeting developers as its users. Instead of relying on a GUI to create, publish and update website content, these operations are done via developer-friendly tools and flow: Git and CI/CD.
 
+## What's new?
+
+- Embed [Bootstrap components](https://getbootstrap.com/docs/5.0/components/) to documents:
+  - `Alerts`: https://getbootstrap.com/docs/5.0/components/alerts/
+  - `Cards`:  https://getbootstrap.com/docs/5.0/components/card/#grid-cards
+  - `Tabs`: https://getbootstrap.com/docs/5.0/components/navs-tabs/#tabs
+- Tags and Tag cloud
+
 ## Highlighted features
 
 -  **Markdown** is a simple yet powerful markup language for creating formatted text. DO CMS supports [GitHub Flavored Markdown](https://github.github.com/gfm/) as well as extensions such as Mathematical and Chemical formulas.

@@ -8,11 +8,12 @@ import (
 )
 
 const (
-	// Version of DO CMS CLI
-	Version = "0.3.0.1"
+	// Version defined the version number of DO CMS CLI
+	Version = "0.3.1.2"
 )
 
 func main() {
+	os.Setenv("CLI", "true")
 	app := &cli.App{
 		Name:    "docli",
 		Usage:   "DO CMS website content preprocessing tool",
@@ -24,6 +25,7 @@ func main() {
 		Commands: []*cli.Command{
 			commandBuild,
 			commandNew,
+			commandTouch,
 		},
 	}
 	if err := app.Run(os.Args); err != nil {

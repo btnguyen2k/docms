@@ -1,16 +1,46 @@
 //#DO CMS frontend
-import i18n from "./i18n"
+import i18n from './i18n'
 import {
+    apiInfo,
     apiDocument,
     apiDocuments,
+    apiDocumentsForTopic,
     apiDoGet,
     apiDoPost,
     apiSearch,
     apiSite, apiTags,
     apiTagSearch,
     apiTopics
-} from "./utils/api_client"
-import {extractLeadingFromName, extractTrailingFromName} from "./utils/docms_utils"
+} from './utils/api_client'
+import {extractLeadingFromName, extractTrailingFromName} from './utils/docms_utils'
+import {computed} from 'vue'
+import MD5 from 'crypto-js/md5'
+
+String.prototype.md5 = function () {
+    return MD5(this).toString()
+}
+
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {fab} from '@fortawesome/free-brands-svg-icons'
+import {far} from '@fortawesome/free-regular-svg-icons'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+
+import {
+    Alert,
+    Button,
+    Carousel,
+    Collapse,
+    Dropdown,
+    Modal,
+    Offcanvas,
+    Popover,
+    ScrollSpy,
+    Tab,
+    Toast,
+    Tooltip
+} from 'bootstrap'
+
+import VueGtag from 'vue-gtag'
 
 class Global {
     get router() {
@@ -69,30 +99,48 @@ class Global {
     }
 }
 
-import {computed} from 'vue'
+function initGtag(app, global) {
+    if (!global.router) {
+        setTimeout(() => {
+            initGtag(app, global)
+        }, 100)
+        return
+    }
 
-import {library} from '@fortawesome/fontawesome-svg-core'
-import {fab} from '@fortawesome/free-brands-svg-icons'
-import {far} from '@fortawesome/free-regular-svg-icons'
-import {fas} from '@fortawesome/free-solid-svg-icons'
+    const data = global.serverInfo
+    app.use(VueGtag, {
+        config: {id: data.tracking.gtag},
+        appName: data.app.name,
+        pageTrackerScreenviewEnabled: true
+    }, global.router)
+}
 
-import {
-    Alert,
-    Button,
-    Carousel,
-    Collapse,
-    Dropdown,
-    Modal,
-    Offcanvas,
-    Popover,
-    ScrollSpy,
-    Tab,
-    Toast,
-    Tooltip
-} from 'bootstrap'
+function initGlobal(app, global) {
+    apiDoGet(apiInfo,
+        apiResp => {
+            if (apiResp.status == 200) {
+                console.log(apiResp.data)
+                console.log(apiResp.extras)
+                global.serverInfo = apiResp.data
+                initGtag(app, global)
+            } else {
+                console.error("Error while fetching server info, retry shortly: ", apiResp)
+                setTimeout(() => {
+                    initGlobal(app, global)
+                }, 5000)
+            }
+        },
+        (err) => {
+            console.error("Error while fetching server info, retry shortly: ", err)
+            setTimeout(() => {
+                initGlobal(app, global)
+            }, 5000)
+        },
+    )
+}
 
 export default {
-    install: (app) => {
+    install: (app, params) => {
         app.config.unwrapInjectedRef = true
 
         // use FontAwesome icons
@@ -115,6 +163,9 @@ export default {
         /*-- read/write global variable */
         let global = new Global()
         app.provide('$global', global)
+        global.router = params.router ? params.router : undefined
+
+        initGlobal(app, global)
 
         /*-- read-only global variable */
         app.provide('$searchQuery', computed(() => global.searchQuery))
@@ -124,6 +175,47 @@ export default {
         app.provide('$siteLastName', computed(() => global.siteLastName))
         app.provide('$siteTopics', computed(() => global.siteTopics))
         app.provide('$tagCloud', computed(() => global.tagCloud))
+
+        // use $reload() to reload the browser tab
+        app.config.globalProperties.$reload = () => {
+            window.location.reload()
+        }
+
+        // use $transferToHome(seconds) to redirect to Home page
+        app.config.globalProperties.$transferToHome = (delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Home'})
+            }, delayInSeconds * 1000)
+        }
+
+        // use $transferToTopic(topicId, seconds) to redirect to Home page
+        app.config.globalProperties.$transferToTopic = (topicId, delayInSeconds) => {
+            setTimeout(() => {
+                return global.router.push({name: 'Topic', params: {tid: topicId}})
+            }, delayInSeconds * 1000)
+        }
+
+        // use $updatePageTitle({...}) update browser's title
+        app.config.globalProperties.$updatePageTitle = (opts) => {
+            opts = opts ? opts : {}
+            const calcTitle = () => {
+                const siteName = global.siteMeta.name
+                let title = ''
+                if (opts.topic) {
+                    title = app.config.globalProperties.$localedText(opts.topic.title)
+                } else if (opts.document || opts.doc) {
+                    const doc = opts.document ? opts.document : opts.doc
+                    title = app.config.globalProperties.$localedText(doc.title)
+                } else if (opts.search) {
+                    title = i18n.global.t('search') + ': ' + opts.search
+                }
+                if (title) {
+                    return title + (siteName ? (' | ' + siteName) : '')
+                }
+                return siteName + ' | ' + app.config.globalProperties.$localedText(global.siteMeta.description)
+            }
+            document.title = calcTitle()
+        }
 
         // use $pickupFromHash(input, list) to pick up one item from the list based on hash of input
         app.config.globalProperties.$pickupFromHash = (input, list) => {
@@ -254,7 +346,7 @@ export default {
             if (callbackPrefetch) {
                 callbackPrefetch()
             }
-            apiDoGet(apiDocuments.replaceAll(':topic-id', topicId),
+            apiDoGet(apiDocumentsForTopic.replaceAll(':topic-id', topicId),
                 apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )
@@ -266,6 +358,18 @@ export default {
                 callbackPrefetch()
             }
             apiDoGet(apiDocument.replaceAll(':topic-id', topicId).replaceAll(':document-id', documentId),
+                apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
+                err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
+            )
+        }
+
+        // use $fetchLatestDocuments to fetch latest documents' metadata from server
+        app.config.globalProperties.$fetchLatestDocuments = (topicId, numDocs, callbackPrefetch, callbackSuccess, callbackError) => {
+            if (callbackPrefetch) {
+                callbackPrefetch()
+            }
+            const uri = apiDocuments + '?p=latest&n=' + numDocs + (topicId ? '&t=' + topicId : '')
+            apiDoGet(uri,
                 apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )

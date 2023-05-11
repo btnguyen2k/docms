@@ -1,6 +1,5 @@
 <template>
-  <div class="page-wrapper">
-    <div class="container">
+  <div class="container">
       <nav class="pb-2 g-0">
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
           <button class="nav-link active" id="nav-hstyle-tab" data-bs-toggle="tab" data-bs-target="#nav-hstyle"
@@ -24,7 +23,7 @@
             </div>
             <div class="col-6">
               <label for="hhtml" class="form-label"><strong>Preview</strong></label>
-              <div id="hhtml" class="form-control img-fit img-center" style="height: 75vh !important; overflow: auto;"
+              <div id="hhtml" class="form-control docms-content img-fit img-center" style="height: 75vh !important; overflow: auto;"
                    v-html="markdownRendered"></div>
             </div>
           </div>
@@ -49,7 +48,7 @@
         </div>
       </div>
     </div>
-  </div>
+  <div id="mermaid-temp" class="d-none"></div>
 </template>
 
 <script>

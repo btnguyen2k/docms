@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
+	"github.com/btnguyen2k/consu/g18"
 	"github.com/btnguyen2k/docms/be-api/src/docms"
 	"github.com/urfave/cli/v2"
 )
@@ -28,7 +28,7 @@ var commandNew = &cli.Command{
 			Aliases: []string{"s"},
 			Usage:   "Create new site content metadata",
 			Flags: []cli.Flag{
-				flagSiteName, flagSiteIcon, flagSiteLanguages,
+				flagSiteName, flagSiteIcon, flagSiteLanguages, flagSiteMode, flagAuthorName, flagAuthorEmail, flagAuthorAvatar,
 			},
 			Action: actionNewSite,
 		},
@@ -37,7 +37,7 @@ var commandNew = &cli.Command{
 			Aliases: []string{"t"},
 			Usage:   "Create new topic metadata",
 			Flags: []cli.Flag{
-				flagTopicId, flagTopicIcon,
+				flagTopicId, flagTopicIcon, flagTopicHidden, flagTopicEntryImage,
 			},
 			Action: actionNewTopic,
 		},
@@ -46,7 +46,7 @@ var commandNew = &cli.Command{
 			Aliases: []string{"doc", "d"},
 			Usage:   "Create new document metadata",
 			Flags: []cli.Flag{
-				flagDocTopic, flagDocId, flagDocIcon, flagDocIdTimestamp,
+				flagDocTopic, flagDocId, flagDocIcon, flagDocIdTimestamp, flagDocEntryImage, flagDocPage, flagDocStyle, flagAuthorName, flagAuthorEmail, flagAuthorAvatar,
 			},
 			Action: actionNewDocument,
 		},
@@ -73,7 +73,7 @@ func _validateDataDirMustExist(dir string) error {
 
 // handle command "new site"
 func actionNewSite(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustBeValid(opts.DataDir); err != nil {
@@ -93,18 +93,8 @@ func actionNewSite(c *cli.Context) error {
 	// init site meta
 	siteMeta, err := docms.LoadSiteMetaAuto(opts.DataDir)
 	if err == nil && siteMeta != nil {
-		if siteMeta.Name == "" || opts.SiteName != "" {
-			siteMeta.Name = opts.SiteName
-		}
-		if siteMeta.Icon == "" || (opts.SiteIcon != "" && opts.SiteIcon != defaultSiteIcon) {
-			siteMeta.Icon = opts.SiteIcon
-		}
-		if siteMeta.Languages == nil {
-			siteMeta.Languages = make(map[string]string)
-		}
 	} else {
 		siteMeta = &docms.SiteMeta{
-			Name: opts.SiteName,
 			Icon: opts.SiteIcon,
 			Contacts: map[string]string{
 				"website":  "https://my/awesome/website(optional)",
@@ -120,6 +110,18 @@ func actionNewSite(c *cli.Context) error {
 				"build": "${build_datetime}",
 			},
 		}
+	}
+	if siteMeta.Languages == nil {
+		siteMeta.Languages = make(map[string]string)
+	}
+	if siteMeta.Name == "" || opts.SiteName != "" {
+		siteMeta.Name = opts.SiteName
+	}
+	if siteMeta.Icon == "" || (opts.SiteIcon != "" && opts.SiteIcon != defaultSiteIcon) {
+		siteMeta.Icon = opts.SiteIcon
+	}
+	if siteMeta.Mode == "" || opts.SiteMode != "" {
+		siteMeta.Mode = opts.SiteMode
 	}
 
 	// site's name
@@ -176,6 +178,34 @@ func actionNewSite(c *cli.Context) error {
 	}
 	siteMeta.TagsAlias = siteTagAliasMap
 
+	// site's mode
+	validSiteModes := []string{docms.SiteModeBlog, docms.SiteModeDoc, docms.SiteModeDocument}
+	if g18.FindInSlice(siteMeta.Mode, validSiteModes) < 0 {
+		return fmt.Errorf("invalid website mode, valid values are <%s>", validSiteModes)
+	}
+
+	// site's author
+	if opts.AuthorName != "" || opts.AuthorEmail != "" || opts.AuthorAvatar != "" {
+		if siteMeta.Author == nil {
+			siteMeta.Author = &docms.Author{}
+		}
+		if siteMeta.Author.Name == "" {
+			siteMeta.Author.Name = opts.AuthorName
+			if siteMeta.Author.Name == "" {
+				siteMeta.Author.Name = "DOCLI"
+			}
+		}
+		if siteMeta.Author.Email == "" {
+			siteMeta.Author.Email = opts.AuthorEmail
+			if siteMeta.Author.Email == "" {
+				siteMeta.Author.Email = "docli@docms"
+			}
+		}
+		if siteMeta.Author.Avatar == "" {
+			siteMeta.Author.Avatar = opts.AuthorAvatar
+		}
+	}
+
 	if err := writeFileYaml(metaFile, siteMeta); err != nil {
 		return err
 	}
@@ -185,7 +215,7 @@ func actionNewSite(c *cli.Context) error {
 
 // handle command "new topic"
 func actionNewTopic(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustExist(opts.DataDir); err != nil {
@@ -206,42 +236,56 @@ func actionNewTopic(c *cli.Context) error {
 	}
 
 	// topic's index
-	index := 1
+	var index *int = nil
+	var topicDir *string = nil
 	if dirContent, err := docms.GetDirContent(opts.DataDir, func(entry os.DirEntry) bool {
-		return entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name())
+		if entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name()) {
+			if tokens := docms.RexpContentDir.FindStringSubmatch(entry.Name()); topicId == tokens[2] {
+				val, _ := strconv.Atoi(tokens[1])
+				index = &val
+				topicDir = g18.PointerOf(entry.Name())
+			}
+			return true
+		}
+		return false
 	}); err != nil {
 		return err
 	} else {
-		for _, dir := range dirContent {
-			tokens := docms.RexpContentDir.FindStringSubmatch(dir.Name())
-			if topicId == tokens[2] {
-				if !opts.OverrideTarget {
-					return fmt.Errorf("topic with id <%s> has already existed, remove it then retry or supply flag --%s", topicId, fieldOverride)
-				}
-				index, _ = strconv.Atoi(tokens[1])
-				break
+		if index != nil {
+			if !opts.OverrideTarget {
+				return fmt.Errorf("topic with id <%s> has already existed, remove it then retry or supply flag --%s", topicId, fieldOverride)
 			}
-			if i, _ := strconv.Atoi(tokens[1]); i >= index {
-				index = i + 1
+		} else {
+			index = g18.PointerOf(1)
+			for _, dir := range dirContent {
+				if i, _ := strconv.Atoi(docms.RexpContentDir.FindStringSubmatch(dir.Name())[1]); i >= *index {
+					index = g18.PointerOf(i + 1)
+				}
 			}
 		}
 	}
 
 	// init topic meta
-	topicDir := fmt.Sprintf("%02d-%s", index, topicId)
-	metaFile := opts.DataDir + "/" + topicDir + "/meta.yaml"
-	if err := os.Mkdir(opts.DataDir+"/"+topicDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
+	if topicDir == nil {
+		topicDir = g18.PointerOf(fmt.Sprintf("%02d-%s", *index, topicId))
+	}
+	metaFile := opts.DataDir + "/" + *topicDir + "/meta.yaml"
+	if err := os.Mkdir(opts.DataDir+"/"+*topicDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
 		return err
 	}
-	topicMeta, err := docms.LoadTopicMetaAuto(opts.DataDir + "/" + topicDir)
+	topicMeta, err := docms.LoadTopicMetaAuto(opts.DataDir + "/" + *topicDir)
 	if err == nil && topicMeta != nil {
-		if topicMeta.Icon == "" || (opts.TopicIcon != "" && opts.TopicIcon != defaultTopicIcon) {
-			topicMeta.Icon = opts.TopicIcon
+		if opts.TopicHidden {
+			topicMeta.Hidden = opts.TopicHidden
 		}
 	} else {
 		topicMeta = &docms.TopicMeta{
-			Icon: opts.TopicIcon,
+			Icon:   opts.TopicIcon,
+			Hidden: opts.TopicHidden,
 		}
+	}
+	if topicMeta.Icon == "" || (opts.TopicIcon != "" && opts.TopicIcon != defaultTopicIcon) {
+		topicMeta.Icon = opts.TopicIcon
 	}
 
 	// topic's title and description
@@ -261,6 +305,11 @@ func actionNewTopic(c *cli.Context) error {
 	topicMeta.Title = topicTitleMap
 	topicMeta.Description = topicDescMap
 
+	// topic's entry-image
+	if opts.TopicEntryImage != "" {
+		topicMeta.EntryImage = opts.TopicEntryImage
+	}
+
 	if err := writeFileYaml(metaFile, topicMeta); err != nil {
 		return err
 	}
@@ -268,13 +317,9 @@ func actionNewTopic(c *cli.Context) error {
 	return nil
 }
 
-func _pint(val int) *int {
-	return &val
-}
-
 // handle command "new document"
 func actionNewDocument(c *cli.Context) error {
-	opts := Opts(c)
+	opts := OptsCmdNew(c)
 
 	// data dir
 	if err := _validateDataDirMustExist(opts.DataDir); err != nil {
@@ -318,11 +363,13 @@ func actionNewDocument(c *cli.Context) error {
 
 	// document's index
 	var index *int = nil
+	var docDir *string = nil
 	if dirContent, err := docms.GetDirContent(opts.DataDir+"/"+topicDir, func(entry os.DirEntry) bool {
 		if entry.IsDir() && docms.RexpContentDir.MatchString(entry.Name()) {
 			if tokens := docms.RexpContentDir.FindStringSubmatch(entry.Name()); docId == tokens[2] {
 				val, _ := strconv.Atoi(tokens[1])
 				index = &val
+				docDir = g18.PointerOf(entry.Name())
 			}
 			return true
 		}
@@ -334,35 +381,45 @@ func actionNewDocument(c *cli.Context) error {
 			if !opts.OverrideTarget {
 				return fmt.Errorf("document with id <%s> has already existed, remove it then retry or supply flag --%s", docId, fieldOverride)
 			}
-		} else if opts.DocIdTimestamp {
-			strTime := time.Now().UTC().Format("200601021504")
+		} else if opts.DocIdTimestamp || siteMeta.Mode == docms.SiteModeBlog {
+			strTime := now.UTC().Format("200601021504")
 			val, _ := strconv.Atoi(strTime)
 			index = &val
 		} else {
-			index = _pint(1)
+			index = g18.PointerOf(1)
 			for _, dir := range dirContent {
 				if i, _ := strconv.Atoi(docms.RexpContentDir.FindStringSubmatch(dir.Name())[1]); i >= *index {
-					index = _pint(i + 1)
+					index = g18.PointerOf(i + 1)
 				}
 			}
 		}
 	}
 
 	// init document meta
-	docDir := fmt.Sprintf("%03d-%s", *index, docId)
-	metaFile := opts.DataDir + "/" + topicDir + "/" + docDir + "/meta.yaml"
-	if err := os.Mkdir(opts.DataDir+"/"+topicDir+"/"+docDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
+	if docDir == nil {
+		docDir = g18.PointerOf(fmt.Sprintf("%03d-%s", *index, docId))
+	}
+	metaFile := opts.DataDir + "/" + topicDir + "/" + *docDir + "/meta.yaml"
+	if err := os.Mkdir(opts.DataDir+"/"+topicDir+"/"+*docDir, dirPerm); err != nil && !errors.Is(err, os.ErrExist) {
 		return err
 	}
-	docMeta, err := docms.LoadDocumentMetaAuto(opts.DataDir + "/" + topicDir + "/" + docDir)
+	docMeta, err := docms.LoadDocumentMetaAuto(opts.DataDir + "/" + topicDir + "/" + *docDir)
 	if err == nil && docMeta != nil {
-		if docMeta.Icon == "" || (opts.DocIcon != "" && opts.DocIcon != defaultDocumentIcon) {
-			docMeta.Icon = opts.DocIcon
+		docMeta.TimestampUpdate = now.UTC().Unix()
+		if docMeta.TimestampCreate <= 0 {
+			docMeta.TimestampCreate = docMeta.FileInfo.ModTime().UTC().Unix()
 		}
 	} else {
 		docMeta = &docms.DocumentMeta{
-			Icon: opts.DocIcon,
+			Icon:            opts.DocIcon,
+			TimestampCreate: now.UTC().Unix(),
+			TimestampUpdate: now.UTC().Unix(),
 		}
+	}
+
+	// document's icon
+	if docMeta.Icon == "" || (opts.DocIcon != "" && opts.DocIcon != defaultDocumentIcon) {
+		docMeta.Icon = opts.DocIcon
 	}
 
 	// document's title, summary, tags and content files
@@ -386,7 +443,7 @@ func actionNewDocument(c *cli.Context) error {
 		}
 		if file, ok := docContentFileMap[lang]; file == "" || !ok {
 			docContentFileMap[lang] = fmt.Sprintf("index-%s.md", lang)
-			contentFile := opts.DataDir + "/" + topicDir + "/" + docDir + "/" + docContentFileMap[lang]
+			contentFile := opts.DataDir + "/" + topicDir + "/" + *docDir + "/" + docContentFileMap[lang]
 			if !isFile(contentFile) {
 				mdContent := fmt.Sprintf("# Document content (in %s)\n\nThe awesome content goes here.", lang)
 				os.WriteFile(contentFile, []byte(mdContent), filePerm)
@@ -397,6 +454,41 @@ func actionNewDocument(c *cli.Context) error {
 	docMeta.Summary = docSummaryMap
 	docMeta.ContentFile = docContentFileMap
 	docMeta.Tags = docTags
+
+	// document's entry-image
+	if opts.TopicEntryImage != "" {
+		docMeta.EntryImage = opts.TopicEntryImage
+	}
+	// document's page
+	if opts.DocPage != "" {
+		docMeta.DocPage = opts.DocPage
+	}
+	// document's style
+	if opts.DocStyle != "" {
+		docMeta.DocStyle = opts.DocStyle
+	}
+
+	// document's author
+	if opts.AuthorName != "" || opts.AuthorEmail != "" || opts.AuthorAvatar != "" {
+		if docMeta.Author == nil {
+			docMeta.Author = &docms.Author{}
+		}
+		if docMeta.Author.Name == "" {
+			docMeta.Author.Name = opts.AuthorName
+			if docMeta.Author.Name == "" {
+				docMeta.Author.Name = "DOCLI"
+			}
+		}
+		if docMeta.Author.Email == "" {
+			docMeta.Author.Email = opts.AuthorEmail
+			if docMeta.Author.Email == "" {
+				docMeta.Author.Email = "docli@docms"
+			}
+		}
+		if docMeta.Author.Avatar == "" {
+			docMeta.Author.Avatar = opts.AuthorAvatar
+		}
+	}
 
 	if err := writeFileYaml(metaFile, docMeta); err != nil {
 		return err

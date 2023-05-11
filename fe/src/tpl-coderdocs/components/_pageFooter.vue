@@ -34,14 +34,14 @@
 
 <script>
 import legoSocialList from './_socialList.vue'
-import {swichLanguage} from "@/_shared/i18n"
+import {switchLanguage} from "@/_shared/i18n"
 
 export default {
   name: 'lego-page-footer',
   inject: ['$siteMeta', '$siteLanguages'],
   components: {legoSocialList},
   methods: {
-    swichLanguage,
+    swichLanguage: switchLanguage,
   }
 }
 </script>

@@ -46,6 +46,7 @@ tags:
       key1: value 1
       key2: value 2
     tags2: [1, "2", true]
+    tag3: this tag _content_ has **markdown**
 ```
 
 Tags defined in the file can be embedded to the document using the syntax `[[do-tag tag-key]]`:
@@ -56,7 +57,9 @@ Tags defined in the file can be embedded to the document using the syntax `[[do-
         Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
         And also from an array (0-based): **[[do-tag demo.tag2.2]]**
 
-        If tag does not exist: [[do-tag demo.tag3]]<br/>
+        Test if markdown is supported: [[do-tag demo.tag3]].
+
+        If tag does not exist: [[do-tag demo.tag4]]<br/>
         Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
     [[bs-tab Rendered result
@@ -65,7 +68,9 @@ Tags defined in the file can be embedded to the document using the syntax `[[do-
     Fetching tag value from a hierarchy structure: <code>[[do-tag demo.tag1.key1]]</code><br/>
     And also from an array (0-based): **[[do-tag demo.tag2.2]]**
 
-    If tag does not exist: [[do-tag demo.tag3]]<br/>
+    Test if markdown is supported: [[do-tag demo.tag3]].
+
+    If tag does not exist: [[do-tag demo.tag4]]<br/>
     Or out of array index: [[do-tag demo.tag2.-1]] / [[do-tag demo.tag2.5]]<br/>
     ]]
 ```
@@ -228,6 +233,63 @@ Popular programming languages are supported:
     ```markdown
     # Welcome
     _Hello_ **world**!
+    ```
+    ]]
+```
+
+## Diagrams
+
+Diagrams can be embedded to the document using [mermaid syntax](https://mermaid.js.org/intro/):
+
+```bs-tabs
+    [[bs-tab Markdown
+    Pie chart:
+
+        ```mermaid
+        pie title Browser Market Share (statcounter, Mar 2022 - Apr 2023)
+            "Chrome": 63.51
+            "Safari"   : 20.43
+            "Edge"    : 4.96
+            "Firefox": 2.77
+            "Others": 8.33
+        ```
+
+    Sequence diagram:
+
+        ```mermaid
+        sequenceDiagram
+            Alice ->> Bob: Hello Bob, how are you?
+            Bob-->>John: How about you John?
+            Bob--x Alice: I am good thanks!
+            Bob-x John: I am good thanks!
+            Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+            Bob-->Alice: Checking with John...
+            Alice->John: Yes... John, how are you?
+        ```
+    ]]
+    [[bs-tab Rendered result
+    Pie chart:
+    ```mermaid
+    pie title Browser Market Share Worldwide (statcounter, Mar 2022 - Apr 2023)
+        "Chrome": 63.51
+        "Safari"   : 20.43
+        "Edge"    : 4.96
+        "Firefox": 2.77
+        "Others": 8.33
+    ```
+
+    Sequence diagram:
+    ```mermaid
+    sequenceDiagram
+        Alice ->> Bob: Hello Bob, how are you?
+        Bob-->>John: How about you John?
+        Bob--x Alice: I am good thanks!
+        Bob-x John: I am good thanks!
+        Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+        Bob-->Alice: Checking with John...
+        Alice->John: Yes... John, how are you?
     ```
     ]]
 ```

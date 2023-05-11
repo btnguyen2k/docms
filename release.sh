@@ -9,7 +9,7 @@ usage() {
 	echo "where <component> is one of:"
 	echo "	cli     - DO CMS CLI tool"
 	echo "	runtime - DO CMS runtime"
-	echo "	all     - all components"
+	echo "	core    - stable release"
 	exit -1
 }
 

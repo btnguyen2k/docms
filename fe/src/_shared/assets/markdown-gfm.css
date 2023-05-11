@@ -3,6 +3,17 @@ DO CMS - Markdown style
 by Thanh Nguyen
 */
 
+.docms-content th {
+    vertical-align: middle !important;
+}
+
+.docms-content th[align]:where(
+    [align*="center"]
+) {
+    text-align: center !important;
+}
+
+.img-fit img:not([class]),
 .img-fit img[class]:not(:where(
     [class*="docms-reset"],
     [class*="do-reset"]
@@ -10,6 +21,7 @@ by Thanh Nguyen
     max-width: 95%;
 }
 
+.img-center img:not([class]),
 .img-center img[class]:not(:where(
     [class*="docms-reset"],
     [class*="do-reset"]
@@ -49,7 +61,7 @@ code {
     padding-right: 2px;
     /*padding: 2px 8px;*/
     /*padding-top: 4px;*/
-    display: inline-block;
+    /*display: inline-block;*/
 }
 
 .alert code {

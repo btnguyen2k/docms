@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "serve:bootstrap": "vue-cli-service serve --port 8080 src/tpl-bootstrap/main.js",
-    "serve:coderdocs": "vue-cli-service serve --port 8081 src/tpl-coderdocs/main.js",
-    "serve:prettydocs": "vue-cli-service serve --port 8082 src/tpl-prettydocs/main.js",
+    "serve:coderdocs": "vue-cli-service serve --port 8080 src/tpl-coderdocs/main.js",
+    "serve:prettydocs": "vue-cli-service serve --port 8080 src/tpl-prettydocs/main.js",
     "build:bootstrap": "vue-cli-service build --dest dist/tpl-bootstrap src/tpl-bootstrap/main.js",
     "build:coderdocs": "vue-cli-service build --dest dist/tpl-coderdocs src/tpl-coderdocs/main.js",
     "build:prettydocs": "vue-cli-service build --dest dist/tpl-prettydocs src/tpl-prettydocs/main.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "serve:blogy": "vue-cli-service serve --port 8080 src/tpl-blogy/main.js",
+    "build:blogy": "vue-cli-service build --dest dist/tpl-blogy src/tpl-blogy/main.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
@@ -23,13 +25,17 @@
     "bootstrap-icons": "^1.10.4",
     "bs5-lightbox": "^1.8.3",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.1.1",
     "dompurify": "^3.0.1",
     "highlight.js": "^11.7.0",
+    "jquery": "^3.6.4",
     "jsrsasign": "^10.7.0",
     "katex": "^0.16.4",
     "marked": "^4.2.12",
+    "mermaid": "^10.1.0",
     "sass-loader": "^13.2.1",
     "vue": "^3.2.13",
+    "vue-gtag": "^2.0.1",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
   },

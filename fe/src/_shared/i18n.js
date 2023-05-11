@@ -10,11 +10,17 @@ const messages = {
 
         language: 'Language',
         wait: 'Please wait...',
+        reload: 'Reload',
+        transfer_to_home: 'We will transfer you to the home page in a few seconds, or you can click <a href="{url}">here</a> to be transferred now',
+        transfer_to_topic: 'We will transfer you to the topic page in a few seconds, or you can click <a href="{url}">here</a> to be transferred now',
         search: 'Search',
         search_result: 'Search result',
         search_no_result: 'Search returns no result, please try another query',
         search_prompt: 'Enter search query',
         tag_cloud: 'Tag cloud',
+        tags: 'Tags',
+        tag: 'Tag',
+        document_length: '{words} words, {time} mins read',
 
         home: 'Home',
         topics: 'Topics',
@@ -22,8 +28,11 @@ const messages = {
         documents: 'Documents',
         document: 'Document',
         read: 'Read',
+        view_all: 'View all',
         explore: 'Explore',
-        contact_info: 'Contact us at',
+        contact_info: 'Contact info',
+        recent_posts: 'Recent posts',
+        same_topic: 'In the same topic',
 
         error: 'Error',
         error_topic_not_found: 'Topic "{topic}" not found',
@@ -37,11 +46,17 @@ const messages = {
 
         language: 'Ngôn ngữ',
         wait: 'Vui lòng giờ giây lát...',
+        reload: 'Tải lại',
+        transfer_to_home: 'Bạn sẽ được chuyển về trang nhà trong vài giây nữa, hoặc bạn có thể nhấn <a href="{url}">vào đây</a> để về trang nhà',
+        transfer_to_topic: 'Bạn sẽ được chuyển về trang chủ đề trong vài giây nữa, hoặc bạn có thể nhấn <a href="{url}">vào đây</a> để về trang nhà',
         search: 'Tìm kiếm',
         search_result: 'Kết quả tìm kiếm',
         search_no_result: 'Tìm kiếm không trả về kết quả, vui lòng thử với câu truy vấn khác',
         search_prompt: 'Nhập câu truy vấn tìm kiếm',
         tag_cloud: 'Vân tiêu',
+        tags: 'Thẻ',
+        tag: 'Thẻ',
+        document_length: '{words} từ, {time} phút đọc',
 
         home: 'Trang nhà',
         topics: 'Chủ đề',
@@ -49,8 +64,11 @@ const messages = {
         documents: 'Bài viết',
         document: 'Bài viết',
         read: 'Xem',
+        view_all: 'Xem tất cả',
         explore: 'Khám phá',
         contact_info: 'Thông tin liên hệ',
+        recent_posts: 'Các bài viết mới',
+        same_topic: 'Trong cùng chủ đề',
 
         error: 'Lỗi',
         error_topic_not_found: 'Không tìm thấy chủ đề "{topic}"',
@@ -81,7 +99,7 @@ watchEffect(() => {
 
 export default i18n
 
-export function swichLanguage(locale, refreshPage) {
+export function switchLanguage(locale, refreshPage) {
     if (locale == '') {
         locale = localStorageGet('_l')
     }

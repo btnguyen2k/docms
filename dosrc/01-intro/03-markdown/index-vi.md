@@ -68,4 +68,24 @@ và khối công thức Hoá học:
 C_p[\ce{H2O(l)}] = \pu{75.3 J // mol K}
 ```
 
+## Biểu đồ
+
+Sử dụng [cú pháp](https://mermaid.js.org/intro/) để vẽ các biểu đồ:
+
+```mermaid
+flowchart LR
+    Author([fa:fa-user<br>Tác giả])==1:push document==>Git{Git repo}
+    subgraph CICD[3:CI/CD]
+        DOCLI(A><code>DOCLI</code>: Tiền xử lý nội dung)-->P(B>Đóng gói nội dung đã xử lý với<br><code>DO CMS Runtime</code> thành Docker image)
+    end
+    Git<==2:pull content==>CICD
+    CICD==4:push image==>CR[(Container Registry)]
+    CICD==5:deploy==>Env{{Môi trường<br>Dev/UAT/Prod}}
+    Env==6:pull image==>CR
+    Users([fa:fa-users<br>Độc giả])<==ghé thăm trang web==>Env
+```
+
+```bs-alert success
+
 Xem danh sách các cú pháp Markdown được hỗ trợ [ở đây](../../reference/markdown/).
+```
