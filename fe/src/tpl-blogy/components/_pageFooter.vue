@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="widget">
-            <h3 class="mb-4"></h3>
+            <!--<h3 class="mb-4">{{ $siteMeta.name }}</h3>-->
             <p>{{ $localedText($siteMeta.description) }}</p>
           </div>
           <div class="widget">
