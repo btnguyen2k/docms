@@ -30,7 +30,7 @@
         <ul>
           <li v-for="doc in $props['documentList']" v-bind:key="doc.id">
             <router-link :to="{name: 'Document', params: {tid: doc.topic?doc.topic.id:$props['topic'].id, did: doc.id}}">
-              <img :src="$calcDocumentEntryImgUrl(doc, doc.topic?doc.topic.id:$props['topic'].id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="me-4 rounded">
+              <img :src="$calcDocumentEntryImgUrl(doc, doc.topic?doc.topic.id:$props['topic'].id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="me-4 rounded">
               <div class="text">
                 <h4>{{ $localedText(doc.title) }}</h4>
                 <div class="post-meta">
@@ -79,7 +79,7 @@ export default {
         'bg-danger link-light',
         'bg-warning text-dark link-dark',
         'bg-info link-light',
-        'bg-light text-dark link-dark',
+        // 'bg-light text-dark link-dark',
       ]
       return this.$pickupFromHash(tag, cssList)
     },
