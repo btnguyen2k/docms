@@ -85,9 +85,9 @@ func apiGetDocuments(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itiner
 		if gSiteMeta.Mode != SiteModeBlog {
 			return _apiEmptyListGetDocuments
 		}
-		num := _extractParam(params, "n", reddo.TypeInt, 10, nil)
+		num := _extractParam(params, "n", reddo.TypeInt, int64(10), nil)
 		if num == nil || num.(int64) <= 0 || num.(int64) > 10 {
-			num = 10
+			num = int64(10)
 		}
 		topics := _extractParam(params, "t", reddo.TypeString, "", nil)
 		if topics == nil {
