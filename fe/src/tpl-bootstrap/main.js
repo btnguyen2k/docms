@@ -16,4 +16,8 @@ app.use(globalPlugin, {
     router: router
 })
 
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+app.use(AOS.init())
+
 app.mount('#app')
