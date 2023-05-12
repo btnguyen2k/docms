@@ -374,5 +374,16 @@ export default {
                 err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
             )
         }
+        // use $fetchSpecialDocuments to fetch special purpose documents' metadata from server
+        app.config.globalProperties.$fetchSpecialDocuments = (callbackPrefetch, callbackSuccess, callbackError) => {
+            if (callbackPrefetch) {
+                callbackPrefetch()
+            }
+            const uri = apiDocuments + '?p=special'
+            apiDoGet(uri,
+                apiResp => callbackSuccess ? callbackSuccess(apiResp) : console.error('no success-callback function defined'),
+                err => callbackError ? callbackError(err) : console.error('no error-callback function defined', err),
+            )
+        }
     }
 }

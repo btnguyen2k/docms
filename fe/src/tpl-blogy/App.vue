@@ -33,6 +33,7 @@ export default {
   provide() {
     return {
       $latestDocuments: computed(() => this.latestDocuments),
+      $specialDocuments: computed(() => this.specialDocuments),
     }
   },
   mounted() {
@@ -42,6 +43,8 @@ export default {
     app.appContext.config.globalProperties.$calcAuthorAvatarUrl = this.calcAuthorAvatarUrl
 
     const vue = this
+
+    // Javascript setup for Blogy template
     document.addEventListener('click', function (event) {
       const specifiedElement = document.querySelector(".site-mobile-menu")
       const btnSidebarOpen = document.querySelector("#sidebarOpen")
@@ -61,15 +64,25 @@ export default {
     });
 
     vue._fetchLatestDocuments(vue)
+    vue._fetchSpecialDocuments(vue)
   },
   methods: {
     _fetchLatestDocuments(vue) {
-      vue.$fetchLatestDocuments(undefined, 10,
-          () => {
-          },
+      vue.$fetchLatestDocuments(undefined, 10, null,
           apiResp => {
             if (apiResp.status == 200) {
               vue.latestDocuments = apiResp.data
+            }
+          },
+          () => {
+          },
+      )
+    },
+    _fetchSpecialDocuments(vue) {
+      vue.$fetchSpecialDocuments(null,
+          apiResp => {
+            if (apiResp.status == 200) {
+              vue.specialDocuments = apiResp.data
             }
           },
           () => {
@@ -114,6 +127,7 @@ export default {
   data() {
     return {
       latestDocuments: [],
+      specialDocuments: {},
     }
   },
 }

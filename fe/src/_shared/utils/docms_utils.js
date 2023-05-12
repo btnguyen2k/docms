@@ -419,17 +419,20 @@ const defaultMarkedOpts = {
 function markdownRender(markdownInput, opts) {
     //parse: marked
     let markedOpts = {...defaultMarkedOpts}
-    if (typeof opts == 'object') {
-        markedOpts = {...markedOpts, ...opts}
-    }
+    opts = typeof opts == 'object' ? opts : {}
+    markedOpts = {...markedOpts, ...opts}
     delete markedOpts['sanitize']
     const myRenderer = new MyRenderer(markedOpts)
     markedOpts.renderer = myRenderer
 
     // process all instances of [[do-tag...]] first
-    markdownInput = myRenderer._renderInlineDoTags(markdownInput, typeof opts['tags'] == 'object' ? opts['tags'] : {})
+    const tags = typeof opts['tags'] == 'object' ? opts['tags'] : {}
+    markdownInput = myRenderer._renderInlineDoTags(markdownInput, tags)
 
-    const html = marked.parse(markdownInput, markedOpts)
+    let html = marked.parse(markdownInput, markedOpts)
+    if (opts['inline']) {
+        html = html.replaceAll(/^<\s*p\s*>/gi, '').replaceAll(/<\s*\/\s*p\s*>$/gi, '')
+    }
 
     //render: katex
     const latexHtml = html.replace(reKatexId, (_match, capture) => {

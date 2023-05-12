@@ -38,16 +38,13 @@
           </div>
         </div>
         <div class="col-lg-4 ps-lg-5">
-<!--          <div class="widget">-->
-<!--            <h3 class="mb-4">Company</h3>-->
-<!--            <ul class="list-unstyled float-start links">-->
-<!--              <li><a href="#">About us</a></li>-->
-<!--              <li><a href="#">Services</a></li>-->
-<!--              <li><a href="#">Vision</a></li>-->
-<!--              <li><a href="#">Mission</a></li>-->
-<!--              <li><a href="#">Terms</a></li>-->
-<!--              <li><a href="#">Privacy</a></li>-->
-<!--            </ul>-->
+          <div class="widget">
+            <h3 class="mb-4">{{ $siteMeta.name }}</h3>
+            <ul class="list-unstyled float-start links">
+              <li v-for="pageId in specialPages" v-bind:key="pageId">
+                <router-link :to="{name: 'Document', params: {tid: $specialDocuments[pageId].topic.id, did: $specialDocuments[pageId].id}}">{{ $localedText($specialDocuments[pageId].title) }}</router-link>
+              </li>
+            </ul>
 <!--            <ul class="list-unstyled float-start links">-->
 <!--              <li><a href="#">Partners</a></li>-->
 <!--              <li><a href="#">Business</a></li>-->
@@ -56,7 +53,7 @@
 <!--              <li><a href="#">FAQ</a></li>-->
 <!--              <li><a href="#">Creative</a></li>-->
 <!--            </ul>-->
-<!--          </div>-->
+          </div>
         </div>
         <div class="col-lg-4">
           <div class="widget" v-if="$props['documentList']">
@@ -99,13 +96,16 @@
 <script>
 export default {
   name: 'lego-page-footer',
-  inject: ['$siteMeta', '$latestDocuments'],
+  inject: ['$siteMeta', '$latestDocuments', '$specialDocuments'],
   props: ['document-list'],
   mounted() {
   },
   computed: {
     now() {
       return new Date()
+    },
+    specialPages() {
+      return ['about', 'contact']
     },
   },
   methods: {
