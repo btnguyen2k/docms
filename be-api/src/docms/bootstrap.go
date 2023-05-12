@@ -246,12 +246,7 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 		gDocumentMeta[topicDocId] = docMeta
 		gDocumentContent[topicDocId] = make(map[string]string)
 		if docMeta.DocPage != "" {
-			specialPages := gSpecialPages[docMeta.DocPage]
-			if specialPages == nil {
-				specialPages = make([]string, 0)
-				gSpecialPages[docMeta.DocPage] = specialPages
-			}
-			specialPages = append(specialPages, topicDocId)
+			gSpecialPages[docMeta.DocPage] = append(gSpecialPages[docMeta.DocPage], topicDocId)
 		}
 
 		if DEBUG_MODE {
