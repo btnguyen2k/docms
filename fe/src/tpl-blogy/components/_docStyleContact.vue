@@ -71,8 +71,7 @@ import {markdownRender} from '@/_shared/utils/docms_utils'
 
 export default {
   name: 'DocumentStyleContact',
-  inject: ['$siteMeta'],
-  props: ['topic', 'document', 'documentList'],
+  props: ['document'],
   computed: {
     documentData() {
       const content = this.$localedText(this.document.content)

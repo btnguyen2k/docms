@@ -18,7 +18,8 @@
   <div v-else>
     <lego-page-header active="topic" :topic="topic" />
 
-    <DocumentStyleContact v-if="document.style=='contact'" :topic="topic" :document="document" :document-list="documentList" />
+    <DocumentStyleContact v-if="document.style=='contact'" :document="document" />
+    <DocumentStyleNoSidebar v-if="document.style!=''" :document="document" />
     <DocumentStyleNormal v-else :topic="topic" :document="document" :document-list="documentList" />
 
     <lego-page-footer :document-list="latestDocuments" />
@@ -34,11 +35,12 @@ import legoPageFooter from './_pageFooter.vue'
 import {switchLanguage} from '@/_shared/i18n'
 import DocumentStyleNormal from './_docStyleNormal.vue'
 import DocumentStyleContact from './_docStyleContact.vue'
+import DocumentStyleNoSidebar from './_docStyleNoSidebar.vue'
 
 export default {
   name: 'Document',
   inject: ['$global', '$siteMeta', '$siteTopics', '$latestDocuments'],
-  components: {legoPageHeader, legoPageFooter, DocumentStyleNormal, DocumentStyleContact},
+  components: {legoPageHeader, legoPageFooter, DocumentStyleNormal, DocumentStyleContact, DocumentStyleNoSidebar},
   mounted() {
     const vue = this
     if (vue.$route.query.l) {
