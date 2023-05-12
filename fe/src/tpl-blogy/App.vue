@@ -6,6 +6,9 @@
 /* Google fonts */
 @import "//fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap";
 
+/* DevIcons */
+@import "//cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css";
+
 /* FontAwesome */
 @import "@/_shared/assets/fontawesome-free-6.4.0-web/css/all.min.css";
 
