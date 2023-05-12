@@ -12,7 +12,7 @@
   <div class="section">
     <div class="container">
       <div class="row">
-        <div class="offset-lg-3 offset-md-2 offset-sm-1 col-auto mb-5 mb-lg-0" data-aos="fade-up" data-aos-delay="100">
+        <div class="offset-lg-3 offset-md-2 offset-sm-1 col-auto mb-5 mb-lg-0" data-aos="fade-up">
           <div class="contact-info">
             <div v-if="documentData.location" class="mt-4">
               <i class="fas fa-location-dot"></i>

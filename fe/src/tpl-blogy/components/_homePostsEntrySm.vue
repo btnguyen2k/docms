@@ -9,9 +9,9 @@
         <div class="col-sm-6 text-sm-end"><router-link :to="{name: 'Topic', params: {tid: topic.id}}" class="read-more">{{ $t('view_all') }}</router-link></div>
       </div>
       <div class="row">
-        <div class="col-md-6 col-lg-3" v-for="doc in docs" v-bind:key="doc.id">
+        <div class="col-md-6 col-lg-3" v-for="doc in docs" v-bind:key="doc.id" data-aos="fade-up">
           <div class="blog-entry">
-            <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="img-link">
+            <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="img-link" data-aos="zoom-in">
               <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'))" class="img-fluid">
             </router-link>
             <span class="date">{{ $unixTimestampToReadable(doc.tu) }}</span>

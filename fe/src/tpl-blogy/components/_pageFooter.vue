@@ -60,9 +60,9 @@
             <h3 class="mb-4">{{ $t('recent_posts') }}</h3>
             <div class="post-entry-footer">
               <ul>
-                <li v-for="doc in $props['documentList'].slice(0,3)" v-bind:key="doc.id">
+                <li v-for="doc in $props['documentList'].slice(0,3)" v-bind:key="doc.id" data-aos="fade-up">
                   <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}">
-                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id, 's')" class="me-4 rounded">
+                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id, 's')" class="me-4 rounded" data-aos="zoom-in">
                     <div class="text">
                       <h4>{{ $localedText(doc.title) }}</h4>
                       <div class="post-meta">
@@ -85,8 +85,7 @@
               **==========
             -->
           <!-- License information: https://untree.co/license/ -->
-          <p>Copyright &copy; {{ $siteMeta.name}} - Template <code>Blogy</code>, designed with love by <a href="https://untree.co" target="_blank">Untree.co</a>
-          </p>
+          <p>Copyright &copy; {{ $siteMeta.name}} - Template <code>Blogy</code>, designed with love by <a href="https://untree.co" target="_blank">Untree.co</a></p>
         </div>
       </div>
     </div>

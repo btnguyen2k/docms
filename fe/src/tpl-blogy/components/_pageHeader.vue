@@ -108,8 +108,6 @@ export default {
   name: 'lego-page-header',
   inject: ['$global', '$siteMeta', '$siteFirstName', '$siteLastName', '$siteTopics', '$siteLanguages'],
   props: ['active', 'topic'],
-  mounted() {
-  },
   computed: {
     visibleTopics() {
       const result = []

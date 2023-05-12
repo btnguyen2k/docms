@@ -88,10 +88,6 @@ class MyRenderer extends marked.Renderer {
             if (value == undefined) {
                 return '<code title="Error: Tag not found/Invalid value!">' + _exp + '</code>'
             }
-            // let render = markdownRender(String(value), this.options)
-            // // hack for marked: remove leading tag <p> and trailing </p>
-            // render = render.replace(/^<\s*p[^>]*>/i,'').replace(/<\s*\/\s*p[^>]>^/i,'')
-            // return render
             return String(value)
         })
         return text
@@ -100,15 +96,17 @@ class MyRenderer extends marked.Renderer {
     _renderGithubGist(gist) {
         const srcScript = "https://gist.github.com/" + gist.trim() + ".js"
         const srcIframe = "data:text/html;charset=utf-8,&lt;head>&lt;base target='_blank' />&lt;/head>&lt;body>&lt;script src='" + srcScript + "'>&lt;/script>&lt;/body>"
-        let result = "<div class=\"ratio ratio-21x9 mb-4\"><iframe title=\"GitHub Gist\" src=\"" + srcIframe + "\"></iframe></div>"
+        const result = '<div class="{css-class}" data-aos="fade-up"><iframe title="GitHub Gist" src="{src-iframe}"></iframe></div>'
         return result
+            .replaceAll('{css-class}', 'ratio ratio-21x9 mb-4')
+            .replaceAll('{src-iframe}', srcIframe)
     }
 
     _renderBootstrapAlert(paramsStr, text) {
         const params = _parseParams(paramsStr, 1)
         const style = ['secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'].indexOf(params['$0']) >= 0 ? params['$0'] : 'primary'
         const flex = params['flex'] ? true : false
-        let result = '<div class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
+        let result = '<div data-aos="fade-up" class="alert alert-' + style + (flex ? ' d-flex' : '') + ' align-items-center" role="alert">'
         const lines = text.split(/\n/)
         const title = lines.length > 0 && lines[0].trim() != '' ? lines[0].trim() : ''
         let body = ''
@@ -194,9 +192,9 @@ class MyRenderer extends marked.Renderer {
             const cssClassText = cardData.params['text'] ? ' text-' + cardData.params['text'] : ''
             const cssClassBorder = cardData.params['border'] ? ' border-' + cardData.params['border'] : ''
             const cssClassBg = cardData.params['bg'] ? ' bg-' + cardData.params['bg'] : (cardData.params['background'] ? ' bg-' + cardData.params['background'] : '')
-            const card = '<div class="col"><div class="card ${cardCssClass}">\n${cardImg}\n${cardHeader}\n<div class="card-body">\n${cardTitle}\n${cardSubTitle}\n${cardText}\n</div>\n${cardFooter}\n</div></div>'
+            const card = '<div class="col" data-aos="fade-up"><div class="card ${cardCssClass}">\n${cardImg}\n${cardHeader}\n<div class="card-body">\n${cardTitle}\n${cardSubTitle}\n${cardText}\n</div>\n${cardFooter}\n</div></div>'
                 .replaceAll('${cardHeader}', cardData.header != '' ? '<div class="card-header">' + cardData.header + '</div>' : '')
-                .replaceAll('${cardImg}', cardData.img != '' ? (lightbox ? '<a data-type="image" data-gallery="' + ('lightbox-gallery-' + lightbox) + '" data-toggle="lightbox" href="' + cardData.img + '">' : '') + '<img src="' + cardData.img + '" class="card-img-top docms-reset">' + (lightbox ? '</a>' : '') : '')
+                .replaceAll('${cardImg}', cardData.img != '' ? (lightbox ? '<a data-type="image" data-gallery="' + ('lightbox-gallery-' + lightbox) + '" data-toggle="lightbox" href="' + cardData.img + '">' : '') + '<img data-aos="zoom-in" src="' + cardData.img + '" class="card-img-top docms-reset">' + (lightbox ? '</a>' : '') : '')
                 .replaceAll('${cardTitle}', cardData.title != '' ? '<h5 className="card-title">' + cardData.title + '</h5>' : '')
                 .replaceAll('${cardSubTitle}', cardData.subtitle != '' ? '<h6 class="card-subtitle mb-2' + (noMute ? '' : ' text-muted') + '">' + cardData.subtitle + '</h6>' : '')
                 .replaceAll('${cardText}', '<div class="card-text">' + markdownRender(cardData.text, this.options) + '</div>')
@@ -272,13 +270,12 @@ class MyRenderer extends marked.Renderer {
         }
         tabHeader += '</ul>'
         tabContent += '</div>'
-        let result = '<div class="container mb-3' + (params['vertical'] ? ' d-flex align-items-start' : '') + '">' + tabHeader + tabContent + '</div>'
+        let result = '<div data-aos="fade-up" class="container mb-3' + (params['vertical'] ? ' d-flex align-items-start' : '') + '">' + tabHeader + tabContent + '</div>'
         return result
     }
 
     processInlineElements(text) {
         let result = this._inlineMathToIds(text)
-        // result = this._renderInlineDoTags(result, typeof this.options['tags'] == 'object' ? this.options['tags'] : {})
         return result
     }
 
@@ -291,14 +288,11 @@ class MyRenderer extends marked.Renderer {
         }
         if (infoString == 'mermaid' || infoString.startsWith('mermaid ')) {
             const mid = 'm' + code.md5() + (mermaidId++)
-            // const el = document.createElement('div')
-            // el.id = mid
-            // document.querySelector('#mermaid-temp').appendChild(el)
             mermaid.render(mid, code)
                 .then(value => {
                     const elList = document.querySelectorAll('.' + mid)
                     elList.forEach(el => {
-                        el.innerHTML = value.svg
+                        el.innerHTML = '<div data-aos="fade-up">' + value.svg + '</div>'
                     })
                 })
                 .finally(() => {
@@ -322,7 +316,8 @@ class MyRenderer extends marked.Renderer {
         if (infoString == 'bs-cards' || infoString.startsWith('bs-cards ')) {
             return this._renderBootstrapCards(infoString.slice('bs-cards'.length), code)
         }
-        return super.code(code, infoString, escaped)
+        const htmlCode = super.code(code, infoString, escaped)
+        return '<div data-aos="fade-up">' + htmlCode + '</div>'
     }
 
     link(href, title, text) {
@@ -342,9 +337,11 @@ class MyRenderer extends marked.Renderer {
     }
 
     paragraph(text) {
-        // console.log('paragraph:-', text)
-        // return super.paragraph(this.processInlineElements(text))
-        return super.paragraph(text)
+        const output = super.paragraph(text)
+        if (!this.options['inline']) {
+            return output.replaceAll(/^<p>/gi, '<p data-aos="fade-up">')
+        }
+        return output
     }
 
     tablecell(content, flags) {
@@ -352,7 +349,6 @@ class MyRenderer extends marked.Renderer {
     }
 
     text(text) {
-        // console.log('text:-', text)
         return super.text(this.processInlineElements(text))
     }
 
@@ -366,18 +362,19 @@ class MyRenderer extends marked.Renderer {
             }
             href = beBase + imgUrl.href.slice(imgUrl.origin.length)
         }
-        return super.image(href, title, text)
+        const imgHtml = super.image(href, title, text)
+        return imgHtml.replaceAll(/^<img /gi, '<img data-aos="zoom-in" ')
     }
 
     table(header, body) {
         let output = super.table(header, body)
-        output = output.replaceAll('<table>', '<table class="table table-bordered table-striped">')
+        output = output.replaceAll('<table>', '<table data-aos="fade-up" class="table table-bordered table-striped">')
         return output
     }
 
     blockquote(src) {
         let output = super.blockquote(src)
-        output = output.replaceAll('<blockquote>', '<blockquote class="blockquote">')
+        output = output.replaceAll('<blockquote>', '<blockquote data-aos="fade-up" class="blockquote">')
         return output
     }
 
@@ -412,7 +409,8 @@ const defaultMarkedOpts = {
     langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class
     highlight: function (code, lang) {
         const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-        return hljs.highlight(code, {language}).value
+        const highlightedCode = hljs.highlight(code, {language}).value
+        return highlightedCode
     },
 }
 
@@ -437,23 +435,13 @@ function markdownRender(markdownInput, opts) {
     //render: katex
     const latexHtml = html.replace(reKatexId, (_match, capture) => {
         const token = mathExpMap[capture]
-        return katex.renderToString(token.expression, {
+        const renderedKatex = katex.renderToString(token.expression, {
             displayMode: token.type == 'block',
             output: 'html',
             throwOnError: false
         })
+        return '<div data-aos="fade-up">' + renderedKatex + '</div>'
     })
-
-    // //render:mermaid
-    // setTimeout(() => {
-    //     mermaid.run({
-    //         suppressErrors: true,
-    //         querySelector: '.docms-mermaid',
-    //         postRenderCallback: (id) => {
-    //             console.log(id)
-    //         },
-    //     });
-    // }, 250)
 
     const sanitize = typeof opts == 'boolean' ? opts : (typeof opts == 'object' ? opts['sanitize'] : false)
     return sanitize ? DOMPurify.sanitize(latexHtml, {

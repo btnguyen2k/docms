@@ -22,9 +22,9 @@
         </div>
         <div class="row posts-entry">
           <div class="col-lg-8">
-            <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in documentList" v-bind:key="doc.id">
+            <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in documentList" v-bind:key="doc.id" data-aos="fade-up">
               <router-link :to="{name: 'Document', params: {tid: topic.id, did: doc.id}}" class="img-link me-4">
-                <img :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
+                <img data-aos="zoom-in" :src="$calcDocumentEntryImgUrl(doc, topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
               </router-link>
               <div class="col-9">
                 <span class="date">{{ $unixTimestampToReadable(doc.tu) }}</span>

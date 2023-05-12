@@ -18,9 +18,9 @@
         <div class="row posts-entry">
           <div class="col-lg-8">
             <div v-if="searchHits.length==0" class="alert alert-warning" role="alert">{{ $t('search_no_result') }}</div>
-            <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in searchHits" v-bind:key="doc.id">
+            <div class="blog-entry d-flex blog-entry-search-item" v-for="doc in searchHits" v-bind:key="doc.id" data-aos="fade-up">
               <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}, query: {q: searchTerm}}" class="img-link me-4">
-                <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
+                <img data-aos="zoom-in" :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/440x440/214252/90A1A9?text='+$localedText(doc.id).replaceAll(' ','%20'), 's')" class="img-fluid">
               </router-link>
               <div class="col-9">
                 <span class="date">{{ $unixTimestampToReadable(doc.tu) }} &bullet; <router-link :to="{name: 'Topic', params: {tid: doc.topic.id}}">{{ $localedText(doc.topic.title) }}</router-link></span>
