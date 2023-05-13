@@ -99,7 +99,21 @@ export default {
           },
           (apiResp) => {
             if (apiResp.status == 200) {
-              vue.latestDocsSmallTopics = apiResp.data
+              const first4LatestDocs = vue.$latestDocuments.slice(0,4)
+              const docs = []
+              for (let i = 0; i < apiResp.data.length; i++) {
+                let found = false
+                for (let j = 0; j < first4LatestDocs.length; j++) {
+                  if (apiResp.data[i].id == first4LatestDocs[j].id) {
+                    found = true
+                    break
+                  }
+                }
+                if (!found) {
+                  docs.push(apiResp.data[i])
+                }
+              }
+              vue.latestDocsSmallTopics = docs
             }
           },
           () => {
