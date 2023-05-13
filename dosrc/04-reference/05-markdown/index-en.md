@@ -22,16 +22,24 @@ Frontend templates of `DO CMS runtime` import [Bootstrap](https://getbootstrap.c
 
 ## Icons
 
-Free version of [FontAwesome icons](https://fontawesome.com/search?m=free) (currently v6.x) and [Bootstrap icons](https://icons.getbootstrap.com/) are also available for use.
+Free version of [FontAwesome icons](https://fontawesome.com/search?m=free), [Bootstrap icons](https://icons.getbootstrap.com/), and [DevIcon](https://devicon.dev/) are also available for use.
 
 ```bs-tabs
     [[bs-tab Markdown
-    This is a Bootstrap icon &lt;i class="bi bi-globe">&lt;/i>
-    and this is a FontAwesome icon &lt;i class="fas bi-book">&lt;/i>
+    This is a Bootstrap icon &lt;i class="bi bi-globe">&lt;/i>&lt;br/>
+    and this is a FontAwesome icon &lt;i class="fas bi-book">&lt;/i>&lt;br/>
+    and DevIcon icons &lt;i class="devicon-vuejs-plain colored">&lt;/i>
+    &lt;i class="devicon-go-original-wordmark colored">&lt;/i>
+    &lt;i class="devicon-docker-plain colored">&lt;/i>
+    &lt;i class="devicon-kubernetes-plain colored">&lt;/i>        
     ]]
     [[bs-tab Rendered result
     This is a Bootstrap icon <i class="bi bi-globe"></i><br/>
-    and this is a FontAwesome icon <i class="fas bi-book"></i>
+    and this is a FontAwesome icon <i class="fas bi-book"></i><br/>
+    and DevIcon icons <i class="devicon-vuejs-plain colored"></i>
+    <i class="devicon-go-original-wordmark colored"></i>
+    <i class="devicon-docker-plain colored"></i>
+    <i class="devicon-kubernetes-plain colored"></i>            
     ]]
 ```
 
