@@ -6,6 +6,9 @@
 /*!* Google Fonts *!*/
 @import "//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap";
 
+/* DevIcons */
+@import "//cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css";
+
 /* FontAwesome */
 @import "@/_shared/assets/fontawesome-free-6.4.0-web/css/all.min.css";
 
