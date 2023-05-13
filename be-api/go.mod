@@ -7,7 +7,9 @@ require (
 	github.com/btnguyen2k/consu/g18 v0.0.1
 	github.com/btnguyen2k/consu/olaf v0.1.3
 	github.com/btnguyen2k/consu/reddo v0.1.8
+	github.com/btnguyen2k/consu/semita v0.1.5
 	github.com/go-akka/configuration v0.0.0-20200606091224-a002c0330665
+	github.com/gorilla/feeds v1.1.1
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/radovskyb/watcher v1.0.7
 	gopkg.in/yaml.v3 v3.0.1

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"runtime"
 	"sort"
@@ -34,7 +33,6 @@ type MyBootstrapper struct {
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (m MyBootstrapper) Bootstrap() error {
-
 	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, func(e *echo.Echo) error {
 		if err := postInitEchoSetup(e); err != nil {
 			panic(err)
@@ -79,6 +77,9 @@ func postInitEchoSetup(e *echo.Echo) error {
 	e.GET("/img/:tid/:did/:img", serveImage)
 	e.GET(fePath+"/:tid/:did/:img", serveImage)
 
+	// register handler for feeds
+	e.GET("/feeds", serveFeeds)
+
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
@@ -110,42 +111,6 @@ func postInitEchoSetup(e *echo.Echo) error {
 	})
 
 	return nil
-}
-
-var imgFileMime = map[string]string{
-	".jpg":  "image/jpeg",
-	".jpeg": "image/jpeg",
-	".png":  "image/png",
-	".gif":  "image/gif",
-	".svg":  "image/svg+xml",
-}
-
-var reFilename = regexp.MustCompile(`^[0-9a-zA-Z_\-\.]+$`)
-
-func serveImage(c echo.Context) error {
-	topicId := c.Param("tid")
-	docId := c.Param("did")
-	imgName := c.Param("img")
-	topicMeta := gTopicMeta[topicId]
-	docMeta := gDocumentMeta[topicId+":"+docId]
-	if topicMeta == nil || docMeta == nil || !reFilename.MatchString(imgName) {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	ext := filepath.Ext(imgName)
-	mimeType, ok := imgFileMime[ext]
-	if !ok {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	fileName := gDataDir + "/" + topicMeta.dir + "/" + docMeta.dir + "/" + imgName
-	buff, err := os.ReadFile(fileName)
-	if err != nil {
-		log.Printf("[%s] Error reading file [%s]: %s", logLevelError, fileName, err)
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	return c.Blob(http.StatusOK, mimeType, buff)
 }
 
 func initCMSData() {

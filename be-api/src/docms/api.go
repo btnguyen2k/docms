@@ -94,14 +94,12 @@ func apiGetDocuments(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itiner
 			topics = ""
 		}
 		topicIdList := regexp.MustCompile(`[\s,;:]+`).Split(topics.(string), -1)
-		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v\n", num, topics, topicIdList)
 		if topics.(string) == "" || topicIdList == nil || len(topicIdList) == 0 {
 			topicIdList = make([]string, 0)
 			for _, t := range gTopicList {
 				topicIdList = append(topicIdList, t.id)
 			}
 		}
-		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v / gTopicList: %#v\n", num, topics, topicIdList, gTopicList)
 		docs := latestDocumentsForTopics(int(num.(int64)), topicIdList)
 		return itineris.NewApiResult(itineris.StatusOk).SetData(docs)
 	}
