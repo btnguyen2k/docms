@@ -333,7 +333,8 @@ class MyRenderer extends marked.Renderer {
     }
 
     listitem(text) {
-        return super.listitem(this.processInlineElements(text))
+        const output = super.listitem(this.processInlineElements(text))
+        return output.replaceAll(/^<li>/gi, '<li data-aos="fade-up">')
     }
 
     paragraph(text) {
@@ -342,10 +343,6 @@ class MyRenderer extends marked.Renderer {
             return output.replaceAll(/^<p>/gi, '<p data-aos="fade-up">')
         }
         return output
-    }
-
-    tablecell(content, flags) {
-        return super.tablecell(this.processInlineElements(content), flags)
     }
 
     text(text) {
@@ -370,6 +367,10 @@ class MyRenderer extends marked.Renderer {
         let output = super.table(header, body)
         output = output.replaceAll('<table>', '<table data-aos="fade-up" class="table table-bordered table-striped">')
         return output
+    }
+
+    tablecell(content, flags) {
+        return super.tablecell(this.processInlineElements(content), flags)
     }
 
     blockquote(src) {
