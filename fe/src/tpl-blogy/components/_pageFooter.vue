@@ -41,9 +41,11 @@
           <div class="widget">
             <h3 class="mb-4">{{ $siteMeta.name }}</h3>
             <ul class="list-unstyled float-start links">
-              <li v-for="pageId in specialPages" v-bind:key="pageId">
-                <router-link :to="{name: 'Document', params: {tid: $specialDocuments[pageId].topic.id, did: $specialDocuments[pageId].id}}">{{ $localedText($specialDocuments[pageId].title) }}</router-link>
-              </li>
+              <template v-for="pageId in specialPages" v-bind:key="pageId">
+                <li v-if="$specialDocuments[pageId]">
+                  <router-link :to="{name: 'Document', params: {tid: $specialDocuments[pageId].topic.id, did: $specialDocuments[pageId].id}}">{{ $localedText($specialDocuments[pageId].title) }}</router-link>
+                </li>
+              </template>
             </ul>
 <!--            <ul class="list-unstyled float-start links">-->
 <!--              <li><a href="#">Partners</a></li>-->
