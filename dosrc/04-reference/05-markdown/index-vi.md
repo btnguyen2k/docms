@@ -22,16 +22,24 @@ Giao diện đồ hoạ đi kèm với `DO CMS runtime` đã bao gồm sẵn [Bo
 
 ## Biểu tượng
 
-Bộ biểu tượng miễn phí của [FontAwesome](https://fontawesome.com/search?m=free) (phiên bản v6.x) và [Bootstrap icons](https://icons.getbootstrap.com/) cũng được kèm sẵn để sử dụng.
+Bộ biểu tượng miễn phí của [FontAwesome](https://fontawesome.com/search?m=free), [Bootstrap icons](https://icons.getbootstrap.com/) và [DevIcon](https://devicon.dev) cũng được kèm sẵn để sử dụng.
 
 ```bs-tabs
     [[bs-tab Markdown
-    Đây là ví dụ icon của Bootstrap &lt;i class="bi bi-globe">&lt;/i>
-    và đây là icon của FontAwesome &lt;i class="fas bi-book">&lt;/i>
+    Đây là ví dụ icon của Bootstrap &lt;i class="bi bi-globe">&lt;/i>&lt;br/><br/>
+    và đây là icon của FontAwesome &lt;i class="fas bi-book">&lt;/i>&lt;br/><br/>
+    và icon của DevIcon &lt;i class="devicon-vuejs-plain colored">&lt;/i>
+    &lt;i class="devicon-go-original-wordmark colored">&lt;/i>
+    &lt;i class="devicon-docker-plain colored">&lt;/i>
+    &lt;i class="devicon-kubernetes-plain colored">&lt;/i>   
     ]]
     [[bs-tab Hiển thị
-    Đây là ví dụ icon của Bootstrap <i class="bi bi-globe"></i>
-    và đây là icon của FontAwesome <i class="fas bi-book"></i>
+    Đây là ví dụ icon của Bootstrap <i class="bi bi-globe"></i><br/>
+    và đây là icon của FontAwesome <i class="fas bi-book"></i><br/>
+    và icon của DevIcon <i class="devicon-vuejs-plain colored"></i>
+    <i class="devicon-go-original-wordmark colored"></i>
+    <i class="devicon-docker-plain colored"></i>
+    <i class="devicon-kubernetes-plain colored"></i>   
     ]]
 ```
 
