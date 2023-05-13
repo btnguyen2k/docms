@@ -1,0 +1,13 @@
+title:
+  # (string, or map[language-code]text)
+  en: How do I support DO CMS?
+  vi: Tôi ủng hộ dự án như thế nào?
+summary:
+    en: Star GitHub repo, Create issues, or Make pull requests.
+    vi: Tặng sao, Tạo issue, Làm pull-request.
+icon: # (string) supporting FontAwesome icons
+file:
+    en: index-en.md
+    vi: index-vi.md
+tc: 1683835429
+tu: 1683835429

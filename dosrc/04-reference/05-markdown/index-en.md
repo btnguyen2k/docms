@@ -26,8 +26,8 @@ Free version of [FontAwesome icons](https://fontawesome.com/search?m=free), [Boo
 
 ```bs-tabs
     [[bs-tab Markdown
-    This is a Bootstrap icon &lt;i class="bi bi-globe">&lt;/i>&lt;br/>
-    and this is a FontAwesome icon &lt;i class="fas bi-book">&lt;/i>&lt;br/>
+    This is a Bootstrap icon &lt;i class="bi bi-globe">&lt;/i>&lt;br/><br/>
+    and this is a FontAwesome icon &lt;i class="fas bi-book">&lt;/i>&lt;br/><br/>
     and DevIcon icons &lt;i class="devicon-vuejs-plain colored">&lt;/i>
     &lt;i class="devicon-go-original-wordmark colored">&lt;/i>
     &lt;i class="devicon-docker-plain colored">&lt;/i>
