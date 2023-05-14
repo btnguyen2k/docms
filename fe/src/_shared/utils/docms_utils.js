@@ -320,6 +320,11 @@ class MyRenderer extends marked.Renderer {
         return '<div data-aos="fade-up">' + htmlCode + '</div>'
     }
 
+    heading(text, level, raw, slugger) {
+        const output = super.heading(text, level, raw, slugger)
+        return output.replaceAll(/^<(h\d+) /gi, '<$1 data-aos="fade-up" ')
+    }
+
     link(href, title, text) {
         let result = super.link(href, title, text)
         if (reUrlWithProtocol.test(href)) {
