@@ -31,6 +31,7 @@ import LegoHomePostsEntrySm from "./_homePostsEntrySm.vue"
 import LegoHomePostsEntryTextRight from "./_homePostsEntryTextRight.vue"
 import LegoHomeLayoutRetroy1 from "./_homeLayoutRetroy1.vue"
 import LegoPageHeader from "./_pageHeader.vue"
+import {switchLanguage} from "@/_shared/i18n"
 
 const largeTopicThreshold = 4
 
@@ -40,6 +41,10 @@ export default {
   components: {LegoPageFooter, LegoHomeLayoutRetroy2, LegoHomePostsEntryMed, LegoHomePostsEntryTextLeft, LegoHomePostsEntrySm, LegoHomePostsEntryTextRight, LegoHomeLayoutRetroy1, LegoPageHeader},
   inject: ['$global', '$siteTopics', '$latestDocuments'],
   mounted() {
+    const vue = this
+    if (vue.$route.query.l) {
+      switchLanguage(vue.$route.query.l, false)
+    }
     this._fetchSiteMeta(this)
   },
   methods: {
