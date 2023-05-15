@@ -85,7 +85,7 @@ func serveFeeds(c echo.Context) error {
 			num = int64(10)
 		}
 
-		docs = latestDocumentsForTopics(10, topicIdList)
+		docs = latestDocumentsForTopics(int(num.(int64)), topicIdList)
 	}
 
 	now := time.Now().UTC()
@@ -97,6 +97,7 @@ func serveFeeds(c echo.Context) error {
 		Description: gSiteMeta.GetDescriptionMap()[gSiteMeta.DefaultLanguage],
 		Created:     now,
 	}
+
 	for _, doc := range docs {
 		s := semita.NewSemita(doc)
 		title, _ := s.GetValueOfType("title."+gSiteMeta.DefaultLanguage, reddo.TypeString)
