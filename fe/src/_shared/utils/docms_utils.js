@@ -320,7 +320,13 @@ class MyRenderer extends marked.Renderer {
         return '<div data-aos="fade-up">' + htmlCode + '</div>'
     }
 
+    toc = []
+
     heading(text, level, raw, slugger) {
+        if (this.options.headerIds) {
+            const id = this.options.headerPrefix + slugger.slug(raw)
+            this.toc.push({id: id, level: level, text: text})
+        }
         const output = super.heading(text, level, raw, slugger)
         return output.replaceAll(/^<(h\d+) /gi, '<$1 data-aos="fade-up" ')
     }
@@ -420,7 +426,7 @@ const defaultMarkedOpts = {
     },
 }
 
-function markdownRender(markdownInput, opts) {
+function markdownRender(markdownInput, opts, tocContainer) {
     //parse: marked
     let markedOpts = {...defaultMarkedOpts}
     opts = typeof opts == 'object' ? opts : {}
@@ -446,8 +452,12 @@ function markdownRender(markdownInput, opts) {
             output: 'html',
             throwOnError: false
         })
-        return '<div data-aos="fade-up">' + renderedKatex + '</div>'
+        return token.type == 'block' ? ('<div data-aos="fade-up">' + renderedKatex + '</div>') : renderedKatex
     })
+
+    if (typeof tocContainer == 'object') {
+        tocContainer.value = myRenderer.toc
+    }
 
     const sanitize = typeof opts == 'boolean' ? opts : (typeof opts == 'object' ? opts['sanitize'] : false)
     return sanitize ? DOMPurify.sanitize(latexHtml, {
