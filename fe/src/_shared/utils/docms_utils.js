@@ -323,12 +323,20 @@ class MyRenderer extends marked.Renderer {
     toc = []
 
     heading(text, level, raw, slugger) {
+        let output = '<h${level} ${cssClass} id="${id}">${text}</h${level}>\n'
         if (this.options.headerIds) {
             const id = this.options.headerPrefix + slugger.slug(raw)
             this.toc.push({id: id, level: level, text: text})
+            output = output.replaceAll('${id}', id)
+        } else {
+            output = '<h${level} ${cssClass}>${text}</h${level}>\n'
         }
-        const output = super.heading(text, level, raw, slugger)
-        return output.replaceAll(/^<(h\d+) /gi, '<$1 data-aos="fade-up" ')
+        return output.replaceAll('${level}', level)
+            .replaceAll('${cssClass}', 'data-aos="fade-up"')
+            .replaceAll('${text}', text)
+        // const output = super.heading(text, level, raw, slugger)
+        // console.log(output, slugger)
+        // return output.replaceAll(/^<(h\d+) /gi, '<$1 data-aos="fade-up" ')
     }
 
     link(href, title, text) {
