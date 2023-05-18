@@ -8,9 +8,11 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/btnguyen2k/consu/checksum"
 	"github.com/btnguyen2k/consu/reddo"
 	"github.com/btnguyen2k/consu/semita"
 	"github.com/btnguyen2k/docms/be-api/src/goapi"
@@ -67,7 +69,19 @@ func serveImage(c echo.Context) error {
 		log.Printf("[%s] Error reading file [%s]: %s", logLevelError, fileName, err)
 		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
 	}
+	fi, err := os.Stat(fileName)
+	if err != nil {
+		log.Printf("[%s] Error reading file info [%s]: %s", logLevelError, fileName, err)
+		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
+	}
 
+	c.Response().Header().Set("Cache-Control", "1024")
+	c.Response().Header().Set("Cache-Control", "public, max-age=31536000")      // cache for 1y , TODO: "public" part is configurable
+	c.Response().Header().Set("Expires", time.Now().UTC().Format(time.RFC1123)) // expire in 1y
+	c.Response().Header().Set("Date", fi.ModTime().UTC().Format(time.RFC1123))
+	c.Response().Header().Set("Last-Modified", fi.ModTime().UTC().Format(time.RFC1123))
+	c.Response().Header().Set("Content-Length", strconv.Itoa(len(buff)))
+	c.Response().Header().Set("Etag", fmt.Sprintf("%x", checksum.Md5Checksum(buff)))
 	return c.Blob(http.StatusOK, mimeType, buff)
 }
 
