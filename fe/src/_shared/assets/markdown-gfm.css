@@ -3,6 +3,13 @@ DO CMS - Markdown style
 by Thanh Nguyen
 */
 
+.docms-content table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow: auto;
+}
+
 .docms-content th {
     vertical-align: middle !important;
 }
