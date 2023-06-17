@@ -228,6 +228,12 @@ export default {
             return list[mod]
         }
 
+        // use $trimText(input, maxLength) to trim a text down to a max-length
+        app.config.globalProperties.$trimText = (input, maxLength) => {
+            const result = input.replace(new RegExp('^(.{' + maxLength + '}[^\\s]*).*'), "$1")
+            return result.length < input.length ? result + '...' : result
+        }
+
         // use $localedText(inputMap) to pick up the correct i18n message
         app.config.globalProperties.$localedText = (inputMap) => {
             return inputMap && inputMap[i18n.global.locale] ? inputMap[i18n.global.locale] : inputMap

@@ -21,7 +21,7 @@
                 <span class="d-inline-block mt-1">{{ doc.author.name }}</span>
                 <span> - {{ $unixTimestampToReadable(doc.tu) }}</span>
               </div>
-              <p>{{ $localedText(doc.summary) }}</p>
+              <p>{{ $trimText($localedText(doc.summary), 70) }}</p>
               <p><router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}" class="read-more">{{ $t('read') }}</router-link></p>
             </div>
           </div>
