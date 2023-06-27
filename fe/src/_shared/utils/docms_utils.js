@@ -63,18 +63,18 @@ class MyRenderer extends marked.Renderer {
         super(options)
     }
 
-    _fixImgUrl(imgUrl) {
-        // fix image URL in development mode
+    _fixMediaUrl(mediaUrl) {
+        // fix media URL in development mode
         const re = /^(https:)|(http:)|(\/)/i
-        if (imgUrl != "" && !re.test(imgUrl) && APP_CONFIG.api_client.be_api_base_url) {
+        if (mediaUrl != "" && !re.test(mediaUrl) && APP_CONFIG.api_client.be_api_base_url) {
             let beBase = APP_CONFIG.api_client.be_api_base_url
             if (beBase.endsWith("/")) {
                 beBase = beBase.slice(0, beBase.length - 1)
             }
-            const newImgUrl = new URL(imgUrl, document.baseURI)
+            const newImgUrl = new URL(mediaUrl, document.baseURI)
             return beBase + newImgUrl.href.slice(newImgUrl.origin.length)
         }
-        return imgUrl
+        return mediaUrl
     }
 
     _inlineMathToIds(text) {
@@ -181,7 +181,7 @@ class MyRenderer extends marked.Renderer {
                         cardHeader = lines[i].slice('-header:'.length).trim()
                     } else if (lines[i].toLowerCase().startsWith("-img:")) {
                         cardImg = lines[i].slice('-img:'.length).trim()
-                        cardImg = this._fixImgUrl(cardImg)
+                        cardImg = this._fixMediaUrl(cardImg)
                     } else if (lines[i].toLowerCase().startsWith("-title:")) {
                         cardTitle = lines[i].slice('-title:'.length).trim()
                     } else if (lines[i].toLowerCase().startsWith("-subtitle:")) {
@@ -289,6 +289,32 @@ class MyRenderer extends marked.Renderer {
         return result
     }
 
+    _renderVideo(paramsStr) {
+        const params = _parseParams(paramsStr, 1)
+        const videoUrl = this._fixMediaUrl(params['$0'])
+        const alignCenter = params['center'] ? true : false
+        let videoRatio = params['ratio']
+        if (videoRatio!='1x1' && videoRatio!='4x3' && videoRatio!='16x9' && videoRatio!='21x9') {
+            videoRatio = '16x9'
+        }
+        const re = /\d$/i
+        let cssStyle = ''
+        if (params['width']) {
+            cssStyle += 'max-width: ' + params['width']+(re.test(params['width'])?'px':'') + ' !important;'
+        }
+        if (params['height']) {
+            cssStyle += 'max-height: ' + params['height']+(re.test(params['height'])?'px':'') + ' !important;'
+        }
+        if (cssStyle != '') {
+            cssStyle = 'style="' + cssStyle + '"'
+        }
+        const result = '<video class="{css-class}" data-aos="fade-up" {css-style} controls><source src="{video-url}" /></video>'
+        return result
+            .replaceAll('{css-style}', cssStyle)
+            .replaceAll('{css-class}', 'ratio ratio-'+videoRatio+(alignCenter?' start-50 translate-middle-x':''))
+            .replaceAll('{video-url}', videoUrl)
+    }
+
     processInlineElements(text) {
         let result = this._inlineMathToIds(text)
         return result
@@ -321,6 +347,9 @@ class MyRenderer extends marked.Renderer {
         }
         if (infoString.startsWith('gh-gist ')) {
             return this._renderGithubGist(infoString.slice('gh-gist'.length))
+        }
+        if (infoString.startsWith('video ')) {
+            return this._renderVideo(infoString.slice('video'.length))
         }
         if (infoString == 'bs-alert' || infoString.startsWith('bs-alert ')) {
             return this._renderBootstrapAlert(infoString.slice('bs-alert'.length), code)
@@ -381,7 +410,7 @@ class MyRenderer extends marked.Renderer {
     }
 
     image(href, title, text) {
-        const imgHtml = super.image(this._fixImgUrl(href), title, text)
+        const imgHtml = super.image(this._fixMediaUrl(href), title, text)
         return imgHtml.replaceAll(/^<img /gi, '<img data-aos="zoom-in" ')
     }
 
