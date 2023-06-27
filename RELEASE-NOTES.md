@@ -6,6 +6,8 @@ Runtime `v0.4.0`:
 - New backend API to return feeds.
 - Extend media MINE types to support attached audios, videos, documents, and more.
 - Bug fixes & enhancements.
+- Support videos:
+  - With tag <code>```video</code>
 
 ## 2023-05-11
 

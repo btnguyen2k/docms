@@ -48,11 +48,11 @@ function _parseParams(params, ignoreFirstN) {
     }
     for (let i = ignoreFirstN; i < paramsTokens.length; i++) {
         const paramAndValue = paramsTokens[i].trim()
-        const paramAndValueTokens = paramAndValue.split(/=/, 2)
+        const paramAndValueTokens = paramAndValue.split('=', 2)
         if (paramAndValueTokens.length == 1) {
-            result[paramAndValue] = true
+            result[paramAndValue.toLowerCase()] = true
         } else {
-            result[paramAndValueTokens[0]] = paramAndValueTokens[1]
+            result[paramAndValueTokens[0].toLowerCase()] = paramAndValueTokens[1]
         }
     }
     return result
@@ -308,6 +308,24 @@ class MyRenderer extends marked.Renderer {
         if (cssStyle != '') {
             cssStyle = 'style="' + cssStyle + '"'
         }
+        const url = new URL(videoUrl)
+        const youtubeDomains = {'www.youtube.com': true, 'youtube.com': true, 'youtu.be': true}
+        if (youtubeDomains[url.hostname]) {
+            // youtube video
+            const vstart = url.searchParams.get('t')?url.searchParams.get('t'):url.searchParams.get('start')
+            let vid = url.searchParams.get('v')
+            if (!vid) {
+                const tokens = url.pathname.split('/')
+                console.log("DEBUG", url.pathname, tokens)
+                vid = tokens.length > 2 ? tokens[2] : ''
+            }
+            const vurl = 'https://www.youtube.com/embed/'+vid+'?start='+vstart
+            const result = '<div class="{css-class}" data-aos="fade-up" {css-style}><iframe src="{video-url}" allowfullscreen allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>'
+            return result
+                .replaceAll('{css-style}', cssStyle)
+                .replaceAll('{css-class}', 'ratio ratio-'+videoRatio+(alignCenter?' start-50 translate-middle-x':''))
+                .replaceAll('{video-url}', vurl)
+        }
         const result = '<video class="{css-class}" data-aos="fade-up" {css-style} controls><source src="{video-url}" /></video>'
         return result
             .replaceAll('{css-style}', cssStyle)
@@ -320,8 +338,9 @@ class MyRenderer extends marked.Renderer {
         return result
     }
 
-    code(code, infoString, escaped) {
-        infoString = infoString == '' || infoString === undefined ? 'plaintext' : infoString.toLowerCase().trim()
+    code(code, _infoString, escaped) {
+        _infoString = _infoString == '' || _infoString === undefined ? 'plaintext' : _infoString.trim()
+        const infoString = _infoString.toLowerCase()
         if (infoString == 'katex' || infoString.startsWith('katex ')) {
             const id = nextKatexId()
             mathExpMap[id] = {type: 'block', expression: code}
@@ -346,19 +365,19 @@ class MyRenderer extends marked.Renderer {
             return '<pre class="docms-mermaid mermaid ' + mid + '">' + code + '</pre>'
         }
         if (infoString.startsWith('gh-gist ')) {
-            return this._renderGithubGist(infoString.slice('gh-gist'.length))
+            return this._renderGithubGist(_infoString.slice('gh-gist'.length))
         }
         if (infoString.startsWith('video ')) {
-            return this._renderVideo(infoString.slice('video'.length))
+            return this._renderVideo(_infoString.slice('video'.length))
         }
         if (infoString == 'bs-alert' || infoString.startsWith('bs-alert ')) {
-            return this._renderBootstrapAlert(infoString.slice('bs-alert'.length), code)
+            return this._renderBootstrapAlert(_infoString.slice('bs-alert'.length), code)
         }
         if (infoString == 'bs-tabs' || infoString.startsWith('bs-tabs ')) {
-            return this._renderBootstrapTabs(infoString.slice('bs-tabs'.length), code)
+            return this._renderBootstrapTabs(_infoString.slice('bs-tabs'.length), code)
         }
         if (infoString == 'bs-cards' || infoString.startsWith('bs-cards ')) {
-            return this._renderBootstrapCards(infoString.slice('bs-cards'.length), code)
+            return this._renderBootstrapCards(_infoString.slice('bs-cards'.length), code)
         }
         const htmlCode = super.code(code, infoString, escaped)
         return '<div data-aos="fade-up">' + htmlCode + '</div>'
