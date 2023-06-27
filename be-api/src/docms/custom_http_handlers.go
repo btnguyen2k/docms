@@ -37,42 +37,44 @@ func _extractQueryParam(c echo.Context, paramName string, typ reflect.Type, defV
 	return v
 }
 
-var imgFileMime = map[string]string{
-	".jpg":  "image/jpeg",
-	".jpeg": "image/jpeg",
-	".png":  "image/png",
-	".gif":  "image/gif",
-	".svg":  "image/svg+xml",
-}
+var mediaFileMime = make(map[string]string)
+
+// var mediaFileMime = map[string]string{
+// 	".jpg":  "image/jpeg",
+// 	".jpeg": "image/jpeg",
+// 	".png":  "image/png",
+// 	".gif":  "image/gif",
+// 	".svg":  "image/svg+xml",
+// }
 
 var reFilename = regexp.MustCompile(`^[0-9a-zA-Z_\-\.]+$`)
 
-func serveImage(c echo.Context) error {
+func serveMedia(c echo.Context) error {
 	topicId := c.Param("tid")
 	docId := c.Param("did")
-	imgName := c.Param("img")
+	mediaName := c.Param("media")
 	topicMeta := gTopicMeta[topicId]
 	docMeta := gDocumentMeta[topicId+":"+docId]
-	if topicMeta == nil || docMeta == nil || !reFilename.MatchString(imgName) {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
+	if topicMeta == nil || docMeta == nil || !reFilename.MatchString(mediaName) {
+		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, mediaName))
 	}
 
-	ext := filepath.Ext(imgName)
-	mimeType, ok := imgFileMime[ext]
+	ext := filepath.Ext(mediaName)
+	mimeType, ok := mediaFileMime[ext]
 	if !ok {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
+		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, mediaName))
 	}
 
-	fileName := gDataDir + "/" + topicMeta.dir + "/" + docMeta.dir + "/" + imgName
+	fileName := gDataDir + "/" + topicMeta.dir + "/" + docMeta.dir + "/" + mediaName
 	buff, err := os.ReadFile(fileName)
 	if err != nil {
 		log.Printf("[%s] Error reading file [%s]: %s", logLevelError, fileName, err)
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
+		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, mediaName))
 	}
 	fi, err := os.Stat(fileName)
 	if err != nil {
 		log.Printf("[%s] Error reading file info [%s]: %s", logLevelError, fileName, err)
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
+		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, mediaName))
 	}
 
 	c.Response().Header().Set("Cache-Control", "1024")

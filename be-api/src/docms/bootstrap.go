@@ -73,18 +73,27 @@ func postInitEchoSetup(e *echo.Echo) error {
 		return fmt.Errorf("invalid frontend template directory: %s", feTemplateDir)
 	}
 
-	// register handler for image files attached to documents
-	e.GET("/img/:tid/:did/:img", serveImage)
-	e.GET(fePath+"/:tid/:did/:img", serveImage)
+	// register handler for media files attached to documents
+	mediaFileMime = confToMapStringString(goapi.AppConfig, "docms.media_mime")
+	mediaFileMimeAdd := confToMapStringString(goapi.AppConfig, "docms.media_mime_add")
+	for k, v := range mediaFileMimeAdd {
+		mediaFileMime[k] = v
+	}
+	path1 := "/img/:tid/:did/:media"
+	e.GET(path1, serveMedia)
+	path2 := fePath + "/:tid/:did/:media"
+	e.GET(path2, serveMedia)
+	log.Printf("[%s] allowed media files <%s> are serving at <%s> and <%s>", logLevelInfo, mediaFileMime, path1, path2)
 
 	// register handler for feeds
 	e.GET("/feeds", serveFeeds)
 
+	// redirect / to fePath/
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
 
-	// map frontend's static assets
+	// map frontend static assets
 	dirContent, err := GetDirContent(feTemplateDir, nil)
 	if err != nil {
 		return err
