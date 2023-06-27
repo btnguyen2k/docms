@@ -1,5 +1,12 @@
 # DOCMS Release Notes
 
+## 2023-05-xx
+
+Runtime `v0.4.0`:
+- New backend API to return feeds.
+- Extend media MINE types to support attached audios, videos, documents, and more.
+- Bug fixes & enhancements.
+
 ## 2023-05-11
 
 Runtime `v0.3.1`:
