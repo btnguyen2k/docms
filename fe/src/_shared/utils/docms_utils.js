@@ -63,6 +63,20 @@ class MyRenderer extends marked.Renderer {
         super(options)
     }
 
+    _fixImgUrl(imgUrl) {
+        // fix image URL in development mode
+        const re = /^(https:)|(http:)|(\/)/i
+        if (imgUrl != "" && !re.test(imgUrl) && APP_CONFIG.api_client.be_api_base_url) {
+            let beBase = APP_CONFIG.api_client.be_api_base_url
+            if (beBase.endsWith("/")) {
+                beBase = beBase.slice(0, beBase.length - 1)
+            }
+            const newImgUrl = new URL(imgUrl, document.baseURI)
+            return beBase + newImgUrl.href.slice(newImgUrl.origin.length)
+        }
+        return imgUrl
+    }
+
     _inlineMathToIds(text) {
         if (reKatexId.test(text)) {
             return text
@@ -167,6 +181,7 @@ class MyRenderer extends marked.Renderer {
                         cardHeader = lines[i].slice('-header:'.length).trim()
                     } else if (lines[i].toLowerCase().startsWith("-img:")) {
                         cardImg = lines[i].slice('-img:'.length).trim()
+                        cardImg = this._fixImgUrl(cardImg)
                     } else if (lines[i].toLowerCase().startsWith("-title:")) {
                         cardTitle = lines[i].slice('-title:'.length).trim()
                     } else if (lines[i].toLowerCase().startsWith("-subtitle:")) {
@@ -334,9 +349,6 @@ class MyRenderer extends marked.Renderer {
         return output.replaceAll('${level}', level)
             .replaceAll('${cssClass}', 'data-aos="fade-up"')
             .replaceAll('${text}', text)
-        // const output = super.heading(text, level, raw, slugger)
-        // console.log(output, slugger)
-        // return output.replaceAll(/^<(h\d+) /gi, '<$1 data-aos="fade-up" ')
     }
 
     link(href, title, text) {
@@ -369,16 +381,7 @@ class MyRenderer extends marked.Renderer {
     }
 
     image(href, title, text) {
-        const re = /^(https:)|(http:)|(\/)/i
-        let beBase = APP_CONFIG.api_client.be_api_base_url
-        if (beBase && !re.test(href)) {
-            const imgUrl = new URL(href, document.baseURI)
-            if (beBase.endsWith("/")) {
-                beBase = beBase.slice(0, beBase.length - 1)
-            }
-            href = beBase + imgUrl.href.slice(imgUrl.origin.length)
-        }
-        const imgHtml = super.image(href, title, text)
+        const imgHtml = super.image(this._fixImgUrl(href), title, text)
         return imgHtml.replaceAll(/^<img /gi, '<img data-aos="zoom-in" ')
     }
 
