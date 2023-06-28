@@ -26,6 +26,7 @@
 import {computed, getCurrentInstance} from 'vue'
 import {triggerPopstate, triggerResize} from '@/_shared/utils/docms_utils'
 import router from '@/tpl-blogy/router'
+import {APP_CONFIG} from "@/_shared/utils/app_config";
 
 window.addEventListener('popstate', () => triggerPopstate())
 window.addEventListener('resize', () => triggerResize())
@@ -113,7 +114,7 @@ export default {
           return img
         }
         const base = router.resolve({name: 'Document', params: {tid: topicId, did: doc.id}}).href
-        return base + img
+        return (APP_CONFIG.api_client.be_api_base_url?APP_CONFIG.api_client.be_api_base_url:'')+base + img
       }
       return defaultUrl
     },

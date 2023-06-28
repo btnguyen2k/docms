@@ -19,7 +19,7 @@
     <lego-page-header active="topic" :topic="topic" />
 
     <DocumentStyleContact v-if="document.style=='contact'" :document="document" />
-    <DocumentStyleNoSidebar v-if="document.style!=''" :document="document" />
+    <DocumentStyleNoSidebar v-else-if="document.style!=''" :document="document" />
     <DocumentStyleNormal v-else :topic="topic" :document="document" :document-list="documentList" />
 
     <lego-page-footer :document-list="latestDocuments" />
