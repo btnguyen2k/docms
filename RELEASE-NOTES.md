@@ -8,6 +8,7 @@ Runtime `v0.4.0`:
 - Bug fixes & enhancements.
 - Support videos:
   - With tag <code>```video</code>
+  - Videos from Youtube
 
 ## 2023-05-11
 

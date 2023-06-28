@@ -319,8 +319,8 @@ class MyRenderer extends marked.Renderer {
                 console.log("DEBUG", url.pathname, tokens)
                 vid = tokens.length > 2 ? tokens[2] : ''
             }
-            const vurl = 'https://www.youtube.com/embed/'+vid+'?start='+vstart
-            const result = '<div class="{css-class}" data-aos="fade-up" {css-style}><iframe src="{video-url}" allowfullscreen allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>'
+            const vurl = 'https://www.youtube.com/embed/'+vid+(vstart?'?start='+vstart:'')
+            const result = '<div class="{css-class}" data-aos="fade-up" {css-style}><iframe title="Youtube video" src="{video-url}" allow="fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>'
             return result
                 .replaceAll('{css-style}', cssStyle)
                 .replaceAll('{css-class}', 'ratio ratio-'+videoRatio+(alignCenter?' start-50 translate-middle-x':''))
@@ -520,8 +520,8 @@ function markdownRender(markdownInput, opts, tocContainer) {
 
     const sanitize = typeof opts == 'boolean' ? opts : (typeof opts == 'object' ? opts['sanitize'] : false)
     return sanitize ? DOMPurify.sanitize(latexHtml, {
-        ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // needed for embed GitHug Gist
-        ADD_ATTR: ['target'],
+        ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // allow iframe tag for GitHub Gist and Youtube video
+        ADD_ATTR: ['target', 'allow'], // allow 'target' and 'allow' attributes
     }) : latexHtml
 }
 
