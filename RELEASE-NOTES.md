@@ -1,6 +1,6 @@
 # DOCMS Release Notes
 
-## 2023-05-xx
+## 2023-06-28
 
 Runtime `v0.4.0`:
 - New backend API to return feeds.
