@@ -1,0 +1,9 @@
+title:
+  # (string, or map[language-code]text)
+    en: FAQ
+    vi: Hỏi - Đáp
+description:
+  # (string, or map[language-code]text)
+    en: Frequently Asked Questions are answered here.
+    vi: Giải đáp các câu hỏi thường gặp.
+icon: fas fa-question # (string) supporting FontAwesome icons

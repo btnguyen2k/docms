@@ -46,16 +46,12 @@ func apiGetTopics(_ *itineris.ApiContext, _ *itineris.ApiAuth, _ *itineris.ApiPa
 	if _apiResultGetTopics == nil || DEBUG_MODE {
 		topics := make([]map[string]interface{}, 0)
 		for _, topic := range gTopicList {
-			if !topic.Hidden {
-				topics = append(topics, topic.toMap())
-			}
+			topics = append(topics, topic.toMap())
 		}
 		_apiResultGetTopics = itineris.NewApiResult(itineris.StatusOk).SetData(topics)
 	}
 	return _apiResultGetTopics
 }
-
-var _apiEmptyResultGetDocuments = itineris.NewApiResult(itineris.StatusOk).SetData(make([]interface{}, 0))
 
 func latestDocumentsForTopics(num int, topicIdList []string) []interface{} {
 	result := make([]interface{}, 0)
@@ -78,35 +74,53 @@ func latestDocumentsForTopics(num int, topicIdList []string) []interface{} {
 	return result
 }
 
+var _apiEmptyListGetDocuments = itineris.NewApiResult(itineris.StatusOk).SetData(make([]interface{}, 0))
+var _apiEmptyMapGetDocuments = itineris.NewApiResult(itineris.StatusOk).SetData(make(map[string]interface{}))
+
 // API handler "getDocuments"
 func apiGetDocuments(_ *itineris.ApiContext, _ *itineris.ApiAuth, params *itineris.ApiParams) *itineris.ApiResult {
 	purpose := _extractParam(params, "p", reddo.TypeString, "", nil)
 	if purpose == "latest" {
 		// fetching "latest" documents is supported only in blog mode
 		if gSiteMeta.Mode != SiteModeBlog {
-			return _apiEmptyResultGetDocuments
+			return _apiEmptyListGetDocuments
 		}
-		num := _extractParam(params, "n", reddo.TypeInt, 10, nil)
+		num := _extractParam(params, "n", reddo.TypeInt, int64(10), nil)
 		if num == nil || num.(int64) <= 0 || num.(int64) > 10 {
-			num = 10
+			num = int64(10)
 		}
 		topics := _extractParam(params, "t", reddo.TypeString, "", nil)
 		if topics == nil {
 			topics = ""
 		}
 		topicIdList := regexp.MustCompile(`[\s,;:]+`).Split(topics.(string), -1)
-		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v\n", num, topics, topicIdList)
 		if topics.(string) == "" || topicIdList == nil || len(topicIdList) == 0 {
 			topicIdList = make([]string, 0)
 			for _, t := range gTopicList {
 				topicIdList = append(topicIdList, t.id)
 			}
 		}
-		// fmt.Printf("[DEBUG] num: %#v / param: %#v / topics: %#v / gTopicList: %#v\n", num, topics, topicIdList, gTopicList)
 		docs := latestDocumentsForTopics(int(num.(int64)), topicIdList)
 		return itineris.NewApiResult(itineris.StatusOk).SetData(docs)
 	}
-	return _apiEmptyResultGetDocuments
+	if purpose == "special" {
+		// fetching "special" pages is supported only in blog mode
+		if gSiteMeta.Mode != SiteModeBlog {
+			return _apiEmptyMapGetDocuments
+		}
+		docs := make(map[string]interface{})
+		for page, topicDocIds := range gSpecialPages {
+			topicDocId := topicDocIds[0]
+			topicId := topicDocId[:strings.Index(topicDocId, ":")]
+			if gDocumentMeta[topicDocId] != nil && gTopicMeta[topicId] != nil {
+				docData := gDocumentMeta[topicDocId].toMap()
+				docData["topic"] = gTopicMeta[topicId].toMap()
+				docs[page] = docData
+			}
+		}
+		return itineris.NewApiResult(itineris.StatusOk).SetData(docs)
+	}
+	return _apiEmptyListGetDocuments
 }
 
 // API handler "getDocumentsForTopic"

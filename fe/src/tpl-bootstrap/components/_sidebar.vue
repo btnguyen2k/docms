@@ -8,6 +8,17 @@
         </div>
       </form>
 
+      <div class="card mb-4" v-if="$props['documentToc'] && $props['documentToc'].length>0">
+        <div class="card-header">{{ $t('toc') }}</div>
+        <div class="card-body">
+          <ul>
+            <li v-for="el in $props['documentToc']" v-bind:key="el.id">
+              <a :href="'#'+el.id">{{ el.text }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="card mb-4">
         <div class="card-header">{{ $t('tag_cloud') }}</div>
         <div class="card-body">
@@ -57,7 +68,7 @@
 export default {
   name: 'lego-page-header',
   inject: ['$global', '$siteTopics', '$tagCloud'],
-  props: ['topic-id', 'document-list', 'document-id', 'no-search'],
+  props: ['topic-id', 'document-list', 'document-id', 'document-toc', 'no-search'],
   methods: {
     calcTagCloudCSS(tag) {
       const cssList = [

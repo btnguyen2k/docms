@@ -1,5 +1,15 @@
 # DOCMS Release Notes
 
+## 2023-06-28
+
+Runtime `v0.4.0`:
+- New backend API to return feeds.
+- Extend media MINE types to support attached audios, videos, documents, and more.
+- Bug fixes & enhancements.
+- Support videos:
+  - With tag <code>```video</code>
+  - Videos from Youtube
+
 ## 2023-05-11
 
 Runtime `v0.3.1`:
@@ -9,7 +19,7 @@ Runtime `v0.3.1`:
 - Add diagram support using [mermaid](https://mermaid.js.org/).
 - Bug fixes & enhancements.
 
-CLI `v0.3.1.2`:
+CLI `v0.3.1.3`:
 - Bug fixes & enhancements.
 
 ## 2023-05-01
