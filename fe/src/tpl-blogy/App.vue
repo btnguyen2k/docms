@@ -6,6 +6,9 @@
 /* Google fonts */
 @import "//fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap";
 
+/* DevIcons */
+@import "//cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css";
+
 /* FontAwesome */
 @import "@/_shared/assets/fontawesome-free-6.4.0-web/css/all.min.css";
 
@@ -23,6 +26,7 @@
 import {computed, getCurrentInstance} from 'vue'
 import {triggerPopstate, triggerResize} from '@/_shared/utils/docms_utils'
 import router from '@/tpl-blogy/router'
+import {APP_CONFIG} from "@/_shared/utils/app_config";
 
 window.addEventListener('popstate', () => triggerPopstate())
 window.addEventListener('resize', () => triggerResize())
@@ -33,6 +37,7 @@ export default {
   provide() {
     return {
       $latestDocuments: computed(() => this.latestDocuments),
+      $specialDocuments: computed(() => this.specialDocuments),
     }
   },
   mounted() {
@@ -42,6 +47,8 @@ export default {
     app.appContext.config.globalProperties.$calcAuthorAvatarUrl = this.calcAuthorAvatarUrl
 
     const vue = this
+
+    // Javascript setup for Blogy template
     document.addEventListener('click', function (event) {
       const specifiedElement = document.querySelector(".site-mobile-menu")
       const btnSidebarOpen = document.querySelector("#sidebarOpen")
@@ -61,15 +68,25 @@ export default {
     });
 
     vue._fetchLatestDocuments(vue)
+    vue._fetchSpecialDocuments(vue)
   },
   methods: {
     _fetchLatestDocuments(vue) {
-      vue.$fetchLatestDocuments(undefined, 10,
-          () => {
-          },
+      vue.$fetchLatestDocuments(undefined, 10, null,
           apiResp => {
             if (apiResp.status == 200) {
               vue.latestDocuments = apiResp.data
+            }
+          },
+          () => {
+          },
+      )
+    },
+    _fetchSpecialDocuments(vue) {
+      vue.$fetchSpecialDocuments(null,
+          apiResp => {
+            if (apiResp.status == 200) {
+              vue.specialDocuments = apiResp.data
             }
           },
           () => {
@@ -97,7 +114,7 @@ export default {
           return img
         }
         const base = router.resolve({name: 'Document', params: {tid: topicId, did: doc.id}}).href
-        return base + img
+        return (APP_CONFIG.api_client.be_api_base_url?APP_CONFIG.api_client.be_api_base_url:'')+base + img
       }
       return defaultUrl
     },
@@ -114,6 +131,7 @@ export default {
   data() {
     return {
       latestDocuments: [],
+      specialDocuments: {},
     }
   },
 }

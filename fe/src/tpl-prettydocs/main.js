@@ -27,4 +27,8 @@ app.config.globalProperties.$styleByHash = (input, styleList) => {
     return styleList[mod]
 }
 
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+app.use(AOS.init())
+
 app.mount('#app')

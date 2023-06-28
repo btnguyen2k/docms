@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"runtime"
 	"sort"
@@ -34,7 +33,6 @@ type MyBootstrapper struct {
 // - register api-handlers with the global ApiRouter
 // - other initializing work (e.g. creating DAO, initializing database, etc)
 func (m MyBootstrapper) Bootstrap() error {
-
 	goapi.PostInitEchoSetup = append(goapi.PostInitEchoSetup, func(e *echo.Echo) error {
 		if err := postInitEchoSetup(e); err != nil {
 			panic(err)
@@ -75,15 +73,27 @@ func postInitEchoSetup(e *echo.Echo) error {
 		return fmt.Errorf("invalid frontend template directory: %s", feTemplateDir)
 	}
 
-	// register handler for image files attached to documents
-	e.GET("/img/:tid/:did/:img", serveImage)
-	e.GET(fePath+"/:tid/:did/:img", serveImage)
+	// register handler for media files attached to documents
+	mediaFileMime = confToMapStringString(goapi.AppConfig, "docms.media_mime")
+	mediaFileMimeAdd := confToMapStringString(goapi.AppConfig, "docms.media_mime_add")
+	for k, v := range mediaFileMimeAdd {
+		mediaFileMime[k] = v
+	}
+	path1 := "/img/:tid/:did/:media"
+	e.GET(path1, serveMedia)
+	path2 := fePath + "/:tid/:did/:media"
+	e.GET(path2, serveMedia)
+	log.Printf("[%s] allowed media files <%s> are serving at <%s> and <%s>", logLevelInfo, mediaFileMime, path1, path2)
 
+	// register handler for feeds
+	e.GET("/feeds", serveFeeds)
+
+	// redirect / to fePath/
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
 
-	// map frontend's static assets
+	// map frontend static assets
 	dirContent, err := GetDirContent(feTemplateDir, nil)
 	if err != nil {
 		return err
@@ -110,42 +120,6 @@ func postInitEchoSetup(e *echo.Echo) error {
 	})
 
 	return nil
-}
-
-var imgFileMime = map[string]string{
-	".jpg":  "image/jpeg",
-	".jpeg": "image/jpeg",
-	".png":  "image/png",
-	".gif":  "image/gif",
-	".svg":  "image/svg+xml",
-}
-
-var reFilename = regexp.MustCompile(`^[0-9a-zA-Z_\-\.]+$`)
-
-func serveImage(c echo.Context) error {
-	topicId := c.Param("tid")
-	docId := c.Param("did")
-	imgName := c.Param("img")
-	topicMeta := gTopicMeta[topicId]
-	docMeta := gDocumentMeta[topicId+":"+docId]
-	if topicMeta == nil || docMeta == nil || !reFilename.MatchString(imgName) {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	ext := filepath.Ext(imgName)
-	mimeType, ok := imgFileMime[ext]
-	if !ok {
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	fileName := gDataDir + "/" + topicMeta.dir + "/" + docMeta.dir + "/" + imgName
-	buff, err := os.ReadFile(fileName)
-	if err != nil {
-		log.Printf("[%s] Error reading file [%s]: %s", logLevelError, fileName, err)
-		return c.HTML(http.StatusNotFound, fmt.Sprintf("Not found: %s/%s/%s", topicId, docId, imgName))
-	}
-
-	return c.Blob(http.StatusOK, mimeType, buff)
 }
 
 func initCMSData() {
@@ -246,12 +220,7 @@ func _loadDocumentsForTopic(topicMeta *TopicMeta) {
 		gDocumentMeta[topicDocId] = docMeta
 		gDocumentContent[topicDocId] = make(map[string]string)
 		if docMeta.DocPage != "" {
-			specialPages := gSpecialPages[docMeta.DocPage]
-			if specialPages == nil {
-				specialPages = make([]string, 0)
-				gSpecialPages[docMeta.DocPage] = specialPages
-			}
-			specialPages = append(specialPages, topicDocId)
+			gSpecialPages[docMeta.DocPage] = append(gSpecialPages[docMeta.DocPage], topicDocId)
 		}
 
 		if DEBUG_MODE {

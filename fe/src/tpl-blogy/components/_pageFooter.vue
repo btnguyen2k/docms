@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="widget">
-            <h3 class="mb-4"></h3>
+            <!--<h3 class="mb-4">{{ $siteMeta.name }}</h3>-->
             <p>{{ $localedText($siteMeta.description) }}</p>
           </div>
           <div class="widget">
@@ -38,16 +38,15 @@
           </div>
         </div>
         <div class="col-lg-4 ps-lg-5">
-<!--          <div class="widget">-->
-<!--            <h3 class="mb-4">Company</h3>-->
-<!--            <ul class="list-unstyled float-start links">-->
-<!--              <li><a href="#">About us</a></li>-->
-<!--              <li><a href="#">Services</a></li>-->
-<!--              <li><a href="#">Vision</a></li>-->
-<!--              <li><a href="#">Mission</a></li>-->
-<!--              <li><a href="#">Terms</a></li>-->
-<!--              <li><a href="#">Privacy</a></li>-->
-<!--            </ul>-->
+          <div class="widget">
+            <h3 class="mb-4">{{ $siteMeta.name }}</h3>
+            <ul class="list-unstyled float-start links">
+              <template v-for="pageId in specialPages" v-bind:key="pageId">
+                <li v-if="$specialDocuments[pageId]">
+                  <router-link :to="{name: 'Document', params: {tid: $specialDocuments[pageId].topic.id, did: $specialDocuments[pageId].id}}">{{ $localedText($specialDocuments[pageId].title) }}</router-link>
+                </li>
+              </template>
+            </ul>
 <!--            <ul class="list-unstyled float-start links">-->
 <!--              <li><a href="#">Partners</a></li>-->
 <!--              <li><a href="#">Business</a></li>-->
@@ -56,16 +55,16 @@
 <!--              <li><a href="#">FAQ</a></li>-->
 <!--              <li><a href="#">Creative</a></li>-->
 <!--            </ul>-->
-<!--          </div>-->
+          </div>
         </div>
         <div class="col-lg-4">
           <div class="widget" v-if="$props['documentList']">
             <h3 class="mb-4">{{ $t('recent_posts') }}</h3>
             <div class="post-entry-footer">
               <ul>
-                <li v-for="doc in $props['documentList'].slice(0,3)" v-bind:key="doc.id">
+                <li v-for="doc in $props['documentList'].slice(0,3)" v-bind:key="doc.id" data-aos="fade-up">
                   <router-link :to="{name: 'Document', params: {tid: doc.topic.id, did: doc.id}}">
-                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id, 's')" class="me-4 rounded">
+                    <img :src="$calcDocumentEntryImgUrl(doc, doc.topic.id, '//placehold.co/700x700/?text='+doc.id, 's')" class="me-4 rounded" data-aos="zoom-in">
                     <div class="text">
                       <h4>{{ $localedText(doc.title) }}</h4>
                       <div class="post-meta">
@@ -88,8 +87,7 @@
               **==========
             -->
           <!-- License information: https://untree.co/license/ -->
-          <p>Copyright &copy; {{ $siteMeta.name}} - Template <code>Blogy</code>, designed with love by <a href="https://untree.co" target="_blank">Untree.co</a>
-          </p>
+          <p>Copyright &copy; {{ $siteMeta.name}} - Template <code>Blogy</code>, designed with love by <a href="https://untree.co" target="_blank">Untree.co</a></p>
         </div>
       </div>
     </div>
@@ -99,13 +97,16 @@
 <script>
 export default {
   name: 'lego-page-footer',
-  inject: ['$siteMeta', '$latestDocuments'],
+  inject: ['$siteMeta', '$latestDocuments', '$specialDocuments'],
   props: ['document-list'],
   mounted() {
   },
   computed: {
     now() {
       return new Date()
+    },
+    specialPages() {
+      return ['about', 'contact']
     },
   },
   methods: {

@@ -47,7 +47,7 @@
           </article>
         </div>
 
-        <lego-sidebar :topic-id="topic.id" :document-list="documentList" :document-id="document.id"/>
+        <lego-sidebar :topic-id="topic.id" :document-list="documentList" :document-id="document.id" :document-toc="documentToc" />
       </div>
     </div>
 
@@ -96,10 +96,13 @@ export default {
   computed: {
     documentContentRendered() {
       this._updateLightbox()
-      return markdownRender(this.$localedText(this.document.content), {
+      const tocContainer = {}
+      const output = markdownRender(this.$localedText(this.document.content), {
         sanitize: true,
         tags: this.$siteMeta.tags,
-      })
+      }, tocContainer)
+      this._updateDocumentToc(tocContainer)
+      return output
     },
   },
   methods: {
@@ -107,6 +110,9 @@ export default {
       this.$nextTick(() => {
         document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
       })
+    },
+    _updateDocumentToc(tocContainer) {
+      this.documentToc = tocContainer.value
     },
     _fetchSiteMeta(vue) {
       vue.$fetchSiteMeta(
@@ -192,6 +198,7 @@ export default {
       topic: {},
       documentList: [],
       document: {},
+      documentToc: [],
       status: -1,
       errorMsg: '',
     }

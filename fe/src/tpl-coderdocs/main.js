@@ -45,4 +45,8 @@ app.config.globalProperties.$coderDocsSidebarToggler = () => {
     }
 }
 
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+app.use(AOS.init())
+
 app.mount('#app')

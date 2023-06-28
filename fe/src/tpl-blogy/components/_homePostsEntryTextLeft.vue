@@ -14,7 +14,7 @@
             <div class="col-md-6">
               <div class="blog-entry">
                 <router-link :to="{name: 'Document', params: {tid: doc0.topic.id, did: doc0.id}}" class="img-link">
-                  <img :src="$calcDocumentEntryImgUrl(doc0, doc0.topic.id, '//placehold.co/700x700/6f42c1/90A1A9?text='+$localedText(doc0.id).replaceAll(' ','%20'))" class="img-fluid">
+                  <img :src="$calcDocumentEntryImgUrl(doc0, doc0.topic.id, '//placehold.co/700x700/6f42c1/90A1A9?text='+$localedText(doc0.id).replaceAll(' ','%20'), 's')" class="img-fluid">
                 </router-link>
                 <span class="date">{{ $unixTimestampToReadable(doc0.tu) }}</span>
                 <h2><router-link :to="{name: 'Document', params: {tid: doc0.topic.id, did: doc0.id}}">{{ $localedText(doc0.title) }}</router-link></h2>
@@ -26,7 +26,7 @@
               <div class="blog-entry">
                 <div class="blog-entry">
                   <router-link :to="{name: 'Document', params: {tid: doc1.topic.id, did: doc1.id}}" class="img-link">
-                    <img :src="$calcDocumentEntryImgUrl(doc1, doc1.topic.id, '//placehold.co/700x700/6610f2/90A1A9?text='+$localedText(doc1.id).replaceAll(' ','%20'))" class="img-fluid">
+                    <img :src="$calcDocumentEntryImgUrl(doc1, doc1.topic.id, '//placehold.co/700x700/6610f2/90A1A9?text='+$localedText(doc1.id).replaceAll(' ','%20'), 's')" class="img-fluid">
                   </router-link>
                   <span class="date">{{ $unixTimestampToReadable(doc1.tu) }}</span>
                   <h2><router-link :to="{name: 'Document', params: {tid: doc1.topic.id, did: doc1.id}}">{{ $localedText(doc1.title) }}</router-link></h2>

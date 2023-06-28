@@ -31,6 +31,7 @@ import LegoHomePostsEntrySm from "./_homePostsEntrySm.vue"
 import LegoHomePostsEntryTextRight from "./_homePostsEntryTextRight.vue"
 import LegoHomeLayoutRetroy1 from "./_homeLayoutRetroy1.vue"
 import LegoPageHeader from "./_pageHeader.vue"
+import {switchLanguage} from "@/_shared/i18n"
 
 const largeTopicThreshold = 4
 
@@ -40,6 +41,10 @@ export default {
   components: {LegoPageFooter, LegoHomeLayoutRetroy2, LegoHomePostsEntryMed, LegoHomePostsEntryTextLeft, LegoHomePostsEntrySm, LegoHomePostsEntryTextRight, LegoHomeLayoutRetroy1, LegoPageHeader},
   inject: ['$global', '$siteTopics', '$latestDocuments'],
   mounted() {
+    const vue = this
+    if (vue.$route.query.l) {
+      switchLanguage(vue.$route.query.l, false)
+    }
     this._fetchSiteMeta(this)
   },
   methods: {
@@ -99,7 +104,21 @@ export default {
           },
           (apiResp) => {
             if (apiResp.status == 200) {
-              vue.latestDocsSmallTopics = apiResp.data
+              const first4LatestDocs = vue.$latestDocuments.slice(0,4)
+              const docs = []
+              for (let i = 0; i < apiResp.data.length; i++) {
+                let found = false
+                for (let j = 0; j < first4LatestDocs.length; j++) {
+                  if (apiResp.data[i].id == first4LatestDocs[j].id) {
+                    found = true
+                    break
+                  }
+                }
+                if (!found) {
+                  docs.push(apiResp.data[i])
+                }
+              }
+              vue.latestDocsSmallTopics = docs
             }
           },
           () => {

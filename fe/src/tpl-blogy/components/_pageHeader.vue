@@ -12,8 +12,7 @@
             <a :href="href" @click="wrapRouterLinkNavigate(navigate, $event)">{{ $t('home') }}</a>
           </router-link>
         </li>
-        <li v-for="topic in $siteTopics" v-bind:key="topic.id"
-            :class="$props['active']=='topic'&&$props['topic'].id==topic.id?'active':''">
+        <li v-for="topic in visibleTopics" v-bind:key="topic.id" :class="$props['active']=='topic'&&$props['topic'].id==topic.id?'active':''">
           <router-link :to="{name: 'Topic', params: {tid: topic.id}}" custom v-slot="{ href, navigate }">
             <a :href="href" @click="wrapRouterLinkNavigate(navigate, $event)">{{ $localedText(topic.title) }}</a>
           </router-link>
@@ -55,17 +54,17 @@
                 <li :class="$props['active']=='home'?'active':''">
                   <router-link :to="{name: 'Home'}">{{ $t('home') }}</router-link>
                 </li>
-                <li v-for="topic in $siteTopics.slice(0,4)" v-bind:key="topic.id"
+                <li v-for="topic in visibleTopics.slice(0,4)" v-bind:key="topic.id"
                     :class="$props['active']=='topic'&&$props['topic'].id==topic.id?'active':''">
                   <router-link :to="{name: 'Topic', params: {tid: topic.id}}">{{
                       $localedText(topic.title)
                     }}
                   </router-link>
                 </li>
-                <li class="has-children" v-if="$siteTopics.length > 4">
+                <li class="has-children" v-if="visibleTopics.length > 4">
                   <a>{{ $t('topics') }}</a>
                   <ul class="dropdown text-nowrap">
-                    <li v-for="topic in $siteTopics" v-bind:key="topic.id">
+                    <li v-for="topic in visibleTopics" v-bind:key="topic.id">
                       <router-link :to="{name: 'Topic', params:{tid: topic.id}}">
                         <i v-if="topic.icon!=''" :class="topic.icon+' fa-fw'"></i> {{ $localedText(topic.title) }}
                       </router-link>
@@ -109,7 +108,16 @@ export default {
   name: 'lego-page-header',
   inject: ['$global', '$siteMeta', '$siteFirstName', '$siteLastName', '$siteTopics', '$siteLanguages'],
   props: ['active', 'topic'],
-  mounted() {
+  computed: {
+    visibleTopics() {
+      const result = []
+      for (let i = 0; i < this.$siteTopics.length; i++) {
+        if (!this.$siteTopics[i].hidden) {
+          result.push(this.$siteTopics[i])
+        }
+      }
+      return result
+    },
   },
   methods: {
     switchLanguage,

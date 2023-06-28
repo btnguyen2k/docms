@@ -12,6 +12,7 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/btnguyen2k/consu/reddo"
+	hocon "github.com/go-akka/configuration"
 	"gopkg.in/yaml.v3"
 )
 
@@ -611,4 +612,30 @@ func GetDirContent(path string, filter func(entry os.DirEntry) bool) ([]os.DirEn
 		}
 	}
 	return result, nil
+}
+
+/*----------------------------------------------------------------------*/
+
+func confToMapStringString(conf *hocon.Config, confKey string) map[string]string {
+	emptyMap := make(map[string]string)
+	confNode := conf.GetNode(confKey)
+	if confNode == nil {
+		return emptyMap
+	}
+	if confNode.IsObject() {
+		val, err := reddo.Convert(confNode.GetObject().Unwrapped(), reflect.TypeOf(emptyMap))
+		if err != nil || val == nil {
+			return emptyMap
+		}
+		return val.(map[string]string)
+	}
+	if confNode.IsString() {
+		var val map[string]string
+		err := json.Unmarshal([]byte(confNode.GetString()), &val)
+		if err != nil || val == nil {
+			return emptyMap
+		}
+		return val
+	}
+	return emptyMap
 }
