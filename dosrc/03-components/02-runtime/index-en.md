@@ -113,3 +113,8 @@ docker run --name docms \
     -title:Document page
     ]]
 ```
+
+```bs-alert info
+
+New template `blogy` has been added since `v0.3.1` (or Docker image `:20230511`). `blogy` template is suitable for blog-style website (site was [created](../docli/) with `--mode blog`).
+```

@@ -113,3 +113,8 @@ Giao diện **PrettyDocs**:
     -title:Trang bài viết
     ]]
 ```
+
+```bs-alert info
+
+Giao diện đồ hoạ `blogy` được thêm vào từ phiên bản `v0.3.1` (hoặc Docker image `:20230511`). `blogy` thích hợp cho các trang web thien về blog (trang web [được tạo](../docli/) với tham số `--mode blog`).
+```
