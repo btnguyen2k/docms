@@ -7,11 +7,12 @@ DO CMS is a Content Management System targeting developers as its users. Instead
 
 ## What's new?
 
-- Embed [Bootstrap components](https://getbootstrap.com/docs/5.0/components/) to documents:
-  - `Alerts`: https://getbootstrap.com/docs/5.0/components/alerts/
-  - `Cards`:  https://getbootstrap.com/docs/5.0/components/card/#grid-cards
-  - `Tabs`: https://getbootstrap.com/docs/5.0/components/navs-tabs/#tabs
-- Tags and Tag cloud
+- New backend API to return feeds (works with [gautamkrishnar/blog-post-workflow](https://github.com/gautamkrishnar/blog-post-workflow)).
+- Extend media MINE types to support attached audios, videos, documents, and more.
+- Bug fixes & enhancements.
+- Support videos:
+  - With tag <code>```video</code>
+  - Videos from Youtube
 
 ## Highlighted features
 
