@@ -133,6 +133,15 @@ mode: document
 - Các bài viết được sắp xếp theo thời gian tạo, mới nhất lên trước.
 - `/feeds` trả về danh sách các bài viết mới nhất ở dạng RSS newsfeed.
 
+## author
+
+`map[string:string]`, thông tin tác giả mặc định của các bài viết, dùng trong chế độ `blog`, ví dụ:
+```yaml
+author:
+  name: Thanh Nguyen
+  avatar: //www.gravatar.com/avatar/9d6ee977a36db465f103ea5c0e4b859c
+```
+
 ## Ví dụ
 
 Một ví dụ đầy đủ của tập tin metadata trang web:

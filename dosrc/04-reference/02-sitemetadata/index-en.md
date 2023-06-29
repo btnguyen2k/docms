@@ -136,6 +136,15 @@ When `blog` mode is on, the following features are available:
 - Documents (blog posts) are sorted by creation time, newest first.
 - `/feeds` returns latest blog posts as RSS newsfeed.
 
+## author
+
+`map[string:string]`, default author's info for blog posts, used in `blog` mode, example:
+```yaml
+author:
+  name: Thanh Nguyen
+  avatar: //www.gravatar.com/avatar/9d6ee977a36db465f103ea5c0e4b859c
+```
+
 ## Example
 
 Example of a full site metadata file:
