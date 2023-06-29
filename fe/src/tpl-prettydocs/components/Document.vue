@@ -92,6 +92,7 @@ export default {
   computed: {
     documentContentRendered() {
       this._updateLightbox()
+      this._scrollToHash(document.location.hash)
       return markdownRender(this.$localedText(this.document.content), {
         sanitize: true,
         tags: this.$siteMeta.tags,
@@ -99,6 +100,16 @@ export default {
     },
   },
   methods: {
+    _scrollToHash(hash) {
+      if (hash) {
+        this.$nextTick(() => {
+          const el = document.getElementById(hash.slice(1))
+          if (el) {
+            el.scrollIntoView({block: 'center', behavior: 'smooth'})
+          }
+        })
+      }
+    },
     _updateLightbox() {
       this.$nextTick(() => {
         document.querySelectorAll('[data-toggle="lightbox"]').forEach(el => el.addEventListener('click', Lightbox.initialize));
