@@ -1,11 +1,15 @@
 Tập tin metadata trang web nằm ở `thư mục gốc` và chứa các trường thông tin sau:
 
-**name** - `string`, tên (ngắn gọn) của trang web, ví dụ:
+## name
+
+`string`, tên (ngắn gọn) của trang web, ví dụ:
 ```yaml
 name: DO CMS
 ```
 
-**icon** - `string`, biểu tượng của trang web, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
+## icon
+
+`string`, biểu tượng của trang web, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
 ```yaml
 icon: fas fa-globe
 ```
@@ -20,7 +24,9 @@ icon: fas fa-globe
 Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
-**languages** - `map[language-code:display-label]`, các ngôn ngữ được hỗ trợ trên trang web, ví dụ:
+## languages
+
+`map[language-code:display-label]`, các ngôn ngữ được hỗ trợ trên trang web, ví dụ:
 ```yaml
 languages:
   en: English
@@ -32,7 +38,9 @@ languages:
 >
 > Dòng `default: vi` chỉ thị rằng `vi` là ngôn ngữ mặc định của trang web.
 
-**description** - `string` hoặc `map[language-code:text]`, mô tả ngắn dọn về trang web, ví dụ:
+## description
+
+`string` hoặc `map[language-code:text]`, mô tả ngắn dọn về trang web, ví dụ:
 ```yaml
 description: "Hệ thống Quản trị nội dung với dữ liệu được xây dựng thông qua qui trình CI/CD"
 ```
@@ -55,7 +63,9 @@ description:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong trường `languages` ở trên.
 
-**contacts** - `map[string:string]`, thông tin liên lạc, ví dụ:
+## contacts
+
+`map[string:string]`, thông tin liên lạc, ví dụ:
 ```yaml
 contacts:
   website: "https://github.com/btnguyen2k/docms"
@@ -68,7 +78,9 @@ contacts:
   discord: ""
 ```
 
-**tagalias** - `map[language-code:map[string:Array(string)]]`, gom nhóm các thẻ tương tự nhau vào làm một, ví dụ:
+## tagalias
+
+`map[language-code:map[string:Array(string)]]`, gom nhóm các thẻ tương tự nhau vào làm một, ví dụ:
 ```yaml
 tagalias:
   en:
@@ -83,7 +95,9 @@ tagalias:
     docli: [cli]
 ```
 
-**tags** - `map[string:object]`, các thông tin khác ở dạng key-object, ví dụ:
+## tags
+
+`map[string:object]`, các thông tin khác ở dạng key-object, ví dụ:
 ```yaml
 tags:
   build: ${build_datetime}
@@ -102,6 +116,24 @@ tags:
 <i class="fas fa-circle-info me-3 fa-xl"></i>
 Các tag có thể được nhúng vào trong tài liệu sử dụng cú pháp `[[do-tag`. Tham khảo chi tiết ở tài liệu [Cú pháp Markdown được hỗ trợ](../markdown/).
 ```
+
+## mode
+
+`string`, chế độ hoạt động của trang web, các giá trị hợp lệ là `document` và `blog`, ví dụ:
+```yaml
+mode: document
+```
+
+> Chế độ mặc định là `document`.
+
+Ở chế độ `blog`, các chức năng sau sẽ được bật:
+- API `/api/documents` hỗ trợ thêm 2 loại request:
+  - `?p=latest`: trả về danh sách N bài viết mới nhất.
+  - `?p=special`: trả về danh sách các tài liệu cho mục đích chuyên biệt (không phải là bài blog).
+- Các bài viết được sắp xếp theo thời gian tạo, mới nhất lên trước.
+- `/feeds` trả về danh sách các bài viết mới nhất ở dạng RSS newsfeed.
+
+## Ví dụ
 
 Một ví dụ đầy đủ của tập tin metadata trang web:
 ```yaml
