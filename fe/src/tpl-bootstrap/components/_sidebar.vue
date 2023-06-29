@@ -20,17 +20,6 @@
       </div>
 
       <div class="card mb-4">
-        <div class="card-header">{{ $t('tag_cloud') }}</div>
-        <div class="card-body">
-          <ul class="list-unstyled mb-0">
-            <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">
-              <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card mb-4">
         <div class="card-header">{{ $t('topics') }}</div>
         <div class="card-body">
           <div class="row">
@@ -52,6 +41,17 @@
               </template>
             </nav>
           </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">{{ $t('tag_cloud') }}</div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            <li v-for="(_, tag) in $localedText($tagCloud)" v-bind:key="tag" class="d-inline-block me-1 mb-1">
+              <router-link :to="{name: 'TagSearch', query:{q: tag, l: $i18n.locale}}" :class="calcTagCloudCSS(tag)" :style="calcTagCloudSize(tag)">{{ tag }}</router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
