@@ -1,5 +1,10 @@
 # DOCMS Release Notes
 
+## 2023-06-29
+
+Runtime `v0.4.0.1`:
+- Bug fixes.
+
 ## 2023-06-28
 
 Runtime `v0.4.0`:
