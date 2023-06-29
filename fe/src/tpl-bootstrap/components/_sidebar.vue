@@ -12,8 +12,13 @@
         <div class="card-header">{{ $t('toc') }}</div>
         <div class="card-body">
           <ul>
-            <li v-for="el in $props['documentToc']" v-bind:key="el.id">
+            <li v-for="el in docTocTree" v-bind:key="el.id">
               <a :href="'#'+el.id">{{ el.text }}</a>
+              <ul>
+                <li v-for="el2 in el['children']" v-bind:key="el2.id">
+                  <a :href="'#'+el2.id">{{ el2.text }}</a>
+                </li>
+              </ul>
             </li>
           </ul>
         </div>
@@ -69,6 +74,42 @@ export default {
   name: 'lego-page-header',
   inject: ['$global', '$siteTopics', '$tagCloud'],
   props: ['topic-id', 'document-list', 'document-id', 'document-toc', 'no-search'],
+  computed: {
+    docTocTree() {
+      const result = []
+      let current = null
+      this.documentToc.forEach(node => {
+        if (!current || node.level == current.level) {
+          node['children'] = []
+          if (current && current['parent']) {
+            node['parent'] = current['parent']
+            current['parent']['children'].push(node)
+          } else {
+            result.push(node)
+          }
+          current = node
+        } else if (node.level > current.level) {
+          node['parent'] = current
+          current['children'].push(node)
+          current = node
+        } else {
+          // node.level > current.level
+          while (current['parent'] && node.level > current.level) {
+            current = current['parent']
+          }
+          node['children'] = []
+          if (current['parent']) {
+            node['parent'] = current['parent']
+            current['parent']['children'].push(node)
+          } else {
+            result.push(node)
+          }
+          current = node
+        }
+      })
+      return result
+    },
+  },
   methods: {
     calcTagCloudCSS(tag) {
       const cssList = [
