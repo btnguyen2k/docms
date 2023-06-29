@@ -71,8 +71,12 @@ class MyRenderer extends marked.Renderer {
             if (beBase.endsWith("/")) {
                 beBase = beBase.slice(0, beBase.length - 1)
             }
-            const newImgUrl = new URL(mediaUrl, document.baseURI)
-            return beBase + newImgUrl.href.slice(newImgUrl.origin.length)
+            try {
+                const newImgUrl = new URL(mediaUrl, document.baseURI)
+                return beBase + newImgUrl.href.slice(newImgUrl.origin.length)
+                // eslint-disable-next-line no-empty
+            } catch (e) {
+            }
         }
         return mediaUrl
     }
@@ -291,7 +295,7 @@ class MyRenderer extends marked.Renderer {
 
     _renderVideo(paramsStr) {
         const params = _parseParams(paramsStr, 1)
-        const videoUrl = this._fixMediaUrl(params['$0'])
+        let videoUrl = this._fixMediaUrl(params['$0'])
         const alignCenter = params['center'] ? true : false
         let videoRatio = params['ratio']
         if (videoRatio!='1x1' && videoRatio!='4x3' && videoRatio!='16x9' && videoRatio!='21x9') {
@@ -308,23 +312,26 @@ class MyRenderer extends marked.Renderer {
         if (cssStyle != '') {
             cssStyle = 'style="' + cssStyle + '"'
         }
-        const url = new URL(videoUrl)
-        const youtubeDomains = {'www.youtube.com': true, 'youtube.com': true, 'youtu.be': true}
-        if (youtubeDomains[url.hostname]) {
-            // youtube video
-            const vstart = url.searchParams.get('t')?url.searchParams.get('t'):url.searchParams.get('start')
-            let vid = url.searchParams.get('v')
-            if (!vid) {
-                const tokens = url.pathname.split('/')
-                console.log("DEBUG", url.pathname, tokens)
-                vid = tokens.length > 2 ? tokens[2] : ''
+        try {
+            const url = new URL(videoUrl, 'http://localhost')
+            const youtubeDomains = {'www.youtube.com': true, 'youtube.com': true, 'youtu.be': true}
+            if (youtubeDomains[url.hostname]) {
+                // youtube video
+                const vstart = url.searchParams.get('t')?url.searchParams.get('t'):url.searchParams.get('start')
+                let vid = url.searchParams.get('v')
+                if (!vid) {
+                    const tokens = url.pathname.split('/')
+                    vid = tokens.length > 2 ? tokens[2] : ''
+                }
+                const vurl = 'https://www.youtube.com/embed/'+vid+(vstart?'?start='+vstart:'')
+                const result = '<div class="{css-class}" data-aos="fade-up" {css-style}><iframe title="Youtube video" src="{video-url}" allow="fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>'
+                return result
+                    .replaceAll('{css-style}', cssStyle)
+                    .replaceAll('{css-class}', 'ratio ratio-'+videoRatio+(alignCenter?' start-50 translate-middle-x':''))
+                    .replaceAll('{video-url}', vurl)
             }
-            const vurl = 'https://www.youtube.com/embed/'+vid+(vstart?'?start='+vstart:'')
-            const result = '<div class="{css-class}" data-aos="fade-up" {css-style}><iframe title="Youtube video" src="{video-url}" allow="fullscreen; accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe></div>'
-            return result
-                .replaceAll('{css-style}', cssStyle)
-                .replaceAll('{css-class}', 'ratio ratio-'+videoRatio+(alignCenter?' start-50 translate-middle-x':''))
-                .replaceAll('{video-url}', vurl)
+        } catch (e) {
+            videoUrl = 'https://placehold.co/600x400/red/yellow.mp4?text=Invalid%20media%20url'
         }
         const result = '<video class="{css-class}" data-aos="fade-up" {css-style} controls><source src="{video-url}" /></video>'
         return result
