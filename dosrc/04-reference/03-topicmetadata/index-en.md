@@ -1,6 +1,8 @@
 Each `topic directory` has its own metadata file. This topic metadata file contains the following fields:
 
-**icon** - `string`, topic's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
+## icon
+
+`string`, topic's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
 ```yaml
 icon: fas fa-book
 ```
@@ -15,7 +17,9 @@ icon: fas fa-book
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
-**title** - `string` or `map[language-code:text]`, topic's title, example:
+## title
+
+`string` or `map[language-code:text]`, topic's title, example:
 ```yaml
 title: "Introduction"
 ```
@@ -38,7 +42,9 @@ title:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
-**description** - `string` or `map[language-code:text]`, topic's short description, example:
+## description
+
+`string` or `map[language-code:text]`, topic's short description, example:
 ```yaml
 description: "An introduction of DO CMS: what it is and how it work."
 ```
@@ -60,6 +66,15 @@ description:
   en: "An introduction of DO CMS: what it is and how it work."
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
+
+## hidden
+
+`boolean`, if set to `true` the topic should be hidden from the GUI, useful to store special purpose pages in `blog` mode, example:
+```yaml
+hidden: true
+```
+
+## Example
 
 Example of a full topic metadata file:
 ```yaml

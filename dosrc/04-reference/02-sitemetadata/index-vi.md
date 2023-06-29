@@ -177,6 +177,7 @@ tagalias:
     ci/cd: [cicd, ci cd, ci-cd]
     localhost: [local]
     docli: [cli]
+mode: document
 ```
 
 Xem thêm:

@@ -1,6 +1,8 @@
 Mỗi một `thư mục chủ đề` có một tập tin metadata riêng. Tập tin này chứa các trường thông tin sau:
 
-**icon** - `string`, icon của chủ đề, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
+## icon
+
+`string`, icon của chủ đề, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
 ```yaml
 icon: fas fa-book
 ```
@@ -15,7 +17,9 @@ icon: fas fa-book
 Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
-**title** - `string` hoặc `map[language-code:text]`, tiêu đề ngắn gọn, ví dụ:
+## title
+
+`string` hoặc `map[language-code:text]`, tiêu đề ngắn gọn, ví dụ:
 ```yaml
 title: "Giới thiệu"
 ```
@@ -38,7 +42,9 @@ title:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
-**description** - `string` hoặc `map[language-code:text]`, mô tả ngắn dọn về chủ đề, ví dụ:
+## description
+
+`string` hoặc `map[language-code:text]`, mô tả ngắn dọn về chủ đề, ví dụ:
 ```yaml
 description: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```
@@ -60,6 +66,15 @@ description:
   vi: "Giới thiệu về DO CMS: tổng quan và cách thức hoạt động."
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
+
+## hidden
+
+`boolean`, đặt giá trị `true` để chỉ dẫn chủ đề này _không_ được hiển thị lên giao diện, thích hợp để lưu trữ các tài liệu cho mục đích chuyên biệt trong chế độ `blog`, ví dụ:
+```yaml
+hidden: true
+```
+
+## Ví dụ
 
 Một ví dụ đầy đủ của tập tin metadata chủ đề:
 ```yaml
