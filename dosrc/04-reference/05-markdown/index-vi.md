@@ -245,7 +245,7 @@ Hầu hết các ngôn ngữ lập trình phổ biến đều được hỗ tr�
     ]]
 ```
 
-## Biểu đổ
+## Biểu đồ
 
 Biểu đồ có thể được nhúng vào tài liệu sử dụng [cú pháp mermaid](https://mermaid.js.org/intro/):
 
