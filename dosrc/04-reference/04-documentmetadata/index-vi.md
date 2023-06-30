@@ -1,6 +1,8 @@
 Mỗi một `thư mục bài viết` có một tập tin metadata riêng. Tập tin này chứa các trường thông tin sau:
 
-**icon** - `string`, icon của bài viết, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
+## icon
+
+`string`, icon của bài viết, hỗ trợ [icon FontAwesome](https://fontawesome.com/search?m=free), ví dụ:
 ```yaml
 icon: fas fa-file
 ```
@@ -15,7 +17,9 @@ icon: fas fa-file
 Bộ biểu tượng FontAwesome và Bootstrap hỗ trợ bởi các giao diện đồ hoạ đi kèm với phiên bản bản `DO CMS runtime` gốc. Nếu bạn sử dụng một bộ giao diện đồ hoạ của bên thứ 3, vui lòng kiểm tra tài liệu đi kèm.
 ```
 
-**title** - `string` hoặc `map[language-code:text]`, tiêu đề bài viết, ví dụ:
+## title
+
+`string` hoặc `map[language-code:text]`, tiêu đề bài viết, ví dụ:
 ```yaml
 title: "DO CMS là gì"
 ```
@@ -38,7 +42,9 @@ title:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
-**summary** - `string` hoặc `map[language-code:text]`, tóm tắt ngắn gọn nội dung bài viết, ví dụ:
+## summary
+
+`string` hoặc `map[language-code:text]`, tóm tắt ngắn gọn nội dung bài viết, ví dụ:
 ```yaml
 summary: "DO CMS là Hệ thống quản lý nội dung giúp tác giả xuất bản nội dung trang web thông qua luồng CI/CD. Sẽ không có giao diện để người dùng tạo, cập nhật và xuất bản nội dung lên trang web. Thay vào đó, nội dung của trang web sẽ được xây dựng và xuất bản thông qua qui trình CI/CD."
 ```
@@ -61,7 +67,9 @@ summary:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
-**file** - `string` hoặc `map[language-code:tên-tập-tin]`, tập tin chứa nội dung bài viết, ví dụ:
+## file
+
+`string` hoặc `map[language-code:tên-tập-tin]`, tập tin chứa nội dung bài viết, ví dụ:
 ```yaml
 file: index.md
 ```
@@ -84,7 +92,9 @@ file:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
-**tags** - `Array("tag1","tag2",...)` hoặc `map[language-code:Array("tag1","tag2",...)]`, thông tin tuỳ ý đính kèm vào tài liệu, ví dụ:
+## tags
+
+`Array("tag1","tag2",...)` hoặc `map[language-code:Array("tag1","tag2",...)]`, thông tin tuỳ ý đính kèm vào tài liệu, ví dụ:
 ```yaml
 tags: [đám mây, máy ảo]
 ```
@@ -107,6 +117,42 @@ tags:
 ```
 bởi vì `vi` đang được chỉ định là ngôn ngữ mặc định của trang web trong [tập tin metadata trang web](../sitemetadata/).
 
+## img
+
+`string` - ảnh đại diện của bài viết, là 1 đường dẫn đơn trỏ tới ảnh, ví dụ:
+```yaml
+img: entry-img.jpg
+```
+
+hoặc là 1 `map[id:img-url]` để chỉ định nhiều ảnh, được mã hoá dạng JSON string, ví dụ:
+```yaml
+img: '{"square":"entry-img-s.jpg","vertical":"entry-img-v.jpg","hortizontal":"entry-img-h.jpg"}
+```
+
+## tu và tc
+
+`UNIX timestamp` - thời giam tài liệu được tạo ra/cập nhật lần cuối, ví dụ:
+```yaml
+tc: 1683215751
+tu: 1683215751
+```
+
+## page
+
+`string` - chỉ dẫn rằng tài liệu này dành riêng cho mục đích chuyên biệt, sử dụng trong [chế độ](../sitemetadata/#mode) `blog`, ví dụ:
+```yaml
+page: about
+```
+
+## style
+
+`string` - chỉ dẫn rằng tài liệu này cần được trình bày trên giao diện với 1 phong cách chuyên biệt, ví dụ:
+```yaml
+style: fullscreen
+```
+
+## Ví dụ
+
 Một ví dụ đầy đủ của tập tin metadata bài viết:
 ```yaml
 title:
@@ -116,12 +162,15 @@ summary:
   en: "DO CMS is a Content Management System that helps authors publish website content through a CI/CD flow. Unlike other CMS, there is no UI to create, update and publish content in DO CMS. Instead, website content is built and published via CI/CD pipelines."
   vi: "DO CMS là Hệ thống quản lý nội dung giúp tác giả xuất bản nội dung trang web thông qua luồng CI/CD. Sẽ không có giao diện để người dùng tạo, cập nhật và xuất bản nội dung lên trang web. Thay vào đó, nội dung của trang web sẽ được xây dựng và xuất bản thông qua qui trình CI/CD."
 icon:
+img: '{"s":"entry-img-s.jpg","v":"entry-img-v.jpg","h":"entry-img-h.jpg"}'
 file:
   en: index-en.md
   vi: index-vi.md
 tags:
   en: [cms, content, devops]
   vi: [cms, nội dung, devops]
+tc: 1683215751
+tu: 1683215751
 ```
 
 Xem thêm:
