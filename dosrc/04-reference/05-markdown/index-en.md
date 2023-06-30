@@ -310,6 +310,8 @@ Videos can be embedded into the document using the following syntax:
     ```
 ```
 
+> `video-url` can be either a URl points to the video file, or a Youtube link.
+
 For example:
 ```bs-tabs
     [[bs-tab Markdown

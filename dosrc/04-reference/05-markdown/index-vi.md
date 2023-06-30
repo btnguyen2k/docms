@@ -306,9 +306,11 @@ Biểu đồ có thể được nhúng vào tài liệu sử dụng [cú pháp m
 
 Video có thể được nhúng vào tài liệu với cú pháp sau:
 ```
-    ```video video-url ratio=<ratio>
+    ```video đường-dẫn-tới-video ratio=<ratio>
     ```
 ```
+
+> `đường-dẫn-tới-video` có thể là 1 URL trỏ đến tập tin video, hoặc là 1 đường dẫn Youtube.
 
 Ví dụ:
 ```bs-tabs
