@@ -13,10 +13,14 @@
         <div class="card-body">
           <ul>
             <li v-for="el in docTocTree" v-bind:key="el.id">
-              <a @click.prevent="$scrollToHash('#'+el.id)" :href="'#'+el.id">{{ el.text }}</a>
+              <router-link :to="'#'+el.id" custom v-slot="{ href }">
+                <a :href="href" @click.prevent="wrapNavigate('#'+el.id)">{{ el.text }}</a>
+              </router-link>
               <ul>
                 <li v-for="el2 in el['children']" v-bind:key="el2.id">
-                  <a @click.prevent="$scrollToHash('#'+el2.id)" :href="'#'+el2.id">{{ el2.text }}</a>
+                  <router-link :to="'#'+el2.id" custom v-slot="{ href }">
+                    <a :href="href" @click.prevent="wrapNavigate('#'+el2.id)">{{ el2.text }}</a>
+                  </router-link>
                 </li>
               </ul>
             </li>
@@ -111,6 +115,10 @@ export default {
     },
   },
   methods: {
+    wrapNavigate(hash) {
+      this.$router['push'](hash)
+      setTimeout(()=>{this.$scrollToHash(hash)}, 0)
+    },
     calcTagCloudCSS(tag) {
       const cssList = [
         'badge bg-primary text-decoration-none link-light',

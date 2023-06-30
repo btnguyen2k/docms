@@ -112,12 +112,13 @@ export default {
   methods: {
     _scrollToHash(hash) {
       if (hash) {
-        this.$nextTick(() => {
+        const fn = () => {
           const el = document.getElementById(hash.slice(1))
           if (el) {
             el.scrollIntoView({block: 'center', behavior: 'smooth'})
           }
-        })
+        }
+        this.$nextTick(fn)
       }
     },
     _updateLightbox() {
