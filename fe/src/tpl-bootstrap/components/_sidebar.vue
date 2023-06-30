@@ -13,10 +13,10 @@
         <div class="card-body">
           <ul>
             <li v-for="el in docTocTree" v-bind:key="el.id">
-              <a :href="'#'+el.id">{{ el.text }}</a>
+              <a @click.prevent="$scrollToHash('#'+el.id)" :href="'#'+el.id">{{ el.text }}</a>
               <ul>
                 <li v-for="el2 in el['children']" v-bind:key="el2.id">
-                  <a :href="'#'+el2.id">{{ el2.text }}</a>
+                  <a @click.prevent="$scrollToHash('#'+el2.id)" :href="'#'+el2.id">{{ el2.text }}</a>
                 </li>
               </ul>
             </li>

@@ -529,6 +529,7 @@ function markdownRender(markdownInput, opts, tocContainer) {
     return sanitize ? DOMPurify.sanitize(latexHtml, {
         ADD_TAGS: ['iframe'], ADD_DATA_URI_TAGS: ['iframe'], // allow iframe tag for GitHub Gist and Youtube video
         ADD_ATTR: ['target', 'allow'], // allow 'target' and 'allow' attributes
+        SANITIZE_DOM: false, // https://github.com/cure53/DOMPurify/issues/517
     }) : latexHtml
 }
 

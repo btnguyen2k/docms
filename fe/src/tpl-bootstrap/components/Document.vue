@@ -61,7 +61,7 @@ import Lightbox from 'bs5-lightbox'
 
 import {markdownRender} from '@/_shared/utils/docms_utils'
 import {useRoute} from 'vue-router'
-import {watch} from 'vue'
+import {getCurrentInstance, watch} from 'vue'
 import '@/_shared/assets/markdown-gfm.css'
 import legoPageHeader from './_pageHeader.vue'
 import legoPageFooter from './_pageFooter.vue'
@@ -73,6 +73,9 @@ export default {
   inject: ['$global', '$siteMeta', '$siteTopics'],
   components: {legoPageHeader, legoPageFooter, legoSidebar},
   mounted() {
+    const app = getCurrentInstance()
+    app.appContext.config.globalProperties.$scrollToHash = this._scrollToHash
+
     const vue = this
     if (vue.$route.query.l) {
       switchLanguage(vue.$route.query.l, false)
