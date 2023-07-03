@@ -1,5 +1,11 @@
 # DOCMS Release Notes
 
+## 2023-07-x
+
+Runtime `v0.4.x`:
+- Template `blogy`: update list of special pages to `['about', 'contact', 'disclaimer', 'privacy', 'privacy-policy']`.
+- Bug fixes & enhancements.
+
 ## 2023-06-29
 
 Runtime `v0.4.0.1`:

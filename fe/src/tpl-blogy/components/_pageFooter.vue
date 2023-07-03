@@ -106,7 +106,7 @@ export default {
       return new Date()
     },
     specialPages() {
-      return ['about', 'contact']
+      return ['about', 'contact', 'disclaimer', 'privacy', 'privacy-policy']
     },
   },
   methods: {
