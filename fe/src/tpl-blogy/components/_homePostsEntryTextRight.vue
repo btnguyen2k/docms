@@ -4,7 +4,7 @@
     <div class="container">
       <div class="row mb-4">
         <div class="col-sm-6">
-          <h2 class="posts-entry-title">{{ $localedText($props['topic'].title) }}</h2>
+          <h2 class="posts-entry-title"><i v-if="$props['topic'].icon!=''" :class="$props['topic'].icon"/> {{ $localedText($props['topic'].title) }}</h2>
         </div>
         <div class="col-sm-6 text-sm-end"><router-link :to="{name: 'Topic', params: {tid: topic.id}}" class="read-more">{{ $t('view_all') }}</router-link></div>
       </div>
