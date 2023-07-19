@@ -1,11 +1,15 @@
 The site metadata file resides at the `root directory` and contains the following fields:
 
-**name** - `string`, website's short name, example:
+## name
+
+`string`, website's short name, example:
 ```yaml
 name: DO CMS
 ```
 
-**icon** - `string`, website's icon, example:
+## icon
+
+`string`, website's icon, example:
 ```yaml
 icon: fas fa-globe
 ```
@@ -20,7 +24,9 @@ icon: fas fa-globe
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
-**languages** - `map[language-code:display-label]`, website's support languages, example:
+## languages
+
+`map[language-code:display-label]`, website's support languages, example:
 ```yaml
 languages:
   en: English
@@ -32,7 +38,9 @@ languages:
 >
 > The special entry `default: en` sets `en` as the default language.
 
-**description** - `string` or `map[language-code:text]`, website's short description, example:
+## description
+
+`string` or `map[language-code:text]`, website's short description, example:
 ```yaml
 description: "Content Management System where its content is built through CI/CD pipeline"
 ```
@@ -55,7 +63,9 @@ description:
 ```
 as `en` is the default language specified in the `languages` field above.
 
-**contacts** - `map[string:string]`, website's contact information, example:
+## contacts
+
+`map[string:string]`, website's contact information, example:
 ```yaml
 contacts:
   website: "https://github.com/btnguyen2k/docms"
@@ -68,7 +78,9 @@ contacts:
   discord: ""
 ```
 
-**tagalias** - `map[language-code:map[string:Array(string)]]`, map similar tags to one, example:
+## tagalias
+
+`map[language-code:map[string:Array(string)]]`, map similar tags to one, example:
 ```yaml
 tagalias:
   en:
@@ -83,7 +95,9 @@ tagalias:
     docli: [cli]
 ```
 
-**tags** - `map[string:object]`, extra key-object data attached to site metadata, example:
+## tags
+
+`map[string:object]`, extra key-object data attached to site metadata, example:
 ```yaml
 tags:
   build: ${build_datetime}
@@ -105,6 +119,33 @@ Special placeholders will be replaced with value by `DO CLI` when pre-processing
 <i class="fas fa-circle-info me-3 fa-xl"></i>
 Tags can be embedded to the document using syntax `[[do-tag`. Refer to [Supported Markdown syntax](../markdown/) for details.
 ```
+
+## mode
+
+`string`, website's mode, current allowed values are `document` and `blog`, example:
+```yaml
+mode: document
+```
+
+> The default mode is `document`.
+
+When `blog` mode is on, the following features are available:
+- API `/api/documents` supports 2 more request types:
+  - `?p=latest`: return latest N blog posts.
+  - `?p=special`: return list of "special"-purpose documents (non blog posts).
+- Documents (blog posts) are sorted by creation time, newest first.
+- `/feeds` returns latest blog posts as RSS newsfeed.
+
+## author
+
+`map[string:string]`, default author's info for blog posts, used in `blog` mode, example:
+```yaml
+author:
+  name: Thanh Nguyen
+  avatar: //www.gravatar.com/avatar/9d6ee977a36db465f103ea5c0e4b859c
+```
+
+## Example
 
 Example of a full site metadata file:
 ```yaml
@@ -139,6 +180,7 @@ tagalias:
     ci/cd: [cicd, ci cd, ci-cd]
     localhost: [local]
     docli: [cli]
+mode: document
 ```
 
 See also:

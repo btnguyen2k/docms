@@ -11,7 +11,7 @@ go install github.com/btnguyen2k/docms/docli@latest
 
 Cài đặt chỉ định một phiên bản cụ thể (*) qua câu lệnh:
 ```shell
-go install github.com/btnguyen2k/docms/docli@cli-v0.3.1.1
+go install github.com/btnguyen2k/docms/docli@cli-v0.3.1.3
 ```
 
 ```bs-alert warning

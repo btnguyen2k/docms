@@ -245,7 +245,7 @@ Hầu hết các ngôn ngữ lập trình phổ biến đều được hỗ tr�
     ]]
 ```
 
-## Biểu đổ
+## Biểu đồ
 
 Biểu đồ có thể được nhúng vào tài liệu sử dụng [cú pháp mermaid](https://mermaid.js.org/intro/):
 
@@ -301,6 +301,30 @@ Biểu đồ có thể được nhúng vào tài liệu sử dụng [cú pháp m
     ```
     ]]
 ```
+
+## Video
+
+Video có thể được nhúng vào tài liệu với cú pháp sau:
+```
+    ```video đường-dẫn-tới-video ratio=<ratio>
+    ```
+```
+
+> `đường-dẫn-tới-video` có thể là 1 URL trỏ đến tập tin video, hoặc là 1 đường dẫn Youtube.
+
+Ví dụ:
+```bs-tabs
+    [[bs-tab Markdown
+        ```video https://www.youtube.com/watch?v=eCCan3TFPoc ratio=16x9
+        ```
+    ]]
+    [[bs-tab Hiển thị
+    ```video https://www.youtube.com/watch?v=eCCan3TFPoc ratio=16x9
+    ```
+    ]]
+```
+
+Tham số **ratio** là tuỳ chọn, các giá trị hợp lệ là `1x1`, `4x3`, `16x9` và `21x9`. Nếu không chỉ định, giá trị ratio mặc định là `16x9`.
 
 Xem thêm:
 - Hỗ trợ [giao diện Bootstrap](../bootstrap/).
