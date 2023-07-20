@@ -17,7 +17,10 @@
       <div class="container">
         <div class="row">
           <div class="col-12">
-            <div class="heading">{{ $t('topic')}}: {{ $localedText(topic.title) }}</div>
+            <div class="heading">
+              <span class=" fw-bold"><i v-if="topic.icon!=''" :class="topic.icon"/> {{ $localedText(topic.title) }}</span>
+              <br/><span>{{ $localedText(topic.description) }}</span>
+            </div>
           </div>
         </div>
         <div class="row posts-entry">
