@@ -13,6 +13,8 @@ require (
 	github.com/gorilla/feeds v1.1.1
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/radovskyb/watcher v1.0.7
+	github.com/yuin/goldmark v1.5.4
+	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -38,7 +40,6 @@ require (
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/json-iterator/go v0.0.0-20171115153421-f7279a603ede // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect

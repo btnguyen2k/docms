@@ -92,6 +92,10 @@ func postInitEchoSetup(e *echo.Echo) error {
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, fePath+"/")
 	})
+	// redirect fePath to fePath/
+	e.GET(fePath, func(c echo.Context) error {
+		return c.Redirect(http.StatusFound, fePath+"/")
+	})
 
 	// map frontend static assets
 	dirContent, err := GetDirContent(feTemplateDir, nil)
@@ -108,6 +112,9 @@ func postInitEchoSetup(e *echo.Echo) error {
 
 	// finally route everything else to "index.html:
 	e.GET(fePath+"/*", func(c echo.Context) error {
+		if isCrawlerBot(c) {
+			return handleCrawlerBotRequest(fePath, c)
+		}
 		if fcontent, err := os.ReadFile(feTemplateDir + "/index.html"); err != nil {
 			if os.IsNotExist(err) {
 				return c.HTML(http.StatusNotFound, "Not found: "+c.Request().RequestURI)
@@ -118,6 +125,8 @@ func postInitEchoSetup(e *echo.Echo) error {
 			return c.HTMLBlob(http.StatusOK, fcontent)
 		}
 	})
+
+	setupCrawlerBotHandlers(e)
 
 	return nil
 }

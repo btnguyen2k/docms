@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ .page.title }}</title>
+    <meta name="author" content="{{ .app.name }} v{{ .app.version }}">
+    <meta name="description" content="{{ .page.description }}">
+    <meta name="keywords" content="{{ .page.keywords }}">
+    <link href="//cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<h1>
+    {{ range $el := .breadcrumbs }}
+        <a href="{{ $el.url }}">{{ $el.title }}</a> /
+    {{ end }}
+    {{$first := true}}
+    {{ range $_, $name := .topic.names }}
+        {{if $first}}
+            {{$first = false}}
+        {{else}}
+            &nbsp;|
+        {{end}}
+        {{ $name }}
+    {{ end }}
+</h1>
+<p>
+    {{$first := true}}
+    {{ range $_, $desc := .topic.descriptions }}
+        {{if $first}}
+            {{$first = false}}
+        {{else}}
+            <br/>
+        {{end}}
+        {{ $desc }}
+    {{ end }}
+</p>
+
+{{ if gt (len .posts) 0 }}
+    <h2>Posts</h2>
+    <ul>
+        {{ range $_, $post := .posts }}
+            <li>
+                {{$first := true}}
+                {{ range $_, $title := $post.titles }}
+                    {{if $first}}
+                        {{$first = false}}
+                    {{else}}
+                        &nbsp;|
+                    {{end}}
+                    <a href="{{ $post.url }}">{{ $title }}</a>
+                {{ end }}
+                {{ range $_, $summary := $post.summaries }}
+                    <br />
+                    <span style="font-size: 0.8em">{{ $summary }}</span>
+                {{ end }}
+            </li>
+        {{ end }}
+    </ul>
+{{ end }}
+</body>
+</html>

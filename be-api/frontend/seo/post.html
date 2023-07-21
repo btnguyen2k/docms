@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ .page.title }}</title>
+    <meta name="author" content="{{ .app.name }} v{{ .app.version }}">
+    <meta name="description" content="{{ .page.description }}">
+    <meta name="keywords" content="{{ .page.keywords }}">
+    <link href="//cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<h1>
+    {{ range $el := .breadcrumbs }}
+        <a href="{{ $el.url }}">{{ $el.title }}</a> /
+    {{ end }}
+    {{$first := true}}
+    {{ range $_, $title := .post.titles }}
+        {{if $first}}
+            {{$first = false}}
+        {{else}}
+            &nbsp;|
+        {{end}}
+        {{ $title }}
+    {{ end }}
+</h1>
+{{$post := .post}}
+{{ range $_, $l := .languages }}
+    <div class="container">
+        <p style="font-size: 1.2em">{{ index $post.summaries $l }}</p>
+        <hr/>
+        <div>
+            {{ index $post.contents $l | unescapeHtml }}
+        </div>
+        <hr/>
+    </div>
+{{ end }}
+</body>
+</html>
