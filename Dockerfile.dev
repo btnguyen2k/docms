@@ -53,6 +53,7 @@ RUN mkdir -p /app/frontend
 COPY ./dodata /app/dodata
 COPY --from=builder_be /build/be-api/main /app/main
 COPY --from=builder_be /build/be-api/config /app/config
+COPY --from=builder_be /build/be-api/frontend /app/frontend
 COPY --from=builder_fe /build/fe-tpl-bootstrap/dist /app/frontend/bootstrap
 RUN apk add --no-cache -U tzdata bash ca-certificates \
     && update-ca-certificates \
