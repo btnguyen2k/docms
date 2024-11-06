@@ -236,7 +236,12 @@ export default {
 
         // use $localedText(inputMap) to pick up the correct i18n message
         app.config.globalProperties.$localedText = (inputMap) => {
-            return inputMap && inputMap[i18n.global.locale] ? inputMap[i18n.global.locale] : inputMap
+            // if the language does not match, return the first value
+            return inputMap && inputMap[i18n.global.locale]
+                ? inputMap[i18n.global.locale] 
+                : typeof(inputMap) === 'object' && !Array.isArray(inputMap) && Object.values(inputMap).length > 0 
+                    ? Object.values(inputMap)[0] 
+                    : inputMap
         }
 
         // use $doSearch to navigate to search view
