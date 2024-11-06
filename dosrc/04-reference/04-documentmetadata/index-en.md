@@ -1,6 +1,8 @@
 Each `document directory` has its own metadata file. This document metadata file contains the following fields:
 
-**icon** - `string`, document's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
+## icon
+
+`string`, document's icon, supporting [FontAwesome icons](https://fontawesome.com/search?m=free), example:
 ```yaml
 icon: fas fa-file
 ```
@@ -15,7 +17,9 @@ icon: fas fa-file
 FontAwesome and Bootstrap icons are supported by the frontend templates included in the offical `DO CMS runtime`. If you use custom frontend templates from 3rd parties, please check their documentations.
 ```
 
-**title** - `string` or `map[language-code:text]`, document's title, example:
+## title
+
+`string` or `map[language-code:text]`, document's title, example:
 ```yaml
 title: "What it is"
 ```
@@ -38,7 +42,9 @@ title:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
-**summary** - `string` or `map[language-code:text]`, document's summary, example:
+## summary
+
+`string` or `map[language-code:text]`, document's summary, example:
 ```yaml
 summary: "DO CMS is a Content Management System that helps authors publish website content through a CI/CD flow. Unlike other CMS, there is no UI to create, update and publish content in DO CMS. Instead, website content is built and published via CI/CD pipelines."
 ```
@@ -61,7 +67,9 @@ summary:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
-**file** - `string` or `map[language-code:file-name]`, document's content file, example:
+## file
+
+`string` or `map[language-code:file-name]`, document's content file, example:
 ```yaml
 file: index.md
 ```
@@ -84,7 +92,9 @@ file:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
-**tags** - `Array("tag1","tag2",...)` or `map[language-code:Array("tag1","tag2",...)]`, arbitrary info attached to the document, example:
+## tags
+
+`Array("tag1","tag2",...)` or `map[language-code:Array("tag1","tag2",...)]`, arbitrary info attached to the document, example:
 ```yaml
 tags: [cloud, virtual machine]
 ```
@@ -107,6 +117,42 @@ tags:
 ```
 as `en` is the default language specified in the [site metadata file](../sitemetadata/).
 
+## img
+
+`string` - document's entry image, either a single url to the image, example:
+```yaml
+img: entry-img.jpg
+```
+
+or a `map[id:img-url]` specifying multiple images, encoded as a JSON string, example:
+```yaml
+img: '{"square":"entry-img-s.jpg","vertical":"entry-img-v.jpg","hortizontal":"entry-img-h.jpg"}
+```
+
+## tu and tc
+
+`UNIX timestamp` - timestamp when the document was created/last updated, example:
+```yaml
+tc: 1683215751
+tu: 1683215751
+```
+
+## page
+
+`string` - indicate that this document is a special purpose page, used in `blog` [mode](../sitemetadata/#mode), example:
+```yaml
+page: about
+```
+
+## style
+
+`string` - indicate that the GUI should present this document in a specific style, example:
+```yaml
+style: fullscreen
+```
+
+## Example
+
 Example of a full document metadata file:
 ```yaml
 title:
@@ -116,12 +162,15 @@ summary:
   en: "DO CMS is a Content Management System that helps authors publish website content through a CI/CD flow. Unlike other CMS, there is no UI to create, update and publish content in DO CMS. Instead, website content is built and published via CI/CD pipelines."
   vi: "DO CMS là Hệ thống quản lý nội dung giúp tác giả xuất bản nội dung trang web thông qua luồng CI/CD. Sẽ không có giao diện để người dùng tạo, cập nhật và xuất bản nội dung lên trang web. Thay vào đó, nội dung của trang web sẽ được xây dựng và xuất bản thông qua qui trình CI/CD."
 icon:
+img: '{"s":"entry-img-s.jpg","v":"entry-img-v.jpg","h":"entry-img-h.jpg"}'
 file:
   en: index-en.md
   vi: index-vi.md
 tags:
   en: [cms, content, devops]
   vi: [cms, nội dung, devops]
+tc: 1683215751
+tu: 1683215751
 ```
 
 See also:

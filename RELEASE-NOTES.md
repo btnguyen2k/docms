@@ -1,5 +1,10 @@
 # DOCMS Release Notes
 
+## 2024-11-06
+
+Runtime `v0.4.0.2`:
+- Fix: if the requested locale language is not available, the first available language will be used.
+
 ## 2023-06-29
 
 Runtime `v0.4.0.1`:

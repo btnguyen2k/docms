@@ -302,5 +302,29 @@ Diagrams can be embedded to the document using [mermaid syntax](https://mermaid.
     ]]
 ```
 
+## Videos
+
+Videos can be embedded into the document using the following syntax:
+```
+    ```video video-url ratio=<ratio>
+    ```
+```
+
+> `video-url` can be either a URl points to the video file, or a Youtube link.
+
+For example:
+```bs-tabs
+    [[bs-tab Markdown
+        ```video https://www.youtube.com/watch?v=eCCan3TFPoc ratio=16x9
+        ```
+    ]]
+    [[bs-tab Rendered result
+    ```video https://www.youtube.com/watch?v=eCCan3TFPoc ratio=16x9
+    ```
+    ]]
+```
+
+**ratio** setting is optional, valid values are `1x1`, `4x3`, `16x9` and `21x9`. If not specified, the default value is `16x9`.
+
 See more:
 - [Bootstrap components](../bootstrap/) support.
